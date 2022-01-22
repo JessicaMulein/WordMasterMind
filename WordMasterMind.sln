@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordMasterMind", "src\WordMasterMind\WordMasterMind.csproj", "{D47E3FE9-ED16-4F15-978D-F708723EAD55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordMasterMind.Test", "test\WordMasterMind.Test\WordMasterMind.Test.csproj", "{288F5014-54C7-444E-867D-51D5D7E0F073}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D47E3FE9-ED16-4F15-978D-F708723EAD55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D47E3FE9-ED16-4F15-978D-F708723EAD55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D47E3FE9-ED16-4F15-978D-F708723EAD55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D47E3FE9-ED16-4F15-978D-F708723EAD55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{288F5014-54C7-444E-867D-51D5D7E0F073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{288F5014-54C7-444E-867D-51D5D7E0F073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{288F5014-54C7-444E-867D-51D5D7E0F073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{288F5014-54C7-444E-867D-51D5D7E0F073}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5D7AB202-67AD-4093-9247-42B5A1DAD1BE}
+	EndGlobalSection
+EndGlobal
