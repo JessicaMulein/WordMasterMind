@@ -281,7 +281,18 @@ public class WordMasterMindTest
             actual: mastermind.WordLength);
         // a guess of "weight" should register "e" as a solved letter, regardless of hardmode
         var attempt = mastermind.Attempt(wordAttempt: "weigh");
+        TestAttempt(
+            knownSecretWord: mastermind.SecretWord,
+            attemptDetails: attempt);
         Assert.IsTrue(
             condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {false, true, false, false, false}));
+        // now let's solve it
+        attempt = mastermind.Attempt(wordAttempt: expectedWord);
+        TestAttempt(
+            knownSecretWord: mastermind.SecretWord,
+            attemptDetails: attempt);
+        Assert.IsTrue(
+            condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {true, true, true, true, true}));
+        Assert.IsTrue(condition: mastermind.Solved);
     }
 }

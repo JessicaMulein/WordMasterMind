@@ -22,6 +22,8 @@ public class WordMasterMind
     /// </summary>
     private readonly string _secretWord;
 
+    private readonly bool[] _solvedLetters;
+
     /// <summary>
     ///     if a previous attempt had a letter in the correct position, future attempts must have the same letter in the
     ///     correct position
@@ -42,8 +44,6 @@ public class WordMasterMind
     ///     Length of the word to be guessed
     /// </summary>
     public readonly int WordLength;
-
-    private readonly bool[] _solvedLetters;
 
     public WordMasterMind(int minLength, int maxLength, bool hardMode = false,
         ScrabbleDictionary? scrabbleDictionary = null, string? secretWord = null)
@@ -153,6 +153,8 @@ public class WordMasterMind
         if (this.WordLength != wordAttempt.Length)
             throw new InvalidAttemptLengthException();
 
+        wordAttempt = wordAttempt.ToUpperInvariant();
+
         if (!this.ScrabbleDictionary.IsWord(word: wordAttempt))
             throw new NotInDictionaryException();
 
@@ -160,7 +162,6 @@ public class WordMasterMind
         var currentAttemptLetterIndex = 0;
         // the attempt hasn't been registered in the count yet
         this._attempts[this.CurrentAttempt] = wordAttempt
-            .ToUpperInvariant()
             .Select(
                 selector: c => new AttemptDetail(
                     letterPosition: currentAttemptLetterIndex,
@@ -185,7 +186,7 @@ public class WordMasterMind
                     throw new HardModeException();
 
         // if we haven't thrown an exception due to hard mode, and the word is the secret word, we've solved it
-        if (wordAttempt == this._secretWord) this.Solved = true;
+        if (this._secretWord.Equals(value: wordAttempt)) this.Solved = true;
 
         // return the current attempt's record and advance the counter
         return this._attempts[this.CurrentAttempt++];
