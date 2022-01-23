@@ -189,9 +189,11 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: false,
             actual: mastermind.HardMode);
-        for (var i = 0; i < Models.WordMasterMind.GetMaxAttemptsForLength(
+        for (var i = 0;
+             i < Models.WordMasterMind.GetMaxAttemptsForLength(
                  length: length,
-                 hardMode: mastermind.HardMode); i++)
+                 hardMode: mastermind.HardMode);
+             i++)
         {
             var attempt = mastermind.Attempt(wordAttempt: incorrectWord);
             TestAttempt(knownSecretWord: secretWord,
@@ -322,8 +324,7 @@ public class WordMasterMindTest
     public void TestAttemptsFunction()
     {
         var scrabbleDictionary = GetScrabbleDictionary();
-        foreach (var hardMode in new bool[] {false, true})
-        {
+        foreach (var hardMode in new[] {false, true})
             for (var length = scrabbleDictionary.ShortestWordLength;
                  length <= scrabbleDictionary.LongestWordLength;
                  length++)
@@ -335,6 +336,5 @@ public class WordMasterMindTest
                     expected: length + (hardMode ? 2 : 1),
                     actual: attemptsForLength);
             }
-        }
     }
 }

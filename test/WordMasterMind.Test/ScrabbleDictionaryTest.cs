@@ -58,6 +58,12 @@ public class ScrabbleDictionaryTest
             Assert.IsTrue(condition: word.Length >= minLength && word.Length <= maxLength);
             Assert.IsTrue(condition: scrabbleDictionary.IsWord(word: word));
         }
+
+        // our scrabble json has 2-15 characters
+        Assert.AreEqual(expected: 2,
+            actual: scrabbleDictionary.ShortestWordLength);
+        Assert.AreEqual(expected: 15,
+            actual: scrabbleDictionary.LongestWordLength);
     }
 
     [TestMethod]

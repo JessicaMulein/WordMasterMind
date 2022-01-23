@@ -55,7 +55,10 @@ public class ScrabbleDictionary
         var validWordLengths = new List<int>();
         int? shortest = null;
         int? longest = null;
-        foreach (var key in this._wordsByLength.Keys)
+        // ensure we traverse the dictionary in length order rather than addition order
+        var dictionaryLengths = this._wordsByLength.Keys.ToArray();
+        Array.Sort(array: dictionaryLengths);
+        foreach (var key in dictionaryLengths)
         {
             // if there are no words of this length, skip it
             if (!this._wordsByLength[key: key].Any()) continue;
