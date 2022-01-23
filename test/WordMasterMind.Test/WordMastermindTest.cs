@@ -98,6 +98,24 @@ public class WordMasterMindTest
             actual: thrownException.Message);
     }
 
+    [TestMethod]
+    public void TestWordMasterMindAttemptCorrect()
+    {
+        var secretWord = "valid";
+        var scrabbleDictionary =
+            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var mastermind = new Models.WordMasterMind(
+            minLength: 5,
+            maxLength: 5,
+            maxAttempts: 6,
+            hardMode: false,
+            scrabbleDictionary: scrabbleDictionary,
+            secretWord: secretWord);
+        var attempt = mastermind.Attempt(wordAttempt: secretWord);
+        Assert.IsTrue(condition: mastermind.Solved);
+        TestAttempt(knownSecretWord: secretWord, attemptDetails: attempt);
+    }
+
     private static void TestAttempt(string knownSecretWord, IEnumerable<AttemptDetail> attemptDetails)
     {
         attemptDetails = attemptDetails.ToArray();
