@@ -12,8 +12,10 @@ namespace WordMasterMind;
 [TestClass]
 public class WordMasterMindTest
 {
-    private static ScrabbleDictionary GetScrabbleDictionary() =>
-       new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+    private static ScrabbleDictionary GetScrabbleDictionary()
+    {
+        return new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+    }
 
     private static string GetTestRoot(string? fileName = null)
     {
@@ -36,7 +38,6 @@ public class WordMasterMindTest
             new Models.WordMasterMind(
                 minLength: 5,
                 maxLength: 5,
-                maxAttempts: 6,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 // secretWord is valid, but not long enough
@@ -53,7 +54,6 @@ public class WordMasterMindTest
             new Models.WordMasterMind(
                 minLength: 5,
                 maxLength: 5,
-                maxAttempts: 6,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 // secretWord is valid, but too long
@@ -72,7 +72,6 @@ public class WordMasterMindTest
             new Models.WordMasterMind(
                 minLength: 8,
                 maxLength: 8,
-                maxAttempts: 6,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 secretWord: expectedSecretWord));
@@ -87,7 +86,6 @@ public class WordMasterMindTest
         var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
-            maxAttempts: 6,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary,
             secretWord: "valid");
@@ -105,13 +103,36 @@ public class WordMasterMindTest
         var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
-            maxAttempts: 6,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary,
             secretWord: secretWord);
         var attempt = mastermind.Attempt(wordAttempt: secretWord);
         Assert.IsTrue(condition: mastermind.Solved);
         TestAttempt(knownSecretWord: secretWord, attemptDetails: attempt);
+    }
+
+    [TestMethod]
+    public void TestWordMasterMindTooManyAttempts()
+    {
+        var secretWord = "valid";
+        var scrabbleDictionary = GetScrabbleDictionary();
+        var mastermind = new Models.WordMasterMind(
+            minLength: 5,
+            maxLength: 5,
+            hardMode: false,
+            scrabbleDictionary: scrabbleDictionary,
+            secretWord: secretWord);
+        for (var i = 0; i < Models.WordMasterMind.GetMaxAttemptsForLength(length: secretWord.Length); i++)
+        {
+            var attempt = mastermind.Attempt(wordAttempt: "wrong");
+            TestAttempt(knownSecretWord: secretWord, attemptDetails: attempt);
+        }
+
+        Assert.IsFalse(condition: mastermind.Solved);
+        var thrownException = Assert.ThrowsException<Exception>(action: () => mastermind.Attempt(wordAttempt: "wrong"));
+        Assert.AreEqual(
+            expected: "You have reached the maximum number of attempts",
+            actual: thrownException.Message);
     }
 
     private static void TestAttempt(string knownSecretWord, IEnumerable<AttemptDetail> attemptDetails)
@@ -140,7 +161,6 @@ public class WordMasterMindTest
         var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
-            maxAttempts: 6,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
         var secretWord = mastermind.SecretWord.ToUpperInvariant();
@@ -159,7 +179,6 @@ public class WordMasterMindTest
         var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
-            maxAttempts: 6,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
     }

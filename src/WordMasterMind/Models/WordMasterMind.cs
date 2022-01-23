@@ -25,16 +25,14 @@ public class WordMasterMind
     /// </summary>
     public readonly int MaxAttempts;
 
-    public WordMasterMind(int minLength, int maxLength, int maxAttempts, bool hardMode = false,
+    public WordMasterMind(int minLength, int maxLength, bool hardMode = false,
         ScrabbleDictionary? scrabbleDictionary = null, string? secretWord = null)
     {
         Solved = false;
         CurrentAttempt = 0;
         HardMode = hardMode;
-        MaxAttempts = maxAttempts;
         scrabbleDictionary ??=
             new ScrabbleDictionary(); // use the provided dictionary, or use the default one which is stored locally
-        _attempts = new IEnumerable<AttemptDetail>[maxAttempts];
         _secretWord = secretWord ?? scrabbleDictionary.GetRandomWord(minLength: minLength, maxLength: maxLength);
 
         if (_secretWord.Length > maxLength || _secretWord.Length < minLength)
@@ -42,6 +40,9 @@ public class WordMasterMind
 
         if (!scrabbleDictionary.IsWord(word: _secretWord))
             throw new ArgumentException(message: "Secret word must be a valid word in the Scrabble dictionary");
+
+        MaxAttempts = GetMaxAttemptsForLength(length: _secretWord.Length);
+        _attempts = new IEnumerable<AttemptDetail>[MaxAttempts];
     }
 
     /// <summary>
@@ -69,6 +70,11 @@ public class WordMasterMind
             if (!IsDebug) throw new Exception(message: "Secret word is only available in debug mode");
             return _secretWord;
         }
+    }
+
+    public static int GetMaxAttemptsForLength(int length, bool hardMode = false)
+    {
+        return length + 1 + (hardMode ? 1 : 0);
     }
 
     public IEnumerable<AttemptDetail> Attempt(string wordAttempt)
