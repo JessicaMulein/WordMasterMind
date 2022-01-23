@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -27,20 +28,57 @@ public class WordMasterMindTest
     {
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
-        var mastermind = new WordMasterMind.Models.WordMasterMind(
+        var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
             maxAttempts: 6,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
     }
+    
+    [TestMethod]
+    public void TestWordMasterMindWordTooShort()
+    {
+        var scrabbleDictionary =
+            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+            new WordMasterMind.Models.WordMasterMind(
+                minLength: 5,
+                maxLength: 5,
+                maxAttempts: 6,
+                hardMode: false,
+                scrabbleDictionary: scrabbleDictionary,
+                // secretWord valid, but not long enough
+                secretWord: "wow"));
+        Assert.AreEqual(expected: "Secret word must be between minLength and maxLength",
+            actual: thrownException.Message);
+    }
+    
+    [TestMethod]
+    public void TestWordMasterMindWordTooLong()
+    {
+        var scrabbleDictionary =
+            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+            new WordMasterMind.Models.WordMasterMind(
+                minLength: 5,
+                maxLength: 5,
+                maxAttempts: 6,
+                hardMode: false,
+                scrabbleDictionary: scrabbleDictionary,
+                // secretWord valid, but not long enough
+                secretWord: "invalid"));
+        Assert.AreEqual(expected: "Secret word must be between minLength and maxLength",
+            actual: thrownException.Message);
+    }
+
 
     [TestMethod]
     public void TestWordMasterMindHardMode()
     {
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
-        var mastermind = new WordMasterMind.Models.WordMasterMind(
+        var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
             maxAttempts: 6,
