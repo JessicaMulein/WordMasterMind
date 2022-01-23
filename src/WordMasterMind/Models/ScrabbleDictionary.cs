@@ -73,8 +73,8 @@ public class ScrabbleDictionary
         while (maxTries-- > 0)
         {
             var length = random.Next(minValue: minLength, maxValue: maxLength);
-            if (!_wordsByLength.ContainsKey(key: length) || !_wordsByLength[key: length].Any()) continue;
-            var wordsForLength = _wordsByLength[key: length];
+            IEnumerable<string> wordsForLength;
+            if (!_wordsByLength.ContainsKey(key: length) || !(wordsForLength = _wordsByLength[key: length]).Any()) continue;
             var forLength = wordsForLength as string[] ?? wordsForLength.ToArray();
             return forLength
                 .ElementAt(index: random.Next(minValue: 0, maxValue: forLength.Length));
