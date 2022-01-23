@@ -244,8 +244,13 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: StandardLength,
             actual: mastermind.WordLength);
-        var attempt = mastermind.Attempt(WordMasterMindPlayer.StandardFirstAttempt[..mastermind.WordLength]);
+        var computerGuess = mastermind.ScrabbleDictionary.GetRandomWord(
+            minLength: mastermind.WordLength,
+            maxLength: mastermind.WordLength);
+        var attempt = mastermind.Attempt(wordAttempt: computerGuess);
+        TestAttempt(knownSecretWord: mastermind.SecretWord,
+            attemptDetails: attempt);
         var attemptString = mastermind.AttemptHistoryEmojiString;
-        Assert.IsTrue(attemptString.Length >= mastermind.WordLength);
+        Assert.IsTrue(condition: attemptString.Length >= mastermind.WordLength);
     }
 }

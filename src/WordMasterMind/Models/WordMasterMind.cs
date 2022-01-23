@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using System.Text;
 using WordMasterMind.Helpers;
 
@@ -9,21 +10,6 @@ public class WordMasterMind
     private const string GreenEmoji = "&#129001;";
     private const string YellowEmoji = "&#129000;";
     private const string BlackEmoji = "&#11035;";
-
-    private static string GetEmojiFromConst(in string constValue)
-    {
-        return System.Net.WebUtility.HtmlDecode(constValue);
-    }
-
-    public static string GetEmojiFromAttemptDetail(in AttemptDetail attemptDetail)
-    {
-        var emojiColor = BlackEmoji;
-        if (attemptDetail.PositionCorrect) emojiColor = GreenEmoji;
-
-        else if (attemptDetail.LetterCorrect) emojiColor = YellowEmoji;
-
-        return GetEmojiFromConst(constValue: emojiColor);
-    }
 
     /// <summary>
     ///     Collection of attempts
@@ -106,6 +92,34 @@ public class WordMasterMind
         }
     }
 
+    public string AttemptHistoryEmojiString
+    {
+        get
+        {
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i < this.CurrentAttempt; i++)
+                stringBuilder.Append(
+                    value: string.Concat(values: this._attempts[i].Select(selector: a => a.ToString())));
+
+            return stringBuilder.ToString();
+        }
+    }
+
+    private static string GetEmojiFromConst(in string constValue)
+    {
+        return WebUtility.HtmlDecode(value: constValue);
+    }
+
+    public static string GetEmojiFromAttemptDetail(in AttemptDetail attemptDetail)
+    {
+        var emojiColor = BlackEmoji;
+        if (attemptDetail.PositionCorrect) emojiColor = GreenEmoji;
+
+        else if (attemptDetail.LetterCorrect) emojiColor = YellowEmoji;
+
+        return GetEmojiFromConst(constValue: emojiColor);
+    }
+
     public static int GetMaxAttemptsForLength(int length, bool hardMode = false)
     {
         return length + 1 + (hardMode ? 1 : 0);
@@ -120,6 +134,9 @@ public class WordMasterMind
 
         if (this.WordLength != wordAttempt.Length)
             throw new ArgumentException(message: "Word length does not match secret word length");
+
+        if (!this.ScrabbleDictionary.IsWord(word: wordAttempt))
+            throw new ArgumentException(message: "wordAttempt is not a valid word in the Scrabble dictionary");
 
         var currentAttempt = 0;
         var attempt = wordAttempt
@@ -158,26 +175,10 @@ public class WordMasterMind
     {
         var stringBuilder = new StringBuilder();
         foreach (var attemptDetail in attemptDetails)
-        {
-            stringBuilder.Append(GetEmojiFromAttemptDetail(attemptDetail: attemptDetail));
-        }
+            stringBuilder.Append(value: GetEmojiFromAttemptDetail(attemptDetail: attemptDetail));
 
         stringBuilder.Append(value: '\n');
 
         return stringBuilder.ToString();
-    }
-
-    public string AttemptHistoryEmojiString
-    {
-        get
-        {
-            var stringBuilder = new StringBuilder();
-            for (var i = 0; i < this.CurrentAttempt; i++)
-            {
-                stringBuilder.Append(value: string.Concat(values: this._attempts[i].Select(selector: a => a.ToString())));
-            }
-
-            return stringBuilder.ToString();
-        }
     }
 }

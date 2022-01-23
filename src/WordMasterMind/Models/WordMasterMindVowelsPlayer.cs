@@ -2,8 +2,6 @@ namespace WordMasterMind.Models;
 
 public static class WordMasterMindPlayer
 {
-    public const string StandardFirstAttempt = "aeiousnthrdlcmzyxwvfjqg";
-
     private static void UpdateAttemptMemory(ref char[] currentWordStatus, ref List<char> mustIncludeLetters,
         in IEnumerable<AttemptDetail> attemptDetails)
     {
@@ -36,22 +34,8 @@ public static class WordMasterMindPlayer
             throw new Exception(message: "You have reached the maximum number of attempts");
 
         var currentWordStatus = new char[mastermind.WordLength];
-
-        // ReSharper disable once StringLiteralTypo
-        if (mastermind.WordLength > StandardFirstAttempt.Length)
-            throw new Exception(
-                message:
-                $"We were not prepared for this. The scrabble dictionary goes to {mastermind.ScrabbleDictionary.LongestWordLength} letters.");
-
         var mustIncludeLetters = new List<char>();
         var triedWords = new List<string>();
-        // try the first try
-        AttemptAndUpdateMemory(
-            mastermind: mastermind,
-            currentWordStatus: ref currentWordStatus,
-            mustIncludeLetters: ref mustIncludeLetters,
-            wordAttempt: StandardFirstAttempt[..mastermind.WordLength]);
-
         while (!mastermind.Solved)
         {
             var computerGuess = mastermind.ScrabbleDictionary.FindWord(
@@ -63,7 +47,7 @@ public static class WordMasterMindPlayer
                 mastermind: mastermind,
                 currentWordStatus: ref currentWordStatus,
                 mustIncludeLetters: ref mustIncludeLetters,
-                wordAttempt: StandardFirstAttempt[..mastermind.WordLength]);
+                wordAttempt: computerGuess);
         }
 
         return mastermind.Solved;

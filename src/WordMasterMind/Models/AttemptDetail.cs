@@ -15,6 +15,6 @@ public record AttemptDetail
 
     public override string ToString()
     {
-        return WordMasterMind.GetEmojiFromAttemptDetail(this);
+        return WordMasterMind.GetEmojiFromAttemptDetail(attemptDetail: this);
     }
 }
