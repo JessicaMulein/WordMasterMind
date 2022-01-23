@@ -58,10 +58,11 @@ public class WordMasterMind
             message: nameof(this._secretWord) + " is null");
         this.WordLength = this._secretWord.Length;
         if (this.WordLength > maxLength || this.WordLength < minLength)
-            throw new ArgumentException(message: "Secret word must be between minLength and maxLength");
+            throw new InvalidLengthException(minLength: minLength,
+                maxLength: maxLength);
 
         if (!this.ScrabbleDictionary.IsWord(word: this._secretWord))
-            throw new ArgumentException(message: "Secret word must be a valid word in the Scrabble dictionary");
+            throw new NotInDictionaryException();
 
         this.MaxAttempts = GetMaxAttemptsForLength(length: this.WordLength);
         this._attempts = new IEnumerable<AttemptDetail>[this.MaxAttempts];
@@ -131,7 +132,7 @@ public class WordMasterMind
         if (this.Solved || this.CurrentAttempt >= this.MaxAttempts) throw new GameOverException(solved: this.Solved);
 
         if (this.WordLength != wordAttempt.Length)
-            throw new InvalidWordLengthException();
+            throw new InvalidAttemptLengthException();
 
         if (!this.ScrabbleDictionary.IsWord(word: wordAttempt))
             throw new NotInDictionaryException();

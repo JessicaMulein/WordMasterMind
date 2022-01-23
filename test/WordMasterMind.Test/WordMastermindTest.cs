@@ -67,7 +67,7 @@ public class WordMasterMindTest
     public void TestWordMasterMindWordTooShort()
     {
         var scrabbleDictionary = GetScrabbleDictionary();
-        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+        var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             new Models.WordMasterMind(
                 minLength: StandardLength,
                 maxLength: StandardLength,
@@ -76,7 +76,7 @@ public class WordMasterMindTest
                 // secretWord is valid, but not long enough
                 secretWord: scrabbleDictionary.GetRandomWord(minLength: 3,
                     maxLength: StandardLength - 1)));
-        Assert.AreEqual(expected: "Secret word must be between minLength and maxLength",
+        Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
     }
 
@@ -84,7 +84,7 @@ public class WordMasterMindTest
     public void TestWordMasterMindWordTooLong()
     {
         var scrabbleDictionary = GetScrabbleDictionary();
-        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+        var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             new Models.WordMasterMind(
                 minLength: StandardLength,
                 maxLength: StandardLength,
@@ -93,7 +93,7 @@ public class WordMasterMindTest
                 // secretWord is valid, but too long
                 secretWord: scrabbleDictionary.GetRandomWord(minLength: StandardLength + 1,
                     maxLength: StandardLength + 1)));
-        Assert.AreEqual(expected: "Secret word must be between minLength and maxLength",
+        Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
     }
 
@@ -103,14 +103,14 @@ public class WordMasterMindTest
         // secretWord is made up word not in dictionary
         const string expectedSecretWord = "fizzbuzz";
         var scrabbleDictionary = GetScrabbleDictionary();
-        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+        var thrownException = Assert.ThrowsException<NotInDictionaryException>(action: () =>
             new Models.WordMasterMind(
                 minLength: 8,
                 maxLength: 8,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 secretWord: expectedSecretWord));
-        Assert.AreEqual(expected: "Secret word must be a valid word in the Scrabble dictionary",
+        Assert.AreEqual(expected: NotInDictionaryException.MessageText,
             actual: thrownException.Message);
     }
 
@@ -128,9 +128,9 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: StandardLength,
             actual: mastermind.WordLength);
-        var thrownException = Assert.ThrowsException<InvalidWordLengthException>(action: () =>
+        var thrownException = Assert.ThrowsException<InvalidAttemptLengthException>(action: () =>
             mastermind.Attempt(wordAttempt: "invalid"));
-        Assert.AreEqual(expected: InvalidWordLengthException.MessageText,
+        Assert.AreEqual(expected: InvalidAttemptLengthException.MessageText,
             actual: thrownException.Message);
     }
 
