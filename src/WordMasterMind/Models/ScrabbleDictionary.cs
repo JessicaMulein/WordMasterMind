@@ -108,7 +108,7 @@ public class ScrabbleDictionary
         throw new Exception(message: "Dictionary doesn't seem to have any words of the requested parameters");
     }
 
-    public string FindWord(char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null)
+    public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null)
     {
         var skipWordsArray = skipWords is null ? null : skipWords.ToArray();
         while (maxIterations-- > 0)
