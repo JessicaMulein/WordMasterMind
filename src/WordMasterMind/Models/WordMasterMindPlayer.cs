@@ -1,3 +1,5 @@
+using WordMasterMind.Exceptions;
+
 namespace WordMasterMind.Models;
 
 public static class WordMasterMindPlayer
@@ -5,14 +7,12 @@ public static class WordMasterMindPlayer
     private static void UpdateAttemptMemory(ref char[] currentWordStatus, ref List<char> mustIncludeLetters,
         in IEnumerable<AttemptDetail> attemptDetails)
     {
-        var position = 0;
         foreach (var attemptDetail in attemptDetails)
         {
-            if (attemptDetail.PositionCorrect) currentWordStatus[position] = attemptDetail.Letter;
-            if (attemptDetail.LetterCorrect)
-                if (!mustIncludeLetters.Contains(item: attemptDetail.Letter))
-                    mustIncludeLetters.Add(item: attemptDetail.Letter);
-            position++;
+            if (!attemptDetail.LetterCorrect) continue;
+            if (attemptDetail.PositionCorrect) currentWordStatus[attemptDetail.LetterPosition] = attemptDetail.Letter;
+            if (!mustIncludeLetters.Contains(item: attemptDetail.Letter))
+                mustIncludeLetters.Add(item: attemptDetail.Letter);
         }
     }
 
@@ -29,10 +29,8 @@ public static class WordMasterMindPlayer
     public static bool ComputerGuess(WordMasterMind mastermind, int turns = -1,
         int maximumDictionaryLookupAttemptsPerTry = 1000)
     {
-        if (mastermind.Solved) throw new Exception(message: "You have already solved this word!");
-
-        if (mastermind.CurrentAttempt >= mastermind.MaxAttempts)
-            throw new Exception(message: "You have reached the maximum number of attempts");
+        if (mastermind.Solved || mastermind.CurrentAttempt >= mastermind.MaxAttempts)
+            throw new GameOverException(solved: mastermind.Solved);
 
         var currentWordStatus = new char[mastermind.WordLength];
         var mustIncludeLetters = new List<char>();
