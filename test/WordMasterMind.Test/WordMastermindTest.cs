@@ -48,16 +48,15 @@ public class WordMasterMindTest
     {
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var masterMind = new Models.WordMasterMind(
+            minLength: 5,
+            maxLength: 5,
+            maxAttempts: 6,
+            hardMode: false,
+            scrabbleDictionary: scrabbleDictionary);
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
-            new Models.WordMasterMind(
-                minLength: 5,
-                maxLength: 5,
-                maxAttempts: 6,
-                hardMode: false,
-                scrabbleDictionary: scrabbleDictionary,
-                // secretWord is valid, but too long
-                secretWord: "invalid"));
-        Assert.AreEqual(expected: "Secret word must be between minLength and maxLength",
+            masterMind.Attempt("hi"));
+        Assert.AreEqual(expected: "Word length does not match secret word length",
             actual: thrownException.Message);
     }
 
@@ -76,6 +75,23 @@ public class WordMasterMindTest
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 secretWord: expectedSecretWord));
+        Assert.AreEqual(expected: "Secret word must be a valid word in the Scrabble dictionary",
+            actual: thrownException.Message);
+    }
+    
+    [TestMethod]
+    public void TestWordMasterMindLengthMismatch()
+    {
+        var scrabbleDictionary =
+            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+            new Models.WordMasterMind(
+                minLength: 5,
+                maxLength: 5,
+                maxAttempts: 6,
+                hardMode: false,
+                scrabbleDictionary: scrabbleDictionary,
+                secretWord: "valid"));
         Assert.AreEqual(expected: "Secret word must be a valid word in the Scrabble dictionary",
             actual: thrownException.Message);
     }
