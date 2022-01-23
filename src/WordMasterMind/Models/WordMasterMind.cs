@@ -43,6 +43,8 @@ public class WordMasterMind
     /// </summary>
     public readonly int WordLength;
 
+    private readonly bool[] _solvedLetters;
+
     public WordMasterMind(int minLength, int maxLength, bool hardMode = false,
         ScrabbleDictionary? scrabbleDictionary = null, string? secretWord = null)
     {
@@ -51,12 +53,14 @@ public class WordMasterMind
         this.HardMode = hardMode;
         this.ScrabbleDictionary = scrabbleDictionary ??
                                   new ScrabbleDictionary(); // use the provided dictionary, or use the default one which is stored locally
-        this._secretWord = secretWord ?? this.ScrabbleDictionary.GetRandomWord(minLength: minLength,
-            maxLength: maxLength);
+        this._secretWord = (secretWord ?? this.ScrabbleDictionary.GetRandomWord(minLength: minLength,
+            maxLength: maxLength)).ToUpperInvariant();
 
         Debug.Assert(condition: this._secretWord != null,
             message: nameof(this._secretWord) + " is null");
+
         this.WordLength = this._secretWord.Length;
+
         if (this.WordLength > maxLength || this.WordLength < minLength)
             throw new InvalidLengthException(minLength: minLength,
                 maxLength: maxLength);
@@ -66,6 +70,20 @@ public class WordMasterMind
 
         this.MaxAttempts = GetMaxAttemptsForLength(length: this.WordLength);
         this._attempts = new IEnumerable<AttemptDetail>[this.MaxAttempts];
+        this._solvedLetters = new bool[this.WordLength];
+    }
+
+    public bool[] SolvedLetters
+    {
+        get
+        {
+            var copy = new bool[this.WordLength];
+            Array.Copy(
+                sourceArray: this._solvedLetters,
+                destinationArray: copy,
+                length: this.WordLength);
+            return copy;
+        }
     }
 
     /// <summary>
@@ -84,6 +102,7 @@ public class WordMasterMind
     public IEnumerable<IEnumerable<AttemptDetail>> Attempts => this._attempts.Take(count: this.CurrentAttempt);
 
     public bool Solved { get; private set; }
+
 
     public string SecretWord
     {
@@ -137,37 +156,39 @@ public class WordMasterMind
         if (!this.ScrabbleDictionary.IsWord(word: wordAttempt))
             throw new NotInDictionaryException();
 
-        var currentAttempt = 0;
-        var attempt = wordAttempt
+        // countAttemptLetterIndex is incremented each time the selector is fired, eg each letter
+        var currentAttemptLetterIndex = 0;
+        // the attempt hasn't been registered in the count yet
+        this._attempts[this.CurrentAttempt] = wordAttempt
             .ToUpperInvariant()
             .Select(
                 selector: c => new AttemptDetail(
+                    letterPosition: currentAttemptLetterIndex,
                     letter: c,
                     letterCorrect: this._secretWord.Contains(value: c),
-                    positionCorrect: this._secretWord[index: currentAttempt++] == c)).ToArray();
+                    positionCorrect: this._secretWord[index: currentAttemptLetterIndex++] == c)).ToArray();
 
-        if (this.HardMode && this.CurrentAttempt > 1)
-        {
+        // update solved letters array
+        for (var i = 0; i < this.WordLength; i++)
+            this._solvedLetters[i] |= this._attempts[this.CurrentAttempt].ElementAt(index: i).PositionCorrect;
+
+        // the attempt hasn't been registered in the count yet, checking for being at least second turn
+        if (this.HardMode && this.CurrentAttempt >= 1)
             // if a previous attempt had a letter in the correct position, future attempts must have the same letter in the correct position
-            var lockedLetters = new bool[this.WordLength];
-            for (var i = 0; i < this.CurrentAttempt; i++)
-            {
-                var letterIndex = 0;
-                foreach (var attemptDetail in this._attempts[i])
-                    if (attemptDetail.LetterCorrect && attemptDetail.PositionCorrect)
-                        lockedLetters[letterIndex++] = true;
-            }
-
-            // now check the current attempt for locked letters
-            for (var i = 0; i < wordAttempt.Length; i++)
-                if (lockedLetters[i] && attempt[i].Letter != this._secretWord[index: i])
+            foreach (var attemptDetail in this._attempts[this.CurrentAttempt])
+                /* if the letter has been previously solved and the letter has
+                 * been changed from the secret word, throw the HardModeException
+                 */
+                if (
+                    this._solvedLetters[attemptDetail.LetterPosition] &&
+                    attemptDetail.Letter != this._secretWord[index: attemptDetail.LetterPosition])
                     throw new HardModeException();
-        }
 
+        // if we haven't thrown an exception due to hard mode, and the word is the secret word, we've solved it
         if (wordAttempt == this._secretWord) this.Solved = true;
 
-        this._attempts[this.CurrentAttempt++] = attempt;
-        return attempt;
+        // return the current attempt's record and advance the counter
+        return this._attempts[this.CurrentAttempt++];
     }
 
     public static string AttemptToEmojiString(IEnumerable<AttemptDetail> attemptDetails)

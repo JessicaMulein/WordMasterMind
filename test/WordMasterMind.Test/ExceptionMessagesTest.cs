@@ -38,7 +38,7 @@ public class ExceptionMessagesTest
             expected: "Game Over: You have reached the maximum number of attempts.",
             actual: thrownException.Message);
     }
-    
+
     [TestMethod]
     public void HardModeExceptionTest()
     {

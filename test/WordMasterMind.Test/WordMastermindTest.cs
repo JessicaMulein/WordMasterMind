@@ -225,14 +225,28 @@ public class WordMasterMindTest
     public void TestWordMasterMindHardMode()
     {
         var scrabbleDictionary = GetScrabbleDictionary();
+        const string expectedWord = "while";
         var mastermind = new Models.WordMasterMind(
-            minLength: StandardLength,
-            maxLength: StandardLength,
-            hardMode: false,
-            scrabbleDictionary: scrabbleDictionary);
+            minLength: expectedWord.Length,
+            maxLength: expectedWord.Length,
+            hardMode: true,
+            scrabbleDictionary: scrabbleDictionary,
+            secretWord: expectedWord);
         Assert.AreEqual(
-            expected: StandardLength,
+            expected: expectedWord.Length,
             actual: mastermind.WordLength);
+
+        // a first attempt of where should lock in three letters, 'w', 'h', and the final 'e'
+        var attempt = mastermind.Attempt(wordAttempt: "where");
+        TestAttempt(knownSecretWord: mastermind.SecretWord,
+            attemptDetails: attempt);
+
+        // this should throw an exception because we've changed the 'w' to 't' in a locked position
+        var thrownException =
+            Assert.ThrowsException<HardModeException>(action: () => mastermind.Attempt(wordAttempt: "there"));
+        Assert.AreEqual(
+            expected: HardModeException.MessageText,
+            actual: thrownException.Message);
     }
 
     [TestMethod]
