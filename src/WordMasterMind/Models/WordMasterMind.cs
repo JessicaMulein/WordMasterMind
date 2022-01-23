@@ -7,7 +7,7 @@ public class WordMasterMind
     /// <summary>
     ///     Collection of attempts
     /// </summary>
-    private readonly IEnumerable<(char letter, bool letterCorrect, bool positionCorrect)>[] _attempts;
+    private readonly IEnumerable<AttemptDetail>[] _attempts;
 
     /// <summary>
     ///     Current word being guessed. Randomly selected from the Scrabble dictionary.
@@ -34,7 +34,7 @@ public class WordMasterMind
         MaxAttempts = maxAttempts;
         scrabbleDictionary ??=
             new ScrabbleDictionary(); // use the provided dictionary, or use the default one which is stored locally
-        _attempts = new IEnumerable<(char letter, bool letterCorrect, bool positionCorrect)>[maxAttempts];
+        _attempts = new IEnumerable<AttemptDetail>[maxAttempts];
         _secretWord = secretWord ?? scrabbleDictionary.GetRandomWord(minLength: minLength, maxLength: maxLength);
 
         if (_secretWord.Length > maxLength || _secretWord.Length < minLength)
@@ -57,7 +57,7 @@ public class WordMasterMind
     /// <summary>
     ///     Gets the attempts so far
     /// </summary>
-    public IEnumerable<IEnumerable<(char letter, bool letterCorrect, bool positionCorrect)>> Attempts =>
+    public IEnumerable<IEnumerable<AttemptDetail>> Attempts =>
         _attempts.Take(count: CurrentAttempt);
 
     public bool Solved { get; private set; }
@@ -71,7 +71,7 @@ public class WordMasterMind
         }
     }
 
-    public IEnumerable<(char letter, bool letterCorrect, bool positionCorrect)> Attempt(string wordAttempt)
+    public IEnumerable<AttemptDetail> Attempt(string wordAttempt)
     {
         if (Solved) throw new Exception(message: "You have already solved this word!");
 
@@ -85,7 +85,7 @@ public class WordMasterMind
         var attempt = wordAttempt
             .ToUpperInvariant()
             .Select(
-                selector: c => (
+                selector: c => new AttemptDetail(
                     letter: c,
                     letterCorrect: _secretWord.Contains(value: c),
                     positionCorrect: _secretWord[index: currentAttempt++] == c)).ToArray();
@@ -97,14 +97,14 @@ public class WordMasterMind
             for (var i = 0; i < CurrentAttempt; i++)
             {
                 var letterIndex = 0;
-                foreach (var (letter, letterCorrect, positionCorrect) in _attempts[i])
-                    if (letterCorrect && positionCorrect)
+                foreach (var attemptDetail in _attempts[i])
+                    if (attemptDetail.LetterCorrect && attemptDetail.PositionCorrect)
                         lockedLetters[letterIndex++] = true;
             }
 
             // now check the current attempt for locked letters
             for (var i = 0; i < wordAttempt.Length; i++)
-                if (lockedLetters[i] && attempt[i].letter != _secretWord[index: i])
+                if (lockedLetters[i] && attempt[i].Letter != _secretWord[index: i])
                     throw new Exception(message: "You cannot change a letter that is in the correct position");
         }
 

@@ -15,11 +15,16 @@ public static class UnitTestDetector
         get
         {
             return new StackTrace().GetFrames()
-                .Any(predicate: f => f.GetMethod()
-                    .DeclaringType.GetCustomAttributes(inherit: false)
-                    .Any(predicate: x =>
-                        UnitTestAttributes.Contains(item: x.GetType().FullName ??
-                                                          throw new InvalidOperationException())));
+                .Any(predicate: f =>
+                {
+                    var method = f.GetMethod();
+                    if (method == null) return false;
+                    var declaringType = method.DeclaringType;
+                    return declaringType != null && declaringType.GetCustomAttributes(inherit: false)
+                        .Any(predicate: x =>
+                            UnitTestAttributes.Contains(item: x.GetType().FullName ??
+                                                              throw new InvalidOperationException()));
+                });
         }
     }
 }

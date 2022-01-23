@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -63,6 +64,8 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWordNotInDictionary()
     {
+        // secretWord is made up word not in dictionary
+        var expectedSecretWord = "fizzbuzz";
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
@@ -72,10 +75,27 @@ public class WordMasterMindTest
                 maxAttempts: 6,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
-                // secretWord is made up word not in dictionary
-                secretWord: "fizzbuzz"));
+                secretWord: expectedSecretWord));
         Assert.AreEqual(expected: "Secret word must be a valid word in the Scrabble dictionary",
             actual: thrownException.Message);
+    }
+
+    private static void TestAttempt(string knownSecretWord, IEnumerable<AttemptDetail> attemptDetails)
+    {
+        attemptDetails = attemptDetails.ToArray();
+        var positionIndex = 0;
+        foreach (var position in attemptDetails)
+        {
+            var correspondingSecretLetter = knownSecretWord[index: positionIndex++];
+            var letterMatch = knownSecretWord.Contains(value: position.Letter);
+            Assert.AreEqual(
+                expected: letterMatch,
+                actual: position.LetterCorrect);
+            var positionMatch = position.Letter.Equals(obj: correspondingSecretLetter);
+            Assert.AreEqual(
+                expected: positionMatch,
+                actual: position.PositionCorrect);
+        }
     }
 
 
@@ -96,19 +116,7 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: secretWord.Length,
             actual: attempt.Length);
-        var positionIndex = 0;
-        foreach (var position in attempt)
-        {
-            var correspondingSecretLetter = secretWord[index: positionIndex++];
-            var letterMatch = secretWord.Contains(position.letter);
-            Assert.AreEqual(
-                expected: letterMatch,
-                actual: position.letterCorrect);
-            var positionMatch = position.letter.Equals(obj: correspondingSecretLetter);
-            Assert.AreEqual(
-                expected: positionMatch,
-                actual: position.positionCorrect);
-        }
+        TestAttempt(knownSecretWord: secretWord, attemptDetails: attempt);
     }
 
     [TestMethod]
