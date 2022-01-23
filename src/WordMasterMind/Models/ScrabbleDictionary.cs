@@ -68,6 +68,9 @@ public class ScrabbleDictionary
 
     public string GetRandomWord(int minLength, int maxLength)
     {
+        if (minLength > maxLength || maxLength < minLength)
+            throw new ArgumentException(message: "minLength must be less than or equal to maxLength");
+
         var random = new Random();
         var maxTries = 1000;
         while (maxTries-- > 0)

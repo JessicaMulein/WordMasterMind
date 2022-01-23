@@ -34,14 +34,15 @@ public class WordMasterMindTest
     public void TestWordMasterMindWordTooShort()
     {
         var scrabbleDictionary = GetScrabbleDictionary();
+        var length = 5;
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             new Models.WordMasterMind(
-                minLength: 5,
-                maxLength: 5,
+                minLength: length,
+                maxLength: length,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 // secretWord is valid, but not long enough
-                secretWord: "wow"));
+                secretWord: scrabbleDictionary.GetRandomWord(minLength: 3, maxLength: length - 1)));
         Assert.AreEqual(expected: "Secret word must be between minLength and maxLength",
             actual: thrownException.Message);
     }
@@ -49,15 +50,16 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWordTooLong()
     {
+        var length = 5;
         var scrabbleDictionary = GetScrabbleDictionary();
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             new Models.WordMasterMind(
-                minLength: 5,
-                maxLength: 5,
+                minLength: length,
+                maxLength: length,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 // secretWord is valid, but too long
-                secretWord: "invalid"));
+                secretWord: scrabbleDictionary.GetRandomWord(minLength: length + 1, maxLength: length + 1)));
         Assert.AreEqual(expected: "Secret word must be between minLength and maxLength",
             actual: thrownException.Message);
     }
@@ -83,12 +85,13 @@ public class WordMasterMindTest
     public void TestWordMasterMindAttemptLengthMismatch()
     {
         var scrabbleDictionary = GetScrabbleDictionary();
+        var length = 5;
         var mastermind = new Models.WordMasterMind(
-            minLength: 5,
-            maxLength: 5,
+            minLength: length,
+            maxLength: length,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary,
-            secretWord: "valid");
+            secretWord: scrabbleDictionary.GetRandomWord(minLength: 3, maxLength: length));
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             mastermind.Attempt(wordAttempt: "invalid"));
         Assert.AreEqual(expected: "Word length does not match secret word length",
@@ -98,11 +101,13 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindAttemptCorrect()
     {
-        var secretWord = "valid";
+        var rnd = new Random();
+        var length = rnd.Next(minValue: 3, maxValue: 5);
         var scrabbleDictionary = GetScrabbleDictionary();
+        var secretWord = scrabbleDictionary.GetRandomWord(minLength: length, maxLength: length);
         var mastermind = new Models.WordMasterMind(
-            minLength: 5,
-            maxLength: 5,
+            minLength: length,
+            maxLength: length,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary,
             secretWord: secretWord);
@@ -114,15 +119,17 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindTooManyAttempts()
     {
-        var secretWord = "valid";
+        var rnd = new Random();
+        var length = rnd.Next(minValue: 3, maxValue: 5);
         var scrabbleDictionary = GetScrabbleDictionary();
+        var secretWord = scrabbleDictionary.GetRandomWord(minLength: length, maxLength: length);
         var mastermind = new Models.WordMasterMind(
-            minLength: 5,
-            maxLength: 5,
+            minLength: length,
+            maxLength: length,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary,
             secretWord: secretWord);
-        for (var i = 0; i < Models.WordMasterMind.GetMaxAttemptsForLength(length: secretWord.Length); i++)
+        for (var i = 0; i < Models.WordMasterMind.GetMaxAttemptsForLength(length: length); i++)
         {
             var attempt = mastermind.Attempt(wordAttempt: "wrong");
             TestAttempt(knownSecretWord: secretWord, attemptDetails: attempt);
@@ -157,17 +164,21 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWithProvidedRandomWord()
     {
+        var length = 5;
         var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
-            minLength: 5,
-            maxLength: 5,
+            minLength: length,
+            maxLength: length,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
         var secretWord = mastermind.SecretWord.ToUpperInvariant();
+        Assert.AreEqual(
+            expected: length,
+            actual: secretWord.Length);
         // ReSharper disable once StringLiteralTypo
         var attempt = mastermind.Attempt(wordAttempt: "aeiou").ToArray();
         Assert.AreEqual(
-            expected: secretWord.Length,
+            expected: length,
             actual: attempt.Length);
         TestAttempt(knownSecretWord: secretWord, attemptDetails: attempt);
     }
@@ -175,10 +186,11 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindHardMode()
     {
+        var length = 5;
         var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
-            minLength: 5,
-            maxLength: 5,
+            minLength: length,
+            maxLength: length,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
     }
