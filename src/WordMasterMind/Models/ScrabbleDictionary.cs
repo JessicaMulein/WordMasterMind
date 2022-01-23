@@ -74,6 +74,7 @@ public class ScrabbleDictionary
 
         var random = new Random();
         var maxTries = 1000;
+        var triedIndexes = new List<int>();
         while (maxTries-- > 0)
         {
             var length = random.Next(minValue: minLength,
@@ -82,9 +83,26 @@ public class ScrabbleDictionary
             if (!this._wordsByLength.ContainsKey(key: length) ||
                 !(wordsForLength = this._wordsByLength[key: length]).Any()) continue;
             var forLength = wordsForLength as string[] ?? wordsForLength.ToArray();
-            return forLength
-                .ElementAt(index: random.Next(minValue: 0,
-                    maxValue: forLength.Length));
+
+            while (true)
+            {
+                var indexToTry = random.Next(minValue: 0,
+                    maxValue: forLength.Length);
+                // if we've already used this word, try another index
+                if (triedIndexes.Contains(item: indexToTry))
+                {
+                    // check if words of this size expired
+                    if (triedIndexes.Count == forLength.Length) break;
+                    // otherwise keep trying
+                    continue;
+                }
+
+                // add to the list of tried index
+                triedIndexes.Add(item: indexToTry);
+                // return the word that was not in the dictionary
+                return forLength
+                    .ElementAt(index: indexToTry);
+            }
         }
 
         throw new Exception(message: "Dictionary doesn't seem to have any words of the requested parameters");
