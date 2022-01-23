@@ -90,12 +90,21 @@ public class WordMasterMindTest
             maxAttempts: 6,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
-        var secretWord = mastermind.SecretWord;
+        var secretWord = mastermind.SecretWord.ToUpperInvariant();
         // ReSharper disable once StringLiteralTypo
-        var attempt = mastermind.Attempt(wordAttempt: "aeiou");
+        var attempt = mastermind.Attempt(wordAttempt: "aeiou").ToArray();
         Assert.AreEqual(
             expected: secretWord.Length,
-            actual: attempt.Count());
+            actual: attempt.Length);
+        var positionIndex = 0;
+        foreach (var position in attempt)
+        {
+            var correspondingSecretLetter = secretWord[index: positionIndex++];
+            var positionMatch = position.letter.Equals(obj: correspondingSecretLetter);
+            Assert.AreEqual(
+                expected: positionMatch,
+                actual: position.positionCorrect);
+        }
     }
 
     [TestMethod]
