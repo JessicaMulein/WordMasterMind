@@ -68,7 +68,9 @@ public class WordMasterMind
         if (!this.ScrabbleDictionary.IsWord(word: this._secretWord))
             throw new NotInDictionaryException();
 
-        this.MaxAttempts = GetMaxAttemptsForLength(length: this.WordLength);
+        this.MaxAttempts = GetMaxAttemptsForLength(
+            length: this.WordLength,
+            hardMode: this.HardMode);
         this._attempts = new IEnumerable<AttemptDetail>[this.MaxAttempts];
         this._solvedLetters = new bool[this.WordLength];
     }
@@ -119,8 +121,11 @@ public class WordMasterMind
         {
             var stringBuilder = new StringBuilder();
             for (var i = 0; i < this.CurrentAttempt; i++)
+            {
                 stringBuilder.Append(
                     value: string.Concat(values: this._attempts[i].Select(selector: a => a.ToString())));
+                stringBuilder.Append(value: '\n');
+            }
 
             return stringBuilder.ToString();
         }
@@ -141,9 +146,20 @@ public class WordMasterMind
         return GetEmojiFromConst(constValue: emojiColor);
     }
 
-    public static int GetMaxAttemptsForLength(int length, bool hardMode = false)
+    public static string AttemptToEmojiString(IEnumerable<AttemptDetail> attemptDetails)
     {
-        return length + 1 + (hardMode ? 1 : 0);
+        var stringBuilder = new StringBuilder();
+        foreach (var attemptDetail in attemptDetails)
+            stringBuilder.Append(value: GetEmojiFromAttemptDetail(attemptDetail: attemptDetail));
+
+        stringBuilder.Append(value: '\n');
+
+        return stringBuilder.ToString();
+    }
+
+    public static int GetMaxAttemptsForLength(int length, bool hardMode)
+    {
+        return length + (hardMode ? 2 : 1);
     }
 
     public IEnumerable<AttemptDetail> Attempt(string wordAttempt)
@@ -190,16 +206,5 @@ public class WordMasterMind
 
         // return the current attempt's record and advance the counter
         return this._attempts[this.CurrentAttempt++];
-    }
-
-    public static string AttemptToEmojiString(IEnumerable<AttemptDetail> attemptDetails)
-    {
-        var stringBuilder = new StringBuilder();
-        foreach (var attemptDetail in attemptDetails)
-            stringBuilder.Append(value: GetEmojiFromAttemptDetail(attemptDetail: attemptDetail));
-
-        stringBuilder.Append(value: '\n');
-
-        return stringBuilder.ToString();
     }
 }

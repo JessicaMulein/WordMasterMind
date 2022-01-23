@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -52,6 +53,8 @@ public class ScrabbleDictionary
 
         // temporary array while we find lengths with more than one word
         var validWordLengths = new List<int>();
+        int? shortest = null;
+        int? longest = null;
         foreach (var key in this._wordsByLength.Keys)
         {
             // if there are no words of this length, skip it
@@ -60,10 +63,19 @@ public class ScrabbleDictionary
             // add to the list of valid word lengths with at least one word
             validWordLengths.Add(item: key);
 
-            if (this.ShortestWordLength > key) this.ShortestWordLength = key;
+            shortest ??= key;
 
-            if (this.LongestWordLength < key) this.LongestWordLength = key;
+            // let this replace every time, the final value will be the longest
+            longest = key;
         }
+
+        Debug.Assert(condition: shortest != null,
+            message: nameof(shortest) + " != null");
+        this.ShortestWordLength = shortest.Value;
+
+        Debug.Assert(condition: longest != null,
+            message: nameof(longest) + " != null");
+        this.LongestWordLength = longest.Value;
 
         // now that the array is final, set it as the instance variable
         this.ValidWordLengths = validWordLengths.ToImmutableArray();

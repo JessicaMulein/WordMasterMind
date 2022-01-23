@@ -128,6 +128,9 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: StandardLength,
             actual: mastermind.WordLength);
+        Assert.AreEqual(
+            expected: false,
+            actual: mastermind.HardMode);
         var thrownException = Assert.ThrowsException<InvalidAttemptLengthException>(action: () =>
             mastermind.Attempt(wordAttempt: "invalid"));
         Assert.AreEqual(expected: InvalidAttemptLengthException.MessageText,
@@ -152,6 +155,9 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: length,
             actual: mastermind.WordLength);
+        Assert.AreEqual(
+            expected: false,
+            actual: mastermind.HardMode);
         var attempt = mastermind.Attempt(wordAttempt: secretWord);
         Assert.IsTrue(condition: mastermind.Solved);
         TestAttempt(knownSecretWord: secretWord,
@@ -180,7 +186,12 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: length,
             actual: mastermind.WordLength);
-        for (var i = 0; i < Models.WordMasterMind.GetMaxAttemptsForLength(length: length); i++)
+        Assert.AreEqual(
+            expected: false,
+            actual: mastermind.HardMode);
+        for (var i = 0; i < Models.WordMasterMind.GetMaxAttemptsForLength(
+                 length: length,
+                 hardMode: mastermind.HardMode); i++)
         {
             var attempt = mastermind.Attempt(wordAttempt: incorrectWord);
             TestAttempt(knownSecretWord: secretWord,
@@ -208,6 +219,9 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: StandardLength,
             actual: mastermind.WordLength);
+        Assert.AreEqual(
+            expected: false,
+            actual: mastermind.HardMode);
         var secretWord = mastermind.SecretWord.ToUpperInvariant();
         Assert.AreEqual(
             expected: StandardLength,
@@ -235,7 +249,9 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: expectedWord.Length,
             actual: mastermind.WordLength);
-
+        Assert.AreEqual(
+            expected: true,
+            actual: mastermind.HardMode);
         // a first attempt of where should lock in three letters, 'w', 'h', and the final 'e'
         var attempt = mastermind.Attempt(wordAttempt: "where");
         TestAttempt(knownSecretWord: mastermind.SecretWord,
@@ -261,6 +277,9 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: StandardLength,
             actual: mastermind.WordLength);
+        Assert.AreEqual(
+            expected: false,
+            actual: mastermind.HardMode);
         WordMasterMindPlayer.ComputerGuess(mastermind: mastermind,
             turns: 1);
     }
@@ -279,6 +298,9 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: expectedWord.Length,
             actual: mastermind.WordLength);
+        Assert.AreEqual(
+            expected: false,
+            actual: mastermind.HardMode);
         // a guess of "weight" should register "e" as a solved letter, regardless of hardmode
         var attempt = mastermind.Attempt(wordAttempt: "weigh");
         TestAttempt(
@@ -294,5 +316,25 @@ public class WordMasterMindTest
         Assert.IsTrue(
             condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {true, true, true, true, true}));
         Assert.IsTrue(condition: mastermind.Solved);
+    }
+
+    [TestMethod]
+    public void TestAttemptsFunction()
+    {
+        var scrabbleDictionary = GetScrabbleDictionary();
+        foreach (var hardMode in new bool[] {false, true})
+        {
+            for (var length = scrabbleDictionary.ShortestWordLength;
+                 length <= scrabbleDictionary.LongestWordLength;
+                 length++)
+            {
+                var attemptsForLength = Models.WordMasterMind.GetMaxAttemptsForLength(
+                    length: length,
+                    hardMode: hardMode);
+                Assert.AreEqual(
+                    expected: length + (hardMode ? 2 : 1),
+                    actual: attemptsForLength);
+            }
+        }
     }
 }
