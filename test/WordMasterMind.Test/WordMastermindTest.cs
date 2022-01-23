@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NuGet.Frameworks;
+using WordMasterMind.Exceptions;
 using WordMasterMind.Models;
 
 namespace WordMasterMind;
@@ -212,10 +212,10 @@ public class WordMasterMindTest
             actual: secretWord.Length);
         var invalidSecretWord = "".PadLeft(totalWidth: StandardLength,
             paddingChar: 'z');
-        var thrownAssertion = Assert.ThrowsException<ArgumentException>(() =>
+        var thrownAssertion = Assert.ThrowsException<NotInDictionaryException>(action: () =>
             mastermind.Attempt(wordAttempt: invalidSecretWord));
         Assert.AreEqual(
-            expected: "wordAttempt is not a valid word in the Scrabble dictionary",
+            expected: NotInDictionaryException.MessageText,
             actual: thrownAssertion.Message);
     }
 

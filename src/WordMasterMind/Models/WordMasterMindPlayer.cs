@@ -26,7 +26,8 @@ public static class WordMasterMindPlayer
             attemptDetails: attempt);
     }
 
-    public static bool ComputerGuess(WordMasterMind mastermind, int turns = -1, int maximumDictionaryLookupAttemptsPerTry = 1000)
+    public static bool ComputerGuess(WordMasterMind mastermind, int turns = -1,
+        int maximumDictionaryLookupAttemptsPerTry = 1000)
     {
         if (mastermind.Solved) throw new Exception(message: "You have already solved this word!");
 

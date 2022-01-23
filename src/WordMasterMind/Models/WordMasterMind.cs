@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Text;
+using WordMasterMind.Exceptions;
 using WordMasterMind.Helpers;
 
 namespace WordMasterMind.Models;
@@ -136,7 +137,7 @@ public class WordMasterMind
             throw new ArgumentException(message: "Word length does not match secret word length");
 
         if (!this.ScrabbleDictionary.IsWord(word: wordAttempt))
-            throw new ArgumentException(message: "wordAttempt is not a valid word in the Scrabble dictionary");
+            throw new NotInDictionaryException();
 
         var currentAttempt = 0;
         var attempt = wordAttempt
