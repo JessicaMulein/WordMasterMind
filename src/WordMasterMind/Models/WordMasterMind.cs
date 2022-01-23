@@ -27,6 +27,11 @@ public class WordMasterMind
     public readonly int MaxAttempts;
 
     /// <summary>
+    ///     Scrabble Dictionary to use
+    /// </summary>
+    public readonly ScrabbleDictionary ScrabbleDictionary;
+
+    /// <summary>
     ///     Length of the word to be guessed
     /// </summary>
     public readonly int WordLength;
@@ -37,16 +42,18 @@ public class WordMasterMind
         this.Solved = false;
         this.CurrentAttempt = 0;
         this.HardMode = hardMode;
-        scrabbleDictionary ??=
-            new ScrabbleDictionary(); // use the provided dictionary, or use the default one which is stored locally
-        this._secretWord = secretWord ?? scrabbleDictionary.GetRandomWord(minLength: minLength, maxLength: maxLength);
+        this.ScrabbleDictionary = scrabbleDictionary ??
+                                  new ScrabbleDictionary(); // use the provided dictionary, or use the default one which is stored locally
+        this._secretWord = secretWord ?? this.ScrabbleDictionary.GetRandomWord(minLength: minLength,
+            maxLength: maxLength);
 
-        Debug.Assert(condition: this._secretWord != null, message: nameof(this._secretWord) + " is null");
+        Debug.Assert(condition: this._secretWord != null,
+            message: nameof(this._secretWord) + " is null");
         this.WordLength = this._secretWord.Length;
         if (this.WordLength > maxLength || this.WordLength < minLength)
             throw new ArgumentException(message: "Secret word must be between minLength and maxLength");
 
-        if (!scrabbleDictionary.IsWord(word: this._secretWord))
+        if (!this.ScrabbleDictionary.IsWord(word: this._secretWord))
             throw new ArgumentException(message: "Secret word must be a valid word in the Scrabble dictionary");
 
         this.MaxAttempts = GetMaxAttemptsForLength(length: this.WordLength);

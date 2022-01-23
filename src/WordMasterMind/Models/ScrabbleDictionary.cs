@@ -42,7 +42,8 @@ public class ScrabbleDictionary
             if (dictionary.ContainsKey(key: wordLength))
                 dictionary[key: wordLength] = dictionary[key: wordLength].Append(element: word.ToUpperInvariant());
             else
-                dictionary.Add(key: wordLength, value: new[] {word.ToUpperInvariant()});
+                dictionary.Add(key: wordLength,
+                    value: new[] {word.ToUpperInvariant()});
         }
 
         return dictionary;
@@ -75,15 +76,46 @@ public class ScrabbleDictionary
         var maxTries = 1000;
         while (maxTries-- > 0)
         {
-            var length = random.Next(minValue: minLength, maxValue: maxLength);
+            var length = random.Next(minValue: minLength,
+                maxValue: maxLength);
             IEnumerable<string> wordsForLength;
             if (!this._wordsByLength.ContainsKey(key: length) ||
                 !(wordsForLength = this._wordsByLength[key: length]).Any()) continue;
             var forLength = wordsForLength as string[] ?? wordsForLength.ToArray();
             return forLength
-                .ElementAt(index: random.Next(minValue: 0, maxValue: forLength.Length));
+                .ElementAt(index: random.Next(minValue: 0,
+                    maxValue: forLength.Length));
         }
 
         throw new Exception(message: "Dictionary doesn't seem to have any words of the requested parameters");
+    }
+
+    public string FindWord(char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null)
+    {
+        var skipWordsArray = skipWords is null ? null : skipWords.ToArray();
+        while (maxIterations-- > 0)
+        {
+            var word = this.GetRandomWord(
+                minLength: knownCharacters.Length,
+                maxLength: knownCharacters.Length);
+            if (skipWordsArray is not null && skipWordsArray.Contains(value: word)) continue;
+
+            var allMatch = true;
+            for (var i = 0; i < knownCharacters.Length; i++)
+            {
+                if (knownCharacters[i] == '\0' || knownCharacters[i] == ' ') continue;
+
+                if (word[index: i] != knownCharacters[i])
+                {
+                    allMatch = false;
+                    break;
+                }
+            }
+
+            if (allMatch)
+                return word;
+        }
+
+        throw new Exception(message: "Number of iterations exceeded without finding a matching word");
     }
 }
