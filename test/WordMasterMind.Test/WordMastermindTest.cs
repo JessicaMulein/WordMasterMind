@@ -24,14 +24,13 @@ public class WordMasterMindTest
     }
 
 
-    
     [TestMethod]
     public void TestWordMasterMindWordTooShort()
     {
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
-            new WordMasterMind.Models.WordMasterMind(
+            new Models.WordMasterMind(
                 minLength: 5,
                 maxLength: 5,
                 maxAttempts: 6,
@@ -42,14 +41,14 @@ public class WordMasterMindTest
         Assert.AreEqual(expected: "Secret word must be between minLength and maxLength",
             actual: thrownException.Message);
     }
-    
+
     [TestMethod]
     public void TestWordMasterMindWordTooLong()
     {
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
-            new WordMasterMind.Models.WordMasterMind(
+            new Models.WordMasterMind(
                 minLength: 5,
                 maxLength: 5,
                 maxAttempts: 6,
@@ -67,9 +66,9 @@ public class WordMasterMindTest
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
-            new WordMasterMind.Models.WordMasterMind(
-                minLength: 5,
-                maxLength: 5,
+            new Models.WordMasterMind(
+                minLength: 8,
+                maxLength: 8,
                 maxAttempts: 6,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,

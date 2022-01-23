@@ -35,11 +35,11 @@ public class WordMasterMind
         _attempts = new IEnumerable<(char letter, bool letterCorrect, bool positionCorrect)>[maxAttempts];
         _secretWord = secretWord ?? scrabbleDictionary.GetRandomWord(minLength: minLength, maxLength: maxLength);
 
-        if (!scrabbleDictionary.IsWord(word: _secretWord))
-            throw new ArgumentException(message: "Secret word must be a valid word in the Scrabble dictionary");
-
         if (_secretWord.Length > maxLength || _secretWord.Length < minLength)
             throw new ArgumentException(message: "Secret word must be between minLength and maxLength");
+
+        if (!scrabbleDictionary.IsWord(word: _secretWord))
+            throw new ArgumentException(message: "Secret word must be a valid word in the Scrabble dictionary");
     }
 
     /// <summary>
