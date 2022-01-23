@@ -100,6 +100,10 @@ public class WordMasterMindTest
         foreach (var position in attempt)
         {
             var correspondingSecretLetter = secretWord[index: positionIndex++];
+            var letterMatch = secretWord.Contains(position.letter);
+            Assert.AreEqual(
+                expected: letterMatch,
+                actual: position.letterCorrect);
             var positionMatch = position.letter.Equals(obj: correspondingSecretLetter);
             Assert.AreEqual(
                 expected: positionMatch,
