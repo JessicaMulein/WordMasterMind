@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using WordMasterMind.Helpers;
 
 namespace WordMasterMind.Models;
@@ -25,24 +26,31 @@ public class WordMasterMind
     /// </summary>
     public readonly int MaxAttempts;
 
+    /// <summary>
+    ///     Length of the word to be guessed
+    /// </summary>
+    public readonly int WordLength;
+
     public WordMasterMind(int minLength, int maxLength, bool hardMode = false,
         ScrabbleDictionary? scrabbleDictionary = null, string? secretWord = null)
     {
-        Solved = false;
-        CurrentAttempt = 0;
-        HardMode = hardMode;
+        this.Solved = false;
+        this.CurrentAttempt = 0;
+        this.HardMode = hardMode;
         scrabbleDictionary ??=
             new ScrabbleDictionary(); // use the provided dictionary, or use the default one which is stored locally
-        _secretWord = secretWord ?? scrabbleDictionary.GetRandomWord(minLength: minLength, maxLength: maxLength);
+        this._secretWord = secretWord ?? scrabbleDictionary.GetRandomWord(minLength: minLength, maxLength: maxLength);
 
-        if (_secretWord.Length > maxLength || _secretWord.Length < minLength)
+        Debug.Assert(condition: this._secretWord != null, message: nameof(this._secretWord) + " is null");
+        this.WordLength = this._secretWord.Length;
+        if (this.WordLength > maxLength || this.WordLength < minLength)
             throw new ArgumentException(message: "Secret word must be between minLength and maxLength");
 
-        if (!scrabbleDictionary.IsWord(word: _secretWord))
+        if (!scrabbleDictionary.IsWord(word: this._secretWord))
             throw new ArgumentException(message: "Secret word must be a valid word in the Scrabble dictionary");
 
-        MaxAttempts = GetMaxAttemptsForLength(length: _secretWord.Length);
-        _attempts = new IEnumerable<AttemptDetail>[MaxAttempts];
+        this.MaxAttempts = GetMaxAttemptsForLength(length: this.WordLength);
+        this._attempts = new IEnumerable<AttemptDetail>[this.MaxAttempts];
     }
 
     /// <summary>
@@ -58,8 +66,7 @@ public class WordMasterMind
     /// <summary>
     ///     Gets the attempts so far
     /// </summary>
-    public IEnumerable<IEnumerable<AttemptDetail>> Attempts =>
-        _attempts.Take(count: CurrentAttempt);
+    public IEnumerable<IEnumerable<AttemptDetail>> Attempts => this._attempts.Take(count: this.CurrentAttempt);
 
     public bool Solved { get; private set; }
 
@@ -68,7 +75,7 @@ public class WordMasterMind
         get
         {
             if (!IsDebug) throw new Exception(message: "Secret word is only available in debug mode");
-            return _secretWord;
+            return this._secretWord;
         }
     }
 
@@ -79,12 +86,12 @@ public class WordMasterMind
 
     public IEnumerable<AttemptDetail> Attempt(string wordAttempt)
     {
-        if (Solved) throw new Exception(message: "You have already solved this word!");
+        if (this.Solved) throw new Exception(message: "You have already solved this word!");
 
-        if (CurrentAttempt >= MaxAttempts)
+        if (this.CurrentAttempt >= this.MaxAttempts)
             throw new Exception(message: "You have reached the maximum number of attempts");
 
-        if (_secretWord.Length != wordAttempt.Length)
+        if (this.WordLength != wordAttempt.Length)
             throw new ArgumentException(message: "Word length does not match secret word length");
 
         var currentAttempt = 0;
@@ -93,30 +100,30 @@ public class WordMasterMind
             .Select(
                 selector: c => new AttemptDetail(
                     letter: c,
-                    letterCorrect: _secretWord.Contains(value: c),
-                    positionCorrect: _secretWord[index: currentAttempt++] == c)).ToArray();
+                    letterCorrect: this._secretWord.Contains(value: c),
+                    positionCorrect: this._secretWord[index: currentAttempt++] == c)).ToArray();
 
-        if (HardMode && CurrentAttempt > 1)
+        if (this.HardMode && this.CurrentAttempt > 1)
         {
             // if a previous attempt had a letter in the correct position, future attempts must have the same letter in the correct position
-            var lockedLetters = new bool[_secretWord.Length];
-            for (var i = 0; i < CurrentAttempt; i++)
+            var lockedLetters = new bool[this.WordLength];
+            for (var i = 0; i < this.CurrentAttempt; i++)
             {
                 var letterIndex = 0;
-                foreach (var attemptDetail in _attempts[i])
+                foreach (var attemptDetail in this._attempts[i])
                     if (attemptDetail.LetterCorrect && attemptDetail.PositionCorrect)
                         lockedLetters[letterIndex++] = true;
             }
 
             // now check the current attempt for locked letters
             for (var i = 0; i < wordAttempt.Length; i++)
-                if (lockedLetters[i] && attempt[i].Letter != _secretWord[index: i])
+                if (lockedLetters[i] && attempt[i].Letter != this._secretWord[index: i])
                     throw new Exception(message: "You cannot change a letter that is in the correct position");
         }
 
-        if (wordAttempt == _secretWord) Solved = true;
+        if (wordAttempt == this._secretWord) this.Solved = true;
 
-        _attempts[CurrentAttempt++] = attempt;
+        this._attempts[this.CurrentAttempt++] = attempt;
         return attempt;
     }
 }

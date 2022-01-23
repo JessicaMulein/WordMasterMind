@@ -18,14 +18,14 @@ public class ScrabbleDictionary
     {
         if (dictionary is not null)
         {
-            _wordsByLength = dictionary.ToImmutableDictionary();
+            this._wordsByLength = dictionary.ToImmutableDictionary();
         }
         else
         {
             var result = Task.Run(function: async () => await LoadDictionaryFromWebJson());
             result.Wait();
-            _wordsByLength = result.Result.ToImmutableDictionary();
-            if (_wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
+            this._wordsByLength = result.Result.ToImmutableDictionary();
+            if (this._wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
         }
     }
 
@@ -62,8 +62,8 @@ public class ScrabbleDictionary
     public bool IsWord(string word)
     {
         var length = word.Length;
-        return _wordsByLength.ContainsKey(key: length) &&
-               _wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
+        return this._wordsByLength.ContainsKey(key: length) &&
+               this._wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
     }
 
     public string GetRandomWord(int minLength, int maxLength)
@@ -77,8 +77,8 @@ public class ScrabbleDictionary
         {
             var length = random.Next(minValue: minLength, maxValue: maxLength);
             IEnumerable<string> wordsForLength;
-            if (!_wordsByLength.ContainsKey(key: length) ||
-                !(wordsForLength = _wordsByLength[key: length]).Any()) continue;
+            if (!this._wordsByLength.ContainsKey(key: length) ||
+                !(wordsForLength = this._wordsByLength[key: length]).Any()) continue;
             var forLength = wordsForLength as string[] ?? wordsForLength.ToArray();
             return forLength
                 .ElementAt(index: random.Next(minValue: 0, maxValue: forLength.Length));

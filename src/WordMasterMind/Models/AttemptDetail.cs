@@ -8,8 +8,8 @@ public record AttemptDetail
 
     public AttemptDetail(char letter, bool letterCorrect, bool positionCorrect)
     {
-        Letter = letter;
-        LetterCorrect = letterCorrect;
-        PositionCorrect = positionCorrect;
+        this.Letter = letter;
+        this.LetterCorrect = letterCorrect;
+        this.PositionCorrect = positionCorrect;
     }
 }
