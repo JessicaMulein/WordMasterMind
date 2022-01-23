@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NuGet.Frameworks;
 using WordMasterMind.Models;
 
 namespace WordMasterMind;
@@ -194,7 +195,7 @@ public class WordMasterMindTest
     }
 
     [TestMethod]
-    public void TestWordMasterMindWithProvidedRandomWord()
+    public void TestWordMasterMindWithProvidedRandomWordAndInvalidAttempt()
     {
         var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
@@ -209,13 +210,13 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: StandardLength,
             actual: secretWord.Length);
-        // ReSharper disable once StringLiteralTypo
-        var attempt = mastermind.Attempt(wordAttempt: "aeiou").ToArray();
+        var invalidSecretWord = "".PadLeft(totalWidth: StandardLength,
+            paddingChar: 'z');
+        var thrownAssertion = Assert.ThrowsException<ArgumentException>(() =>
+            mastermind.Attempt(wordAttempt: invalidSecretWord));
         Assert.AreEqual(
-            expected: StandardLength,
-            actual: attempt.Length);
-        TestAttempt(knownSecretWord: secretWord,
-            attemptDetails: attempt);
+            expected: "wordAttempt is not a valid word in the Scrabble dictionary",
+            actual: thrownAssertion.Message);
     }
 
     [TestMethod]
@@ -244,13 +245,7 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: StandardLength,
             actual: mastermind.WordLength);
-        var computerGuess = mastermind.ScrabbleDictionary.GetRandomWord(
-            minLength: mastermind.WordLength,
-            maxLength: mastermind.WordLength);
-        var attempt = mastermind.Attempt(wordAttempt: computerGuess);
-        TestAttempt(knownSecretWord: mastermind.SecretWord,
-            attemptDetails: attempt);
-        var attemptString = mastermind.AttemptHistoryEmojiString;
-        Assert.IsTrue(condition: attemptString.Length >= mastermind.WordLength);
+        WordMasterMindPlayer.ComputerGuess(mastermind: mastermind,
+            turns: 1);
     }
 }

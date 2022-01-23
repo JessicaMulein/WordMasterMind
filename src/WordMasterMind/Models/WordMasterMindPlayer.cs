@@ -26,7 +26,7 @@ public static class WordMasterMindPlayer
             attemptDetails: attempt);
     }
 
-    public static bool ComputerGuess(WordMasterMind mastermind, int maximumDictionaryLookupAttemptsPerTry = 1000)
+    public static bool ComputerGuess(WordMasterMind mastermind, int turns = -1, int maximumDictionaryLookupAttemptsPerTry = 1000)
     {
         if (mastermind.Solved) throw new Exception(message: "You have already solved this word!");
 
@@ -36,7 +36,7 @@ public static class WordMasterMindPlayer
         var currentWordStatus = new char[mastermind.WordLength];
         var mustIncludeLetters = new List<char>();
         var triedWords = new List<string>();
-        while (!mastermind.Solved)
+        while (!mastermind.Solved && (turns == -1 || turns-- > 0))
         {
             var computerGuess = mastermind.ScrabbleDictionary.FindWord(
                 knownCharacters: currentWordStatus,
