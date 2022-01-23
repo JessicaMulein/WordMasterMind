@@ -88,7 +88,7 @@ public class WordMasterMind
     {
         get
         {
-            if (!IsDebug) throw new Exception(message: "Secret word is only available in debug mode");
+            if (!IsDebug) throw new DebugModeException(paramName: nameof(this.SecretWord));
             return this._secretWord;
         }
     }
