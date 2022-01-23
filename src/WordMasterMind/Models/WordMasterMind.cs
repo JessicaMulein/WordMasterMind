@@ -161,7 +161,7 @@ public class WordMasterMind
             // now check the current attempt for locked letters
             for (var i = 0; i < wordAttempt.Length; i++)
                 if (lockedLetters[i] && attempt[i].Letter != this._secretWord[index: i])
-                    throw new Exception(message: "You cannot change a letter that is in the correct position");
+                    throw new HardModeException();
         }
 
         if (wordAttempt == this._secretWord) this.Solved = true;

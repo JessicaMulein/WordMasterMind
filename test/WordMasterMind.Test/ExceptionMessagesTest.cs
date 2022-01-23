@@ -38,6 +38,16 @@ public class ExceptionMessagesTest
             expected: "Game Over: You have reached the maximum number of attempts.",
             actual: thrownException.Message);
     }
+    
+    [TestMethod]
+    public void HardModeExceptionTest()
+    {
+        var thrownException =
+            Assert.ThrowsException<HardModeException>(action: () => throw new HardModeException());
+        Assert.AreEqual(
+            expected: "You cannot change a letter that is in the correct position.",
+            actual: thrownException.Message);
+    }
 
     [TestMethod]
     public void TestInvalidAttemptLengthException()
