@@ -30,11 +30,19 @@ public static class WordMasterMindPlayer
 
         while (!mastermind.Solved)
         {
-            var computerGuess = mastermind.ScrabbleDictionary.FindWord(knownCharacters: currentWordStatus,
+            var computerGuess = mastermind.ScrabbleDictionary.FindWord(
+                knownCharacters: currentWordStatus,
                 maxIterations: maximumDictionaryLookupAttemptsPerTry,
                 skipWords: triedWords);
             triedWords.Add(item: computerGuess);
             attempt = mastermind.Attempt(wordAttempt: computerGuess);
+
+            position = 0;
+            foreach (var attemptDetail in attempt)
+            {
+                if (attemptDetail.LetterCorrect) currentWordStatus[position] = attemptDetail.Letter;
+                position++;
+            }
         }
 
         return mastermind.Solved;
