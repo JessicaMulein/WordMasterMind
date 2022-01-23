@@ -1,3 +1,5 @@
+using WordMasterMind.Helpers;
+
 namespace WordMasterMind.Models;
 
 public class WordMasterMind
@@ -43,6 +45,11 @@ public class WordMasterMind
     }
 
     /// <summary>
+    ///     Debug flag allows revealing the secret word
+    /// </summary>
+    private static bool IsDebug => UnitTestDetector.IsRunningInUnitTest;
+
+    /// <summary>
     ///     Gets the current attempt number
     /// </summary>
     public int CurrentAttempt { get; private set; }
@@ -55,6 +62,15 @@ public class WordMasterMind
 
     public bool Solved { get; private set; }
 
+    public string SecretWord
+    {
+        get
+        {
+            if (!IsDebug) throw new Exception(message: "Secret word is only available in debug mode");
+            return _secretWord;
+        }
+    }
+
     public IEnumerable<(char letter, bool letterCorrect, bool positionCorrect)> Attempt(string wordAttempt)
     {
         if (Solved) throw new Exception(message: "You have already solved this word!");
@@ -65,13 +81,14 @@ public class WordMasterMind
         if (_secretWord.Length != wordAttempt.Length)
             throw new ArgumentException(message: "Word length does not match secret word length");
 
-        var currentPosition = -1;
+        var currentAttempt = 0;
         var attempt = wordAttempt
+            .ToUpperInvariant()
             .Select(
                 selector: c => (
                     letter: c,
                     letterCorrect: _secretWord.Contains(value: c),
-                    positionCorrect: _secretWord[index: currentPosition++] == c)).ToArray();
+                    positionCorrect: _secretWord[index: currentAttempt++] == c)).ToArray();
 
         if (HardMode && CurrentAttempt > 1)
         {

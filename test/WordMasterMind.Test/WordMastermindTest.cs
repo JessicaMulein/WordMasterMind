@@ -80,7 +80,7 @@ public class WordMasterMindTest
 
 
     [TestMethod]
-    public void TestWordMasterMind()
+    public void TestWordMasterMindWithProvidedRandomWord()
     {
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
@@ -90,6 +90,9 @@ public class WordMasterMindTest
             maxAttempts: 6,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
+        var secretWord = mastermind.SecretWord;
+        // ReSharper disable once StringLiteralTypo
+        var attempt = mastermind.Attempt(wordAttempt: "aeiou");
     }
 
     [TestMethod]
