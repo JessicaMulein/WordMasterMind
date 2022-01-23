@@ -128,10 +128,10 @@ public class WordMasterMind
 
     public IEnumerable<AttemptDetail> Attempt(string wordAttempt)
     {
-        if (this.Solved || (this.CurrentAttempt >= this.MaxAttempts)) throw new GameOverException(solved: this.Solved);
+        if (this.Solved || this.CurrentAttempt >= this.MaxAttempts) throw new GameOverException(solved: this.Solved);
 
         if (this.WordLength != wordAttempt.Length)
-            throw new ArgumentException(message: "Word length does not match secret word length");
+            throw new InvalidWordLengthException();
 
         if (!this.ScrabbleDictionary.IsWord(word: wordAttempt))
             throw new NotInDictionaryException();

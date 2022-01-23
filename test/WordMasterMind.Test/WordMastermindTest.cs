@@ -128,9 +128,9 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: StandardLength,
             actual: mastermind.WordLength);
-        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+        var thrownException = Assert.ThrowsException<InvalidWordLengthException>(action: () =>
             mastermind.Attempt(wordAttempt: "invalid"));
-        Assert.AreEqual(expected: "Word length does not match secret word length",
+        Assert.AreEqual(expected: InvalidWordLengthException.MessageText,
             actual: thrownException.Message);
     }
 
@@ -188,7 +188,8 @@ public class WordMasterMindTest
         }
 
         Assert.IsFalse(condition: mastermind.Solved);
-        var thrownException = Assert.ThrowsException<GameOverException>(action: () => mastermind.Attempt(wordAttempt: "wrong"));
+        var thrownException =
+            Assert.ThrowsException<GameOverException>(action: () => mastermind.Attempt(wordAttempt: "wrong"));
         Assert.IsFalse(condition: thrownException.Solved);
         Assert.AreEqual(
             expected: GameOverException.GameOverText,
