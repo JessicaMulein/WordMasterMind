@@ -61,15 +61,26 @@ public class ScrabbleDictionaryTest
     }
 
     [TestMethod]
-    public void TestRandomWordExhaustion()
+    public void TestRandomWordLengthUpperLimit()
     {
         var scrabbleDictionary =
             new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
-        // there are no words of length 16 in the scrabble dictionary
-        var thrownException = Assert.ThrowsException<Exception>(action: () =>
-            scrabbleDictionary.GetRandomWord(minLength: 16,
-                maxLength: 16));
-        Assert.AreEqual(expected: "Dictionary doesn't seem to have any words of the requested parameters",
+        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+            scrabbleDictionary.GetRandomWord(minLength: scrabbleDictionary.LongestWordLength + 1,
+                maxLength: scrabbleDictionary.LongestWordLength + 1));
+        Assert.AreEqual(expected: "maxLength must be less than or equal to the longest word length",
+            actual: thrownException.Message);
+    }
+
+    [TestMethod]
+    public void TestRandomWordLengthLowerLimit()
+    {
+        var scrabbleDictionary =
+            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+            scrabbleDictionary.GetRandomWord(minLength: scrabbleDictionary.ShortestWordLength - 1,
+                maxLength: scrabbleDictionary.ShortestWordLength - 1));
+        Assert.AreEqual(expected: "minLength must be greater than or equal to the shortest word length",
             actual: thrownException.Message);
     }
 }

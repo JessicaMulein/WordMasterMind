@@ -6,33 +6,94 @@ namespace WordMasterMind.Models;
 
 public class ScrabbleDictionary
 {
+    /// <summary>
+    ///     Unalterable collection of dictionary words, organized by length
+    /// </summary>
     private readonly ImmutableDictionary<int, IEnumerable<string>> _wordsByLength;
 
+    /// <summary>
+    ///     Longest word length with at least one word
+    /// </summary>
+    public readonly int LongestWordLength;
+
+    /// <summary>
+    ///     Shortest word length with at least one word
+    /// </summary>
+    public readonly int ShortestWordLength;
+
+    /// <summary>
+    ///     Word lengths known to have at least one word
+    /// </summary>
+    public readonly IEnumerable<int> ValidWordLengths;
+
+    /// <summary>
+    ///     Standard constructor takes a dictionary of strings, organized by length
+    /// </summary>
+    /// <param name="dictionary"></param>
+    /// <exception cref="Exception"></exception>
+    public ScrabbleDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null)
+    {
+        if (dictionary is not null)
+        {
+            // set this as the instance dictionary, made immutable
+            this._wordsByLength = dictionary.ToImmutableDictionary();
+        }
+        else
+        {
+            // this is a Blazor WebAssembly app, essentially self-hosted.
+            // LoadDirectlyFromJsonFile() is a helper method that grabs it using HTTP to localhost
+            var result = Task.Run(function: async () => await LoadDictionaryFromWebJson());
+            // wait for the task to complete
+            result.Wait();
+            // set up the instance dictionary with the result, made immutable
+            this._wordsByLength = result.Result.ToImmutableDictionary();
+            if (this._wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
+        }
+
+        // temporary array while we find lengths with more than one word
+        var validWordLengths = new List<int>();
+        foreach (var key in this._wordsByLength.Keys)
+        {
+            // if there are no words of this length, skip it
+            if (!this._wordsByLength[key: key].Any()) continue;
+
+            // add to the list of valid word lengths with at least one word
+            validWordLengths.Add(item: key);
+
+            if (this.ShortestWordLength > key) this.ShortestWordLength = key;
+
+            if (this.LongestWordLength < key) this.LongestWordLength = key;
+        }
+
+        // now that the array is final, set it as the instance variable
+        this.ValidWordLengths = validWordLengths.ToImmutableArray();
+    }
+
+    /// <summary>
+    ///     This constructor builds a dictionary organized by lengths from a simple array of words
+    ///     and passes it to the standard constructor
+    /// </summary>
+    /// <param name="words"></param>
+    public ScrabbleDictionary(IEnumerable<string> words) : this(dictionary: FillDictionary(words: words))
+    {
+    }
+
+    /// <summary>
+    ///     This constructor creates a list of words from a JSON file with an array of strings containing the words
+    ///     It will get passed through FillDictionary and then the standard constructor
+    /// </summary>
+    /// <param name="pathToDictionaryJson"></param>
     public ScrabbleDictionary(string pathToDictionaryJson) : this(
         words: JsonSerializer.Deserialize<string[]>(json: string.Join(separator: "\n",
             value: File.ReadAllLines(path: pathToDictionaryJson))) ?? throw new InvalidOperationException())
     {
     }
 
-    public ScrabbleDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null)
-    {
-        if (dictionary is not null)
-        {
-            this._wordsByLength = dictionary.ToImmutableDictionary();
-        }
-        else
-        {
-            var result = Task.Run(function: async () => await LoadDictionaryFromWebJson());
-            result.Wait();
-            this._wordsByLength = result.Result.ToImmutableDictionary();
-            if (this._wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
-        }
-    }
-
-    public ScrabbleDictionary(IEnumerable<string> words) : this(dictionary: FillDictionary(words: words))
-    {
-    }
-
+    /// <summary>
+    ///     Helper method to make a dictionary organized by lengths from a simple array of words
+    /// </summary>
+    /// <param name="words"></param>
+    /// <returns></returns>
     private static Dictionary<int, IEnumerable<string>> FillDictionary(in IEnumerable<string> words)
     {
         var dictionary = new Dictionary<int, IEnumerable<string>>();
@@ -49,6 +110,11 @@ public class ScrabbleDictionary
         return dictionary;
     }
 
+    /// <summary>
+    ///     Attempts to use HTTP to get the json file and then use FillDictionary to format it
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     private static async Task<Dictionary<int, IEnumerable<string>>> LoadDictionaryFromWebJson()
     {
         var dictionaryWords =
@@ -59,7 +125,11 @@ public class ScrabbleDictionary
         return FillDictionary(words: dictionaryWords);
     }
 
-
+    /// <summary>
+    ///     Returns whether the word is in the dictionary
+    /// </summary>
+    /// <param name="word"></param>
+    /// <returns></returns>
     public bool IsWord(string word)
     {
         var length = word.Length;
@@ -67,48 +137,89 @@ public class ScrabbleDictionary
                this._wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
     }
 
-    public string GetRandomWord(int minLength, int maxLength, int maxTries = 1000)
+    /// <summary>
+    ///     Gets a random word from the dictionary from a random length between minLength and maxLength
+    /// </summary>
+    /// <param name="minLength"></param>
+    /// <param name="maxLength"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="Exception"></exception>
+    public string GetRandomWord(int minLength, int maxLength)
     {
         if (minLength > maxLength || maxLength < minLength)
             throw new ArgumentException(message: "minLength must be less than or equal to maxLength");
 
+        if (minLength < this.ShortestWordLength)
+            throw new ArgumentException(message: "minLength must be greater than or equal to the shortest word length");
+
+        if (maxLength > this.LongestWordLength)
+            throw new ArgumentException(message: "maxLength must be less than or equal to the longest word length");
+
         var random = new Random();
-        var triedIndexes = new List<int>();
+        /* maxTries is the number of tries to find a word of length between minLength and maxLength
+         * that is of a length included in the dictionary. Although the dictionary is known to have
+         * words of length between minLength and maxLength, it is possible that the dictionary does
+         * not have words of a specific length between the minLength and maxLength, though I don't
+         * think that is possible in the supplied dictionary. (untested assertion)
+         * A non standard dictionary may have been provided, so we must ensure we test that the length
+         * has any words
+         * It is very unlikely that the standard dictionary will have any trouble of finding words
+         * of length between minLength and maxLength, but we will allow for some number of retries
+         * of different random lengths to find a word of a length included in the dictionary.
+         */
+        var maxTries = 10000;
         while (maxTries-- > 0)
         {
-            var length = random.Next(minValue: minLength,
-                maxValue: maxLength);
+            // get a random length between minLength and maxLength
+            var nonRandomLength = minLength == maxLength;
+            var length = nonRandomLength
+                ? maxLength
+                : random.Next(minValue: minLength,
+                    maxValue: maxLength);
+            // set up a variable to contain a reference the dictionary entry for the length
             IEnumerable<string> wordsForLength;
+            // if the dictionary does not contain any words of length, or the length had an empty array, loop again
             if (!this._wordsByLength.ContainsKey(key: length) ||
-                !(wordsForLength = this._wordsByLength[key: length]).Any()) continue;
-            var forLength = wordsForLength as string[] ?? wordsForLength.ToArray();
-
-            while (true)
+                !(wordsForLength = this._wordsByLength[key: length]).Any())
             {
-                var indexToTry = random.Next(minValue: 0,
-                    maxValue: forLength.Length);
-                // if we've already used this word, try another index
-                if (triedIndexes.Contains(item: indexToTry))
-                {
-                    // check if words of this size expired
-                    if (triedIndexes.Count == forLength.Length) break;
-                    // otherwise keep trying
-                    continue;
-                }
+                // there is no point to continue looping if min and max are locked to a value
+                if (nonRandomLength)
+                    break;
 
-                // add to the list of tried index
-                triedIndexes.Add(item: indexToTry);
-                // return the word that was not in the dictionary
-                return forLength
-                    .ElementAt(index: indexToTry);
+                // continue looping, but skip the following code
+                continue;
             }
-        }
 
+            ;
+
+            /* at this point we have a length that is included in the dictionary
+             * and we have at least one word of that length
+             * this is guaranteed to return a word of the desired length
+             * enumerate to an array to prevent multiple enumerations during the return call
+            */
+            var wordsForLengthArray = wordsForLength.ToArray();
+
+            return wordsForLengthArray
+                .ElementAt(index: random.Next(minValue: 0,
+                    maxValue: wordsForLengthArray.Length));
+        } // end while maxTries
+
+        // we've failed out of the loop
         throw new Exception(message: "Dictionary doesn't seem to have any words of the requested parameters");
     }
 
-    public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null, IEnumerable<char>? mustIncludeLetters = null)
+    public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null,
+        IEnumerable<char>? mustIncludeLetters = null)
     {
+        if (knownCharacters.Length < this.ShortestWordLength)
+            throw new ArgumentException(
+                message: "knownCharacters array length must be greater than or equal to the shortest word length");
+
+        if (knownCharacters.Length > this.LongestWordLength)
+            throw new ArgumentException(
+                message: "knownCharacters array length must be less than or equal to the longest word length");
+
         var skipWordsArray = skipWords is null ? Array.Empty<string>() : skipWords.ToArray();
         var mustIncludeLettersArray = mustIncludeLetters is null ? new List<char>() : mustIncludeLetters.ToList();
 
@@ -124,13 +235,12 @@ public class ScrabbleDictionary
             // check the must include list
             var allLetters = true;
             foreach (var mustIncludeLetter in mustIncludeLettersArray)
-            {
                 if (!word.Contains(value: mustIncludeLetter))
                 {
                     allLetters = false;
                     break;
                 }
-            }
+
             if (!allLetters) continue;
 
             var allMatch = true;

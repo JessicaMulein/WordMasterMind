@@ -4,24 +4,22 @@ public static class WordMasterMindPlayer
 {
     public const string StandardFirstAttempt = "aeiousnthrdlcmzyxwvfjqg";
 
-    private static void UpdateAttemptMemory(ref char[] currentWordStatus, ref List<char> mustIncludeLetters, in IEnumerable<AttemptDetail> attemptDetails)
+    private static void UpdateAttemptMemory(ref char[] currentWordStatus, ref List<char> mustIncludeLetters,
+        in IEnumerable<AttemptDetail> attemptDetails)
     {
         var position = 0;
         foreach (var attemptDetail in attemptDetails)
         {
             if (attemptDetail.PositionCorrect) currentWordStatus[position] = attemptDetail.Letter;
             if (attemptDetail.LetterCorrect)
-            {
-                if (!mustIncludeLetters.Contains(attemptDetail.Letter))
-                {
-                    mustIncludeLetters.Add(attemptDetail.Letter);
-                }
-            }
+                if (!mustIncludeLetters.Contains(item: attemptDetail.Letter))
+                    mustIncludeLetters.Add(item: attemptDetail.Letter);
             position++;
         }
     }
 
-    private static void AttemptAndUpdateMemory(in WordMasterMind mastermind, ref char[] currentWordStatus, ref List<char> mustIncludeLetters, string wordAttempt)
+    private static void AttemptAndUpdateMemory(in WordMasterMind mastermind, ref char[] currentWordStatus,
+        ref List<char> mustIncludeLetters, string wordAttempt)
     {
         var attempt = mastermind.Attempt(wordAttempt: wordAttempt).ToArray();
         UpdateAttemptMemory(
@@ -41,9 +39,9 @@ public static class WordMasterMindPlayer
 
         // ReSharper disable once StringLiteralTypo
         if (mastermind.WordLength > StandardFirstAttempt.Length)
-        {
-            throw new Exception("We were not prepared for this. The scrabble dictionary goes to 16 letters.");
-        }
+            throw new Exception(
+                message:
+                $"We were not prepared for this. The scrabble dictionary goes to {mastermind.ScrabbleDictionary.LongestWordLength} letters.");
 
         var mustIncludeLetters = new List<char>();
         var triedWords = new List<string>();
