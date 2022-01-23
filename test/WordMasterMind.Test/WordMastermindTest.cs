@@ -12,6 +12,9 @@ namespace WordMasterMind;
 [TestClass]
 public class WordMasterMindTest
 {
+    private static ScrabbleDictionary GetScrabbleDictionary() =>
+       new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+
     private static string GetTestRoot(string? fileName = null)
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -28,8 +31,7 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWordTooShort()
     {
-        var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetScrabbleDictionary();
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             new Models.WordMasterMind(
                 minLength: 5,
@@ -46,8 +48,7 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWordTooLong()
     {
-        var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetScrabbleDictionary();
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             new Models.WordMasterMind(
                 minLength: 5,
@@ -66,8 +67,7 @@ public class WordMasterMindTest
     {
         // secretWord is made up word not in dictionary
         const string expectedSecretWord = "fizzbuzz";
-        var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetScrabbleDictionary();
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             new Models.WordMasterMind(
                 minLength: 8,
@@ -83,8 +83,7 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindAttemptLengthMismatch()
     {
-        var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
@@ -102,8 +101,7 @@ public class WordMasterMindTest
     public void TestWordMasterMindAttemptCorrect()
     {
         var secretWord = "valid";
-        var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
@@ -138,8 +136,7 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWithProvidedRandomWord()
     {
-        var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
@@ -158,8 +155,7 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindHardMode()
     {
-        var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
             minLength: 5,
             maxLength: 5,
