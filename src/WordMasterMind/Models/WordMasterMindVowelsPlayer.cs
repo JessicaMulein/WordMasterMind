@@ -12,7 +12,11 @@ public static class WordMasterMindPlayer
         var currentWordStatus = new char[mastermind.WordLength];
 
         // ReSharper disable once StringLiteralTypo
-        var firstTry = "aeiousnthrdlcm";
+        var firstTry = "aeiousnthrdlcmzyxwvfjqg";
+        if (mastermind.WordLength > firstTry.Length)
+        {
+            throw new Exception("We were not prepared for this. The scrabble dictionary goes to 16 letters.");
+        }
         var triedWords = new List<string>();
         // try the first try
         var attempt = mastermind.Attempt(wordAttempt: firstTry.Substring(startIndex: 0,
@@ -24,7 +28,7 @@ public static class WordMasterMindPlayer
             position++;
         }
 
-        while (mastermind.Solved)
+        while (!mastermind.Solved)
         {
             var computerGuess = mastermind.ScrabbleDictionary.FindWord(knownCharacters: currentWordStatus,
                 maxIterations: maximumDictionaryLookupAttemptsPerTry,
