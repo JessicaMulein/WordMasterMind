@@ -128,10 +128,7 @@ public class WordMasterMind
 
     public IEnumerable<AttemptDetail> Attempt(string wordAttempt)
     {
-        if (this.Solved) throw new Exception(message: "You have already solved this word!");
-
-        if (this.CurrentAttempt >= this.MaxAttempts)
-            throw new Exception(message: "You have reached the maximum number of attempts");
+        if (this.Solved || (this.CurrentAttempt >= this.MaxAttempts)) throw new GameOverException(solved: this.Solved);
 
         if (this.WordLength != wordAttempt.Length)
             throw new ArgumentException(message: "Word length does not match secret word length");

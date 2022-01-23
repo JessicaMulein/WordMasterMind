@@ -188,9 +188,10 @@ public class WordMasterMindTest
         }
 
         Assert.IsFalse(condition: mastermind.Solved);
-        var thrownException = Assert.ThrowsException<Exception>(action: () => mastermind.Attempt(wordAttempt: "wrong"));
+        var thrownException = Assert.ThrowsException<GameOverException>(action: () => mastermind.Attempt(wordAttempt: "wrong"));
+        Assert.IsFalse(condition: thrownException.Solved);
         Assert.AreEqual(
-            expected: "You have reached the maximum number of attempts",
+            expected: GameOverException.GameOverText,
             actual: thrownException.Message);
     }
 
