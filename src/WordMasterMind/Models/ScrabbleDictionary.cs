@@ -73,10 +73,11 @@ public class ScrabbleDictionary
         while (maxTries-- > 0)
         {
             var length = random.Next(minValue: minLength, maxValue: maxLength);
-            if (!_wordsByLength.ContainsKey(key: length)) break;
-            var countForLength = _wordsByLength[key: length].Count();
-            if (countForLength == 0) continue;
-            return _wordsByLength[key: length].ElementAt(index: random.Next(minValue: 0, maxValue: countForLength));
+            if (!_wordsByLength.ContainsKey(key: length) || !_wordsByLength[key: length].Any()) continue;
+            var wordsForLength = _wordsByLength[key: length];
+            var forLength = wordsForLength as string[] ?? wordsForLength.ToArray();
+            return forLength
+                .ElementAt(index: random.Next(minValue: 0, maxValue: forLength.Length));
         }
 
         throw new Exception(message: "Dictionary doesn't seem to have any words of the requested parameters");
