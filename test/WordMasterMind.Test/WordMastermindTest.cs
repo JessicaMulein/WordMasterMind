@@ -241,5 +241,11 @@ public class WordMasterMindTest
             maxLength: StandardLength,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
+        Assert.AreEqual(
+            expected: StandardLength,
+            actual: mastermind.WordLength);
+        var attempt = mastermind.Attempt(WordMasterMindPlayer.StandardFirstAttempt[..mastermind.WordLength]);
+        var attemptString = mastermind.AttemptHistoryEmojiString;
+        Assert.IsTrue(attemptString.Length >= mastermind.WordLength);
     }
 }

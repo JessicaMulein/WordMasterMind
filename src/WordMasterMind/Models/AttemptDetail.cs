@@ -12,4 +12,9 @@ public record AttemptDetail
         this.LetterCorrect = letterCorrect;
         this.PositionCorrect = positionCorrect;
     }
+
+    public override string ToString()
+    {
+        return WordMasterMind.GetEmojiFromAttemptDetail(this);
+    }
 }

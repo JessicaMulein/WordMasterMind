@@ -15,7 +15,7 @@ public class WordMasterMind
         return System.Net.WebUtility.HtmlDecode(constValue);
     }
 
-    private static string GetEmojiFromAttemptDetail(in AttemptDetail attemptDetail)
+    public static string GetEmojiFromAttemptDetail(in AttemptDetail attemptDetail)
     {
         var emojiColor = BlackEmoji;
         if (attemptDetail.PositionCorrect) emojiColor = GreenEmoji;
@@ -154,6 +154,19 @@ public class WordMasterMind
         return attempt;
     }
 
+    public static string AttemptToEmojiString(IEnumerable<AttemptDetail> attemptDetails)
+    {
+        var stringBuilder = new StringBuilder();
+        foreach (var attemptDetail in attemptDetails)
+        {
+            stringBuilder.Append(GetEmojiFromAttemptDetail(attemptDetail: attemptDetail));
+        }
+
+        stringBuilder.Append(value: '\n');
+
+        return stringBuilder.ToString();
+    }
+
     public string AttemptHistoryEmojiString
     {
         get
@@ -161,12 +174,7 @@ public class WordMasterMind
             var stringBuilder = new StringBuilder();
             for (var i = 0; i < this.CurrentAttempt; i++)
             {
-                foreach (var attemptDetail in this._attempts[i])
-                {
-                    stringBuilder.Append(GetEmojiFromAttemptDetail(attemptDetail: attemptDetail));
-                }
-
-                stringBuilder.Append(value: '\n');
+                stringBuilder.Append(value: string.Concat(values: this._attempts[i].Select(selector: a => a.ToString())));
             }
 
             return stringBuilder.ToString();

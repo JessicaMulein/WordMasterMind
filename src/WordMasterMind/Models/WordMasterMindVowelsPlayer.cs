@@ -2,7 +2,7 @@ namespace WordMasterMind.Models;
 
 public static class WordMasterMindPlayer
 {
-    private const string StandardFirstAttempt = "aeiousnthrdlcmzyxwvfjqg";
+    public const string StandardFirstAttempt = "aeiousnthrdlcmzyxwvfjqg";
 
     private static void UpdateAttemptMemory(ref char[] currentWordStatus, ref List<char> mustIncludeLetters, in IEnumerable<AttemptDetail> attemptDetails)
     {
