@@ -1,10 +1,30 @@
 using System.Diagnostics;
+using System.Text;
 using WordMasterMind.Helpers;
 
 namespace WordMasterMind.Models;
 
 public class WordMasterMind
 {
+    private const string GreenEmoji = "&#129001;";
+    private const string YellowEmoji = "&#129000;";
+    private const string BlackEmoji = "&#11035;";
+
+    private static string GetEmojiFromConst(in string constValue)
+    {
+        return System.Net.WebUtility.HtmlDecode(constValue);
+    }
+
+    private static string GetEmojiFromAttemptDetail(in AttemptDetail attemptDetail)
+    {
+        var emojiColor = BlackEmoji;
+        if (attemptDetail.PositionCorrect) emojiColor = GreenEmoji;
+
+        else if (attemptDetail.LetterCorrect) emojiColor = YellowEmoji;
+
+        return GetEmojiFromConst(constValue: emojiColor);
+    }
+
     /// <summary>
     ///     Collection of attempts
     /// </summary>
@@ -132,5 +152,24 @@ public class WordMasterMind
 
         this._attempts[this.CurrentAttempt++] = attempt;
         return attempt;
+    }
+
+    public string AttemptHistoryEmojiString
+    {
+        get
+        {
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i < this.CurrentAttempt; i++)
+            {
+                foreach (var attemptDetail in this._attempts[i])
+                {
+                    stringBuilder.Append(GetEmojiFromAttemptDetail(attemptDetail: attemptDetail));
+                }
+
+                stringBuilder.Append(value: '\n');
+            }
+
+            return stringBuilder.ToString();
+        }
     }
 }

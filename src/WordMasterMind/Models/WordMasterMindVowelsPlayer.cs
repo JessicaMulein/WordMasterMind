@@ -4,21 +4,29 @@ public static class WordMasterMindPlayer
 {
     private const string StandardFirstAttempt = "aeiousnthrdlcmzyxwvfjqg";
 
-    private static void UpdateAttemptMemory(ref char[] currentWordStatus, in IEnumerable<AttemptDetail> attemptDetails)
+    private static void UpdateAttemptMemory(ref char[] currentWordStatus, ref List<char> mustIncludeLetters, in IEnumerable<AttemptDetail> attemptDetails)
     {
         var position = 0;
         foreach (var attemptDetail in attemptDetails)
         {
-            if (attemptDetail.LetterCorrect) currentWordStatus[position] = attemptDetail.Letter;
+            if (attemptDetail.PositionCorrect) currentWordStatus[position] = attemptDetail.Letter;
+            if (attemptDetail.LetterCorrect)
+            {
+                if (!mustIncludeLetters.Contains(attemptDetail.Letter))
+                {
+                    mustIncludeLetters.Add(attemptDetail.Letter);
+                }
+            }
             position++;
         }
     }
 
-    private static void AttemptAndUpdateMemory(in WordMasterMind mastermind, ref char[] currentWordStatus)
+    private static void AttemptAndUpdateMemory(in WordMasterMind mastermind, ref char[] currentWordStatus, ref List<char> mustIncludeLetters, string wordAttempt)
     {
-        var attempt = mastermind.Attempt(wordAttempt: StandardFirstAttempt[..mastermind.WordLength]).ToArray();
+        var attempt = mastermind.Attempt(wordAttempt: wordAttempt).ToArray();
         UpdateAttemptMemory(
             currentWordStatus: ref currentWordStatus,
+            mustIncludeLetters: ref mustIncludeLetters,
             attemptDetails: attempt);
     }
 
@@ -36,11 +44,15 @@ public static class WordMasterMindPlayer
         {
             throw new Exception("We were not prepared for this. The scrabble dictionary goes to 16 letters.");
         }
+
+        var mustIncludeLetters = new List<char>();
         var triedWords = new List<string>();
         // try the first try
         AttemptAndUpdateMemory(
             mastermind: mastermind,
-            currentWordStatus: ref currentWordStatus);
+            currentWordStatus: ref currentWordStatus,
+            mustIncludeLetters: ref mustIncludeLetters,
+            wordAttempt: StandardFirstAttempt[..mastermind.WordLength]);
 
         while (!mastermind.Solved)
         {
@@ -51,7 +63,9 @@ public static class WordMasterMindPlayer
             triedWords.Add(item: computerGuess);
             AttemptAndUpdateMemory(
                 mastermind: mastermind,
-                currentWordStatus: ref currentWordStatus);
+                currentWordStatus: ref currentWordStatus,
+                mustIncludeLetters: ref mustIncludeLetters,
+                wordAttempt: StandardFirstAttempt[..mastermind.WordLength]);
         }
 
         return mastermind.Solved;

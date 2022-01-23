@@ -231,4 +231,15 @@ public class WordMasterMindTest
             expected: StandardLength,
             actual: mastermind.WordLength);
     }
+
+    [TestMethod]
+    public void TestAttemptsToString()
+    {
+        var scrabbleDictionary = GetScrabbleDictionary();
+        var mastermind = new Models.WordMasterMind(
+            minLength: StandardLength,
+            maxLength: StandardLength,
+            hardMode: false,
+            scrabbleDictionary: scrabbleDictionary);
+    }
 }

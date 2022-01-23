@@ -67,13 +67,12 @@ public class ScrabbleDictionary
                this._wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
     }
 
-    public string GetRandomWord(int minLength, int maxLength)
+    public string GetRandomWord(int minLength, int maxLength, int maxTries = 1000)
     {
         if (minLength > maxLength || maxLength < minLength)
             throw new ArgumentException(message: "minLength must be less than or equal to maxLength");
 
         var random = new Random();
-        var maxTries = 1000;
         var triedIndexes = new List<int>();
         while (maxTries-- > 0)
         {
@@ -108,15 +107,31 @@ public class ScrabbleDictionary
         throw new Exception(message: "Dictionary doesn't seem to have any words of the requested parameters");
     }
 
-    public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null)
+    public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null, IEnumerable<char>? mustIncludeLetters = null)
     {
-        var skipWordsArray = skipWords is null ? null : skipWords.ToArray();
+        var skipWordsArray = skipWords is null ? Array.Empty<string>() : skipWords.ToArray();
+        var mustIncludeLettersArray = mustIncludeLetters is null ? new List<char>() : mustIncludeLetters.ToList();
+
         while (maxIterations-- > 0)
         {
             var word = this.GetRandomWord(
                 minLength: knownCharacters.Length,
                 maxLength: knownCharacters.Length);
+
+            // check the skip words list
             if (skipWordsArray is not null && skipWordsArray.Contains(value: word)) continue;
+
+            // check the must include list
+            var allLetters = true;
+            foreach (var mustIncludeLetter in mustIncludeLettersArray)
+            {
+                if (!word.Contains(value: mustIncludeLetter))
+                {
+                    allLetters = false;
+                    break;
+                }
+            }
+            if (!allLetters) continue;
 
             var allMatch = true;
             for (var i = 0; i < knownCharacters.Length; i++)
