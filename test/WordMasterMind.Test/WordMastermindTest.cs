@@ -264,4 +264,24 @@ public class WordMasterMindTest
         WordMasterMindPlayer.ComputerGuess(mastermind: mastermind,
             turns: 1);
     }
+
+    [TestMethod]
+    public void TestSolvedLetters()
+    {
+        var expectedWord = "hello";
+        var scrabbleDictionary = GetScrabbleDictionary();
+        var mastermind = new Models.WordMasterMind(
+            minLength: expectedWord.Length,
+            maxLength: expectedWord.Length,
+            hardMode: false,
+            scrabbleDictionary: scrabbleDictionary,
+            secretWord: expectedWord);
+        Assert.AreEqual(
+            expected: expectedWord.Length,
+            actual: mastermind.WordLength);
+        // a guess of "weight" should register "e" as a solved letter, regardless of hardmode
+        var attempt = mastermind.Attempt(wordAttempt: "weigh");
+        Assert.IsTrue(
+            condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {false, true, false, false, false}));
+    }
 }
