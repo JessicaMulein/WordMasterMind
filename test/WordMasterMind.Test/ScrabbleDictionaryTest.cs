@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -51,5 +52,17 @@ public class ScrabbleDictionaryTest
             Assert.IsTrue(condition: word.Length >= minLength && word.Length <= maxLength);
             Assert.IsTrue(condition: scrabbleDictionary.IsWord(word: word));
         }
+    }
+
+    [TestMethod]
+    public void TestRandomWordExhaustion()
+    {
+        var scrabbleDictionary =
+            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        // there are no words of length 16 in the scrabble dictionary
+        var thrownException = Assert.ThrowsException<Exception>(action: () =>
+            scrabbleDictionary.GetRandomWord(minLength: 16, maxLength: 16));
+        Assert.AreEqual(expected: "Dictionary doesn't seem to have any words of the requested parameters",
+            actual: thrownException.Message);
     }
 }
