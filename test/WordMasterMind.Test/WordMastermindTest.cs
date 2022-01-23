@@ -93,6 +93,9 @@ public class WordMasterMindTest
         var secretWord = mastermind.SecretWord;
         // ReSharper disable once StringLiteralTypo
         var attempt = mastermind.Attempt(wordAttempt: "aeiou");
+        Assert.AreEqual(
+            expected: secretWord.Length,
+            actual: attempt.Count());
     }
 
     [TestMethod]
