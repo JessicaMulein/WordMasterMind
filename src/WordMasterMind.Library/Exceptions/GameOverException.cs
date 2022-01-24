@@ -8,6 +8,6 @@ public class GameOverException : Exception
 
     public GameOverException(bool solved = false) : base(message: solved ? SolvedText : GameOverText)
     {
-        Solved = solved;
+        this.Solved = solved;
     }
 }

@@ -46,12 +46,12 @@ a, .btn-link {
     z-index: 1000;
 }
 
-#blazor-error-ui .dismiss {
-    cursor: pointer;
-    position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
-}
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
 
 .blazor-error-boundary {
     background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
@@ -59,31 +59,32 @@ a, .btn-link {
     color: white;
 }
 
-.blazor-error-boundary::after {
-    content: "An error has occurred."
-}
+    .blazor-error-boundary::after {
+        content: "An error has occurred."
+    }
 
 /*From wordle*/
 /* Global Styles & Colors */
- :root {
-     --green: #6aaa64;
-     --darkendGreen: #538d4e;
-     --yellow: #c9b458;
-     --darkendYellow: #b59f3b;
-     --lightGray: #d8d8d8;
-     --gray: #86888a;
-     --darkGray: #939598;
-     --white: #fff;
-     --black: #212121;
-     /* Colorblind colors */
-     --orange: #f5793a;
-     --blue: #85c0f9;
-     font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
-     font-size: 16px;
-     --header-height: 50px;
-     --keyboard-height: 200px;
-     --game-max-width: 500px;
- }
+:root {
+    --green: #6aaa64;
+    --darkendGreen: #538d4e;
+    --yellow: #c9b458;
+    --darkendYellow: #b59f3b;
+    --lightGray: #d8d8d8;
+    --gray: #86888a;
+    --darkGray: #939598;
+    --white: #fff;
+    --black: #212121;
+    /* Colorblind colors */
+    --orange: #f5793a;
+    --blue: #85c0f9;
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    --header-height: 50px;
+    --keyboard-height: 200px;
+    --game-max-width: 500px;
+}
+
 /* Light theme colors */
 :root {
     --color-tone-1: #1a1a1b;
@@ -95,6 +96,7 @@ a, .btn-link {
     --color-tone-7: #ffffff;
     --opacity-50: rgba(255, 255, 255, 0.5);
 }
+
 /* Dark Theme Colors */
 .nightmode {
     --color-tone-1: #d7dadc;
@@ -106,11 +108,13 @@ a, .btn-link {
     --color-tone-7: #121213;
     --opacity-50: rgba(0, 0, 0, 0.5);
 }
+
 /* Constant colors and colors derived from theme */
 :root,
 .nightmode {
     --color-background: var(--color-tone-7);
 }
+
 :root {
     --color-present: var(--yellow);
     --color-correct: var(--green);
@@ -124,6 +128,7 @@ a, .btn-link {
     --key-bg-absent: var(--color-absent);
     --modal-content-bg: var(--color-tone-7);
 }
+
 .nightmode {
     --color-present: var(--darkendYellow);
     --color-correct: var(--darkendGreen);
@@ -137,6 +142,7 @@ a, .btn-link {
     --key-bg-absent: var(--color-absent);
     --modal-content-bg: var(--color-tone-7);
 }
+
 .colorblind {
     --color-correct: var(--orange);
     --color-present: var(--blue);
@@ -145,9 +151,11 @@ a, .btn-link {
     --key-bg-correct: var(--color-correct);
     --key-bg-absent: var(--color-absent);
 }
+
 html {
     height: 100%;
 }
+
 body {
     height: 100%;
     background-color: var(--color-background);

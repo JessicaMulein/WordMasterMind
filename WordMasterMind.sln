@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordMasterMind.Blazor", "src\WordMasterMind.Blazor\WordMasterMind.Blazor.csproj", "{D47E3FE9-ED16-4F15-978D-F708723EAD55}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordMasterMind.Test", "test\WordMasterMind.Test\WordMasterMind.Test.csproj", "{288F5014-54C7-444E-867D-51D5D7E0F073}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordMasterMind.Library", "src\WordMasterMind.Library\WordMasterMind.Library.csproj", "{22DD2315-7473-414D-ACD3-5E7DB8E74FF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordMasterMind.Library", "src\WordMasterMind.Library\WordMasterMind.Library.csproj", "{22DD2315-7473-414D-ACD3-5E7DB8E74FF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordMasterMind.Blazor", "src\WordMasterMind.Blazor\WordMasterMind.Blazor.csproj", "{456EDF1B-B42C-4F36-BAE3-E93664CB351E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D47E3FE9-ED16-4F15-978D-F708723EAD55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D47E3FE9-ED16-4F15-978D-F708723EAD55}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D47E3FE9-ED16-4F15-978D-F708723EAD55}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D47E3FE9-ED16-4F15-978D-F708723EAD55}.Release|Any CPU.Build.0 = Release|Any CPU
 		{288F5014-54C7-444E-867D-51D5D7E0F073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{288F5014-54C7-444E-867D-51D5D7E0F073}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{288F5014-54C7-444E-867D-51D5D7E0F073}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{22DD2315-7473-414D-ACD3-5E7DB8E74FF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22DD2315-7473-414D-ACD3-5E7DB8E74FF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22DD2315-7473-414D-ACD3-5E7DB8E74FF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{456EDF1B-B42C-4F36-BAE3-E93664CB351E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{456EDF1B-B42C-4F36-BAE3-E93664CB351E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{456EDF1B-B42C-4F36-BAE3-E93664CB351E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{456EDF1B-B42C-4F36-BAE3-E93664CB351E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

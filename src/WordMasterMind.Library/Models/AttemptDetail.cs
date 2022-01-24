@@ -9,10 +9,10 @@ public record AttemptDetail
 
     public AttemptDetail(int letterPosition, char letter, bool letterCorrect, bool positionCorrect)
     {
-        LetterPosition = letterPosition;
-        Letter = letter;
-        LetterCorrect = letterCorrect;
-        PositionCorrect = positionCorrect;
+        this.LetterPosition = letterPosition;
+        this.Letter = letter;
+        this.LetterCorrect = letterCorrect;
+        this.PositionCorrect = positionCorrect;
     }
 
     public override string ToString()

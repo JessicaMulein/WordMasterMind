@@ -9,7 +9,7 @@ public class InvalidLengthException : Exception
 
     public InvalidLengthException(int minLength, int maxLength) : base(message: MessageText)
     {
-        MinLength = minLength;
-        MaxLength = maxLength;
+        this.MinLength = minLength;
+        this.MaxLength = maxLength;
     }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "WordMasterMind",
-  "short_name": "WordMasterMind",
+  "name": "WordMasterMind.Blazor",
+  "short_name": "WordMasterMind.Blazor",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

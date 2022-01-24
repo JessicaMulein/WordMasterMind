@@ -1,53 +1,61 @@
 <section>
     <div class="instructions">
-      <p>Welcome to <strong>Word MasterMind</strong>!</p>
-      <p>Word Mastermind is a variation of <a href="https://en.wikipedia.org/wiki/Mastermind_(board_game)">Mastermind</a>,
-        popularized by the game Wordle, but with a few differences.</p>
-      <p>In Word Mastermind, you can choose any word length in the <a href="https://en.wikipedia.org/wiki/Scrabble">Scrabble</a> <a href="https://scrabble.merriam.com/">Dictionary</a></p>
-      <p>Words available in the dictionary range from 2 letters to 15 letters. Playing a 2 letter game is probably too
-        easy, but there seemed no reason to limit things.</p>
-      <p>Unlike Wordle, the number of tries varies with the word length.</p>
-      <ul>
-        <li>1 Attempt per letter in the secret word</li>
-        <li>1 additional Attempt normally, or 2 additional Attempts if you've selected <b>Hard Mode</b></li>
-      </ul>
-      <p>Therefore, a 3 letter word will give you 4 attempts, a 5 letter will give you 6 like Wordle, and a bonus try
-        for Hard Mode. A 15 letter word would give you 16 attempts.</p>
-      <p>Guess the word the Mastermind has in mind in within the number of tries.</p>
-      <p>Each guess must be a valid word of the correct length. Hit the enter button to submit.</p>
-      <p>After each guess, the color of the tiles will change to show how close your guess was to the word.</p>
-      <div class="examples">
-        <p><strong>Examples</strong></p>
-        <div class="example">
-          <div class="row">
-            <game-tile letter="w" evaluation="correct" reveal=""></game-tile>
-            <game-tile letter="e"></game-tile>
-            <game-tile letter="a"></game-tile>
-            <game-tile letter="r"></game-tile>
-            <game-tile letter="y"></game-tile>
-          </div>
-          <p>The letter <strong>W</strong> is in the word and in the correct spot.</p>
+        <p>Welcome to <strong>Word MasterMind</strong>!</p>
+        <p>
+            Word Mastermind is a variation of <a href="https://en.wikipedia.org/wiki/Mastermind_(board_game)">Mastermind</a>,
+            popularized by the game Wordle, but with a few differences.
+        </p>
+        <p>In Word Mastermind, you can choose any word length in the <a href="https://en.wikipedia.org/wiki/Scrabble">Scrabble</a> <a href="https://scrabble.merriam.com/">Dictionary</a></p>
+        <p>
+            Words available in the dictionary range from 2 letters to 15 letters. Playing a 2 letter game is probably too
+            easy, but there seemed no reason to limit things.
+        </p>
+        <p>Unlike Wordle, the number of tries varies with the word length.</p>
+        <ul>
+            <li>1 Attempt per letter in the secret word</li>
+            <li>1 additional Attempt normally, or 2 additional Attempts if you've selected <b>Hard Mode</b></li>
+        </ul>
+        <p>
+            Therefore, a 3 letter word will give you 4 attempts, a 5 letter will give you 6 like Wordle, and a bonus try
+            for Hard Mode. A 15 letter word would give you 16 attempts.
+        </p>
+        <p>Guess the word the Mastermind has in mind in within the number of tries.</p>
+        <p>Each guess must be a valid word of the correct length. Hit the enter button to submit.</p>
+        <p>After each guess, the color of the tiles will change to show how close your guess was to the word.</p>
+        <div class="examples">
+            <p>
+                <strong>Examples</strong>
+            </p>
+            <div class="example">
+                <div class="row">
+                    <game-tile letter="w" evaluation="correct" reveal=""></game-tile>
+                    <game-tile letter="e"></game-tile>
+                    <game-tile letter="a"></game-tile>
+                    <game-tile letter="r"></game-tile>
+                    <game-tile letter="y"></game-tile>
+                </div>
+                <p>The letter <strong>W</strong> is in the word and in the correct spot.</p>
+            </div>
+            <div class="example">
+                <div class="row">
+                    <game-tile letter="p"></game-tile>
+                    <game-tile letter="i" evaluation="present" reveal=""></game-tile>
+                    <game-tile letter="l"></game-tile>
+                    <game-tile letter="l"></game-tile>
+                    <game-tile letter="s"></game-tile>
+                </div>
+                <p>The letter <strong>I</strong> is in the word but in the wrong spot.</p>
+            </div>
+            <div class="example">
+                <div class="row">
+                    <game-tile letter="v"></game-tile>
+                    <game-tile letter="a"></game-tile>
+                    <game-tile letter="g"></game-tile>
+                    <game-tile letter="u" evaluation="absent" reveal=""></game-tile>
+                    <game-tile letter="e"></game-tile>
+                </div>
+                <p>The letter <strong>U</strong> is not in the word in any spot.</p>
+            </div>
         </div>
-        <div class="example">
-          <div class="row">
-            <game-tile letter="p"></game-tile>
-            <game-tile letter="i" evaluation="present" reveal=""></game-tile>
-            <game-tile letter="l"></game-tile>
-            <game-tile letter="l"></game-tile>
-            <game-tile letter="s"></game-tile>
-          </div>
-          <p>The letter <strong>I</strong> is in the word but in the wrong spot.</p>
-        </div>
-        <div class="example">
-          <div class="row">
-            <game-tile letter="v"></game-tile>
-            <game-tile letter="a"></game-tile>
-            <game-tile letter="g"></game-tile>
-            <game-tile letter="u" evaluation="absent" reveal=""></game-tile>
-            <game-tile letter="e"></game-tile>
-          </div>
-          <p>The letter <strong>U</strong> is not in the word in any spot.</p>
-        </div>
-      </div>
     </div>
-  </section>
+</section>

@@ -7,6 +7,6 @@ public class DebugModeException : Exception
 
     public DebugModeException(string paramName) : base(message: MessageText)
     {
-        ParamName = paramName;
+        this.ParamName = paramName;
     }
 }
