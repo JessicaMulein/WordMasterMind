@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordMasterMind.Exceptions;
+using WordMasterMind.Helpers;
 using WordMasterMind.Models;
 
 namespace WordMasterMind;
@@ -13,8 +14,6 @@ namespace WordMasterMind;
 [TestClass]
 public class WordMasterMindTest
 {
-    private const int StandardLength = 5;
-
     private static ScrabbleDictionary GetScrabbleDictionary()
     {
         return new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
@@ -69,13 +68,13 @@ public class WordMasterMindTest
         var scrabbleDictionary = GetScrabbleDictionary();
         var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             new Models.WordMasterMind(
-                minLength: StandardLength,
-                maxLength: StandardLength,
+                minLength: Constants.StandardLength,
+                maxLength: Constants.StandardLength,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 // secretWord is valid, but not long enough
                 secretWord: scrabbleDictionary.GetRandomWord(minLength: 3,
-                    maxLength: StandardLength - 1)));
+                    maxLength: Constants.StandardLength - 1)));
         Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
     }
@@ -86,13 +85,13 @@ public class WordMasterMindTest
         var scrabbleDictionary = GetScrabbleDictionary();
         var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             new Models.WordMasterMind(
-                minLength: StandardLength,
-                maxLength: StandardLength,
+                minLength: Constants.StandardLength,
+                maxLength: Constants.StandardLength,
                 hardMode: false,
                 scrabbleDictionary: scrabbleDictionary,
                 // secretWord is valid, but too long
-                secretWord: scrabbleDictionary.GetRandomWord(minLength: StandardLength + 1,
-                    maxLength: StandardLength + 1)));
+                secretWord: scrabbleDictionary.GetRandomWord(minLength: Constants.StandardLength + 1,
+                    maxLength: Constants.StandardLength + 1)));
         Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
     }
@@ -119,14 +118,14 @@ public class WordMasterMindTest
     {
         var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
-            minLength: StandardLength,
-            maxLength: StandardLength,
+            minLength: Constants.StandardLength,
+            maxLength: Constants.StandardLength,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary,
-            secretWord: scrabbleDictionary.GetRandomWord(minLength: StandardLength,
-                maxLength: StandardLength));
+            secretWord: scrabbleDictionary.GetRandomWord(minLength: Constants.StandardLength,
+                maxLength: Constants.StandardLength));
         Assert.AreEqual(
-            expected: StandardLength,
+            expected: Constants.StandardLength,
             actual: mastermind.WordLength);
         Assert.AreEqual(
             expected: false,
@@ -214,21 +213,21 @@ public class WordMasterMindTest
     {
         var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
-            minLength: StandardLength,
-            maxLength: StandardLength,
+            minLength: Constants.StandardLength,
+            maxLength: Constants.StandardLength,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
         Assert.AreEqual(
-            expected: StandardLength,
+            expected: Constants.StandardLength,
             actual: mastermind.WordLength);
         Assert.AreEqual(
             expected: false,
             actual: mastermind.HardMode);
         var secretWord = mastermind.SecretWord.ToUpperInvariant();
         Assert.AreEqual(
-            expected: StandardLength,
+            expected: Constants.StandardLength,
             actual: secretWord.Length);
-        var invalidSecretWord = "".PadLeft(totalWidth: StandardLength,
+        var invalidSecretWord = "".PadLeft(totalWidth: Constants.StandardLength,
             paddingChar: 'z');
         var thrownAssertion = Assert.ThrowsException<NotInDictionaryException>(action: () =>
             mastermind.Attempt(wordAttempt: invalidSecretWord));
@@ -272,12 +271,12 @@ public class WordMasterMindTest
     {
         var scrabbleDictionary = GetScrabbleDictionary();
         var mastermind = new Models.WordMasterMind(
-            minLength: StandardLength,
-            maxLength: StandardLength,
+            minLength: Constants.StandardLength,
+            maxLength: Constants.StandardLength,
             hardMode: false,
             scrabbleDictionary: scrabbleDictionary);
         Assert.AreEqual(
-            expected: StandardLength,
+            expected: Constants.StandardLength,
             actual: mastermind.WordLength);
         Assert.AreEqual(
             expected: false,
@@ -337,4 +336,7 @@ public class WordMasterMindTest
                     actual: attemptsForLength);
             }
     }
+
+    /* TODO: I'd like to have a test that verifies the SecretWord is only accessible when the game is complete,
+     * but the Test framework by default makes it impossible to test all of the paths without introducing more */
 }

@@ -8,10 +8,6 @@ namespace WordMasterMind.Models;
 
 public class WordMasterMind
 {
-    private const string GreenEmoji = "&#129001;";
-    private const string YellowEmoji = "&#129000;";
-    private const string BlackEmoji = "&#11035;";
-
     /// <summary>
     ///     Collection of attempts
     /// </summary>
@@ -105,12 +101,13 @@ public class WordMasterMind
 
     public bool Solved { get; private set; }
 
+    public bool GameOver => this.Solved || this.CurrentAttempt >= this.MaxAttempts;
 
     public string SecretWord
     {
         get
         {
-            if (!IsDebug) throw new DebugModeException(paramName: nameof(this.SecretWord));
+            if (!this.Solved && !IsDebug) throw new DebugModeException(paramName: nameof(this.SecretWord));
             return this._secretWord;
         }
     }
@@ -138,10 +135,10 @@ public class WordMasterMind
 
     public static string GetEmojiFromAttemptDetail(in AttemptDetail attemptDetail)
     {
-        var emojiColor = BlackEmoji;
-        if (attemptDetail.PositionCorrect) emojiColor = GreenEmoji;
+        var emojiColor = Constants.BlackEmoji;
+        if (attemptDetail.PositionCorrect) emojiColor = Constants.GreenEmoji;
 
-        else if (attemptDetail.LetterCorrect) emojiColor = YellowEmoji;
+        else if (attemptDetail.LetterCorrect) emojiColor = Constants.YellowEmoji;
 
         return GetEmojiFromConst(constValue: emojiColor);
     }
@@ -164,7 +161,7 @@ public class WordMasterMind
 
     public IEnumerable<AttemptDetail> Attempt(string wordAttempt)
     {
-        if (this.Solved || this.CurrentAttempt >= this.MaxAttempts) throw new GameOverException(solved: this.Solved);
+        if (this.GameOver) throw new GameOverException(solved: this.Solved);
 
         if (this.WordLength != wordAttempt.Length)
             throw new InvalidAttemptLengthException();
