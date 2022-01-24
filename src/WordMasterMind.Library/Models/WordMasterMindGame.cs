@@ -165,6 +165,17 @@ public class WordMasterMindGame
         }
     }
 
+    public char[] SolvedLettersAsChars
+    {
+        get
+        {
+            var solvedLetters = new char[this.WordLength];
+            for (var i = 0; i < this.WordLength; i++)
+                solvedLetters[i] = this._solvedLetters[i] ? this._secretWord[index: i] : ' ';
+            return solvedLetters;
+        }
+    }
+
     private static string GetEmojiFromConst(in string constValue)
     {
         return WebUtility.HtmlDecode(value: constValue);

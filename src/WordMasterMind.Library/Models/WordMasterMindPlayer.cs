@@ -4,49 +4,70 @@ namespace WordMasterMind.Library.Models;
 
 public static class WordMasterMindPlayer
 {
-    private static void UpdateAttemptMemory(ref char[] currentWordStatus, ref List<char> mustIncludeLetters,
-        in AttemptDetails attemptDetails)
+    /// <summary>
+    ///     The computer strategy starts with adieu if the game is 5 letters and it is not specifically disabled
+    /// </summary>
+    /// <param name="mastermind"></param>
+    /// <param name="turn"></param>
+    /// <param name="maximumDictionaryLookupAttemptsPerTry"></param>
+    /// <param name="excludeWords"></param>
+    /// <param name="mustIncludeLetters"></param>
+    /// <param name="noAdieu"></param>
+    /// <returns></returns>
+    public static string ComputerGuessWord(WordMasterMindGame mastermind,
+        int turn,
+        int maximumDictionaryLookupAttemptsPerTry = 1000,
+        IEnumerable<string>? excludeWords = null,
+        IEnumerable<char>? mustIncludeLetters = null,
+        bool noAdieu = false)
     {
-        foreach (var attemptDetail in attemptDetails)
-        {
-            if (!attemptDetail.LetterCorrect) continue;
-            if (attemptDetail.PositionCorrect) currentWordStatus[attemptDetail.LetterPosition] = attemptDetail.Letter;
-            if (!mustIncludeLetters.Contains(item: attemptDetail.Letter))
-                mustIncludeLetters.Add(item: attemptDetail.Letter);
-        }
+        if (turn == 1 && mastermind.WordLength == 5 && !noAdieu)
+            return "adieu".ToUpperInvariant();
+
+        return mastermind.WordDictionaryDictionary.FindWord(
+            knownCharacters: mastermind.SolvedLettersAsChars,
+            maxIterations: maximumDictionaryLookupAttemptsPerTry,
+            skipWords: excludeWords,
+            mustIncludeLetters: mustIncludeLetters);
     }
 
-    private static void AttemptAndUpdateMemory(in WordMasterMindGame mastermind, ref char[] currentWordStatus,
-        ref List<char> mustIncludeLetters, string wordAttempt)
-    {
-        var attempt = mastermind.Attempt(wordAttempt: wordAttempt);
-        UpdateAttemptMemory(
-            currentWordStatus: ref currentWordStatus,
-            mustIncludeLetters: ref mustIncludeLetters,
-            attemptDetails: attempt);
-    }
-
-    public static bool ComputerGuess(WordMasterMindGame mastermind, int turns = -1,
-        int maximumDictionaryLookupAttemptsPerTry = 1000)
+    /// <summary>
+    ///     Attempts to solve the current puzzle from whatever turn it is on.
+    /// </summary>
+    /// <param name="mastermind"></param>
+    /// <param name="turns"></param>
+    /// <param name="maximumDictionaryLookupAttemptsPerTry"></param>
+    /// <param name="noAdieu"></param>
+    /// <returns></returns>
+    /// <exception cref="GameOverException"></exception>
+    public static bool AttemptComputerSolve(WordMasterMindGame mastermind, int turns = -1,
+        int maximumDictionaryLookupAttemptsPerTry = 1000, bool noAdieu = false)
     {
         if (mastermind.Solved || mastermind.CurrentAttempt >= mastermind.MaxAttempts)
             throw new GameOverException(solved: mastermind.Solved);
 
-        var currentWordStatus = new char[mastermind.WordLength];
         var mustIncludeLetters = new List<char>();
         var triedWords = new List<string>();
+        var turn = 1;
         while (!mastermind.Solved && (turns == -1 || turns-- > 0))
         {
-            var computerGuess = mastermind.WordDictionaryDictionary.FindWord(
-                knownCharacters: currentWordStatus,
-                maxIterations: maximumDictionaryLookupAttemptsPerTry,
-                skipWords: triedWords);
-            triedWords.Add(item: computerGuess);
-            AttemptAndUpdateMemory(
+            var computerGuess = ComputerGuessWord(
+                turn: turn++,
                 mastermind: mastermind,
-                currentWordStatus: ref currentWordStatus,
-                mustIncludeLetters: ref mustIncludeLetters,
-                wordAttempt: computerGuess);
+                maximumDictionaryLookupAttemptsPerTry: maximumDictionaryLookupAttemptsPerTry,
+                excludeWords: triedWords,
+                mustIncludeLetters: mustIncludeLetters,
+                noAdieu: noAdieu);
+
+            triedWords.Add(item: computerGuess);
+
+            var attempt = mastermind.Attempt(wordAttempt: computerGuess);
+
+            // add all matched letters to the mustIncludeLetters list
+            // future word guesses must include these letters
+            attempt.Details
+                .Where(predicate: d => d.LetterCorrect)
+                .ToList().ForEach(action: d => { mustIncludeLetters.Add(item: d.Letter); });
         }
 
         return mastermind.Solved;

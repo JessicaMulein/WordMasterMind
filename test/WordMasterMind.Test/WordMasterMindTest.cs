@@ -196,7 +196,10 @@ public class WordMasterMindTest
                  hardMode: mastermind.HardMode);
              i++)
         {
-            var attempt = mastermind.Attempt(wordAttempt: incorrectWord);
+            WordMasterMindPlayer.AttemptComputerSolve(
+                mastermind: mastermind,
+                turns: 1);
+            var attempt = mastermind.Attempts.Last();
             TestAttempt(knownSecretWord: secretWord,
                 attemptDetails: attempt);
             Assert.AreEqual(
@@ -217,9 +220,10 @@ public class WordMasterMindTest
             actual: thrownException.Message);
 
         // our Computer player needs to cover this same case where the game is over for test coverage
-        var thrownGuessException = Assert.ThrowsException<GameOverException>(() => WordMasterMindPlayer.ComputerGuess(
-            mastermind: mastermind,
-            turns: 1));
+        var thrownGuessException = Assert.ThrowsException<GameOverException>(action: ()
+            => WordMasterMindPlayer.AttemptComputerSolve(
+                mastermind: mastermind,
+                turns: 1));
         Assert.IsFalse(condition: thrownGuessException.Solved);
         Assert.AreEqual(
             expected: GameOverException.GameOverText,
@@ -301,7 +305,7 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: false,
             actual: mastermind.HardMode);
-        WordMasterMindPlayer.ComputerGuess(mastermind: mastermind,
+        WordMasterMindPlayer.AttemptComputerSolve(mastermind: mastermind,
             turns: 1);
         Assert.AreEqual(
             expected: mastermind.CurrentAttempt,
