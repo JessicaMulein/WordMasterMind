@@ -158,6 +158,7 @@ public class WordMasterMindTest
             expected: false,
             actual: mastermind.HardMode);
         var attempt = mastermind.Attempt(wordAttempt: secretWord);
+        Assert.IsTrue(condition: mastermind.GameOver);
         Assert.IsTrue(condition: mastermind.Solved);
         TestAttempt(knownSecretWord: secretWord,
             attemptDetails: attempt);
@@ -205,6 +206,7 @@ public class WordMasterMindTest
                 actual: mastermind.Attempts.Count());
         }
 
+        Assert.IsTrue(condition: mastermind.GameOver);
         Assert.IsFalse(condition: mastermind.Solved);
         var thrownException =
             Assert.ThrowsException<GameOverException>(action: () => mastermind.Attempt(wordAttempt: "wrong"));
@@ -333,6 +335,7 @@ public class WordMasterMindTest
             actual: mastermind.Attempts.Count());
         Assert.IsTrue(
             condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {true, true, true, true, true}));
+        Assert.IsTrue(condition: mastermind.GameOver);
         Assert.IsTrue(condition: mastermind.Solved);
     }
 
