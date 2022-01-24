@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WordMasterMind.Library.Helpers;
 using WordMasterMind.Library.Models;
 
 namespace WordMasterMind.Test;
@@ -28,11 +29,15 @@ public class ScrabbleDictionaryTest
                 path2: fileName);
     }
 
+    private static WordDictionaryDictionary GetWordDictionary()
+    {
+        return new(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+    }
+
     [TestMethod]
     public void TestScrabbleDictionary()
     {
-        var scrabbleDictionary =
-            new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetWordDictionary();
 
         // Test word check
         Assert.IsTrue(condition: scrabbleDictionary.IsWord(word: "hello"));
@@ -69,8 +74,7 @@ public class ScrabbleDictionaryTest
     [TestMethod]
     public void TestRandomWordLengthUpperLimit()
     {
-        var scrabbleDictionary =
-            new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetWordDictionary();
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             scrabbleDictionary.GetRandomWord(minLength: scrabbleDictionary.LongestWordLength + 1,
                 maxLength: scrabbleDictionary.LongestWordLength + 1));
@@ -81,12 +85,35 @@ public class ScrabbleDictionaryTest
     [TestMethod]
     public void TestRandomWordLengthLowerLimit()
     {
-        var scrabbleDictionary =
-            new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        var scrabbleDictionary = GetWordDictionary();
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             scrabbleDictionary.GetRandomWord(minLength: scrabbleDictionary.ShortestWordLength - 1,
                 maxLength: scrabbleDictionary.ShortestWordLength - 1));
         Assert.AreEqual(expected: "minLength must be greater than or equal to the shortest word length",
             actual: thrownException.Message);
+    }
+
+    [TestMethod]
+    public void TestDailyWordGenerator()
+    {
+        var scrabbleDictionary = GetWordDictionary();
+
+        var dayOneWord = DailyWordGenerator.WordOfTheDay(
+            length: 5,
+            date: DailyWordGenerator.WordGeneratorEpoch,
+            dictionary: scrabbleDictionary);
+        Assert.AreEqual(
+            // ReSharper disable once StringLiteralTypo
+            expected: "AAHED",
+            actual: dayOneWord);
+
+        var oneYearWord = DailyWordGenerator.WordOfTheDay(
+            length: 5,
+            date: DailyWordGenerator.WordGeneratorEpoch.AddYears(value: 1),
+            dictionary: scrabbleDictionary);
+        Assert.AreEqual(
+            // ReSharper disable once StringLiteralTypo
+            expected: "PACAS",
+            actual: oneYearWord);
     }
 }

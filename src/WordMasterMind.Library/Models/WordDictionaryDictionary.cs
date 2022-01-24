@@ -144,6 +144,29 @@ public class WordDictionaryDictionary
         return FillDictionary(words: dictionaryWords);
     }
 
+    public int WordsForLength(int length)
+    {
+        return !this._wordsByLength
+            .ContainsKey(key: length)
+            ? 0
+            : this._wordsByLength[key: length].Count();
+    }
+
+    public string WordAtIndex(int length, int wordIndex)
+    {
+        if (!this._wordsByLength.ContainsKey(key: length))
+            throw new ArgumentOutOfRangeException(
+                paramName: nameof(length),
+                message: "No words of this length");
+
+        var words = this._wordsByLength[key: length].ToArray();
+        if (wordIndex < 0 || wordIndex >= words.Length)
+            throw new ArgumentOutOfRangeException(paramName: nameof(wordIndex),
+                message: "Word index out of range");
+
+        return words[wordIndex];
+    }
+
     /// <summary>
     ///     Returns whether the word is in the dictionary
     /// </summary>
