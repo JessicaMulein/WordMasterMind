@@ -202,6 +202,9 @@ public class WordMasterMindTest
             Assert.AreEqual(
                 expected: mastermind.CurrentAttempt,
                 actual: mastermind.Attempts.Count());
+            Assert.AreEqual(
+                expected: i + 1,
+                actual: attempt.AttemptNumber);
         }
 
         Assert.IsTrue(condition: mastermind.GameOver);
