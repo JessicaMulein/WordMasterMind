@@ -5,7 +5,7 @@ namespace WordMasterMind.Library.Models;
 public static class WordMasterMindPlayer
 {
     private static void UpdateAttemptMemory(ref char[] currentWordStatus, ref List<char> mustIncludeLetters,
-        in IEnumerable<AttemptDetail> attemptDetails)
+        in AttemptDetails attemptDetails)
     {
         foreach (var attemptDetail in attemptDetails)
         {
@@ -19,7 +19,7 @@ public static class WordMasterMindPlayer
     private static void AttemptAndUpdateMemory(in WordMasterMindGame mastermind, ref char[] currentWordStatus,
         ref List<char> mustIncludeLetters, string wordAttempt)
     {
-        var attempt = mastermind.Attempt(wordAttempt: wordAttempt).ToArray();
+        var attempt = mastermind.Attempt(wordAttempt: wordAttempt);
         UpdateAttemptMemory(
             currentWordStatus: ref currentWordStatus,
             mustIncludeLetters: ref mustIncludeLetters,

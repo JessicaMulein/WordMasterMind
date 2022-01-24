@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,7 +15,7 @@ public class WordMasterMindTest
 {
     private static WordDictionaryDictionary GetWordDictionary()
     {
-        return new(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        return new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
     }
 
     /// <summary>
@@ -44,9 +43,8 @@ public class WordMasterMindTest
     /// </summary>
     /// <param name="knownSecretWord"></param>
     /// <param name="attemptDetails"></param>
-    private static void TestAttempt(string knownSecretWord, IEnumerable<AttemptDetail> attemptDetails)
+    private static void TestAttempt(string knownSecretWord, AttemptDetails attemptDetails)
     {
-        attemptDetails = attemptDetails.ToArray();
         var positionIndex = 0;
         foreach (var position in attemptDetails)
         {

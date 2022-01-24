@@ -128,6 +128,43 @@ public class WordMasterMindGame
         }
     }
 
+    /// <summary>
+    ///     Game score. Higher is better.
+    /// </summary>
+    public int Score
+    {
+        get
+        {
+            // two points per attempt under maximum
+            var score = 2 * (this.MaxAttempts - this.CurrentAttempt);
+            // three points if the first time a letter is used, it is in the correct position
+            // one point for each new letter out of place
+            // one more point for a previously guessed letter when it is in the correct position
+            var newLetters = new List<char>();
+            foreach (var turn in this._attempts)
+            foreach (var attemptDetail in turn.Details)
+            {
+                var newLetter = !newLetters.Contains(item: attemptDetail.Letter);
+                if (attemptDetail.PositionCorrect && newLetter)
+                {
+                    score += 3;
+                    newLetters.Add(item: attemptDetail.Letter);
+                }
+                else if (attemptDetail.LetterCorrect && newLetter)
+                {
+                    score += 1;
+                    newLetters.Add(item: attemptDetail.Letter);
+                }
+                else if (attemptDetail.PositionCorrect && !newLetter)
+                {
+                    score += 1;
+                }
+            }
+
+            return score;
+        }
+    }
+
     private static string GetEmojiFromConst(in string constValue)
     {
         return WebUtility.HtmlDecode(value: constValue);
@@ -159,7 +196,7 @@ public class WordMasterMindGame
         return length + (hardMode ? 2 : 1);
     }
 
-    public IEnumerable<AttemptDetail> Attempt(string wordAttempt)
+    public AttemptDetails Attempt(string wordAttempt)
     {
         if (this.GameOver) throw new GameOverException(solved: this.Solved);
 
@@ -174,13 +211,15 @@ public class WordMasterMindGame
         // countAttemptLetterIndex is incremented each time the selector is fired, eg each letter
         var currentAttemptLetterIndex = 0;
         // the attempt hasn't been registered in the count yet
-        this._attempts[this.CurrentAttempt] = new AttemptDetails(details: wordAttempt
-            .Select(
-                selector: c => new AttemptDetail(
-                    letterPosition: currentAttemptLetterIndex,
-                    letter: c,
-                    letterCorrect: this._secretWord.Contains(value: c),
-                    positionCorrect: this._secretWord[index: currentAttemptLetterIndex++] == c)).ToArray());
+        this._attempts[this.CurrentAttempt] = new AttemptDetails(
+            attemptNumber: this.CurrentAttempt + 1,
+            details: wordAttempt
+                .Select(
+                    selector: c => new AttemptDetail(
+                        letterPosition: currentAttemptLetterIndex,
+                        letter: c,
+                        letterCorrect: this._secretWord.Contains(value: c),
+                        positionCorrect: this._secretWord[index: currentAttemptLetterIndex++] == c)).ToArray());
 
         // update solved letters array
         for (var i = 0; i < this.WordLength; i++)
@@ -202,43 +241,5 @@ public class WordMasterMindGame
 
         // return the current attempt's record and advance the counter
         return this._attempts[this.CurrentAttempt++];
-    }
-
-    /// <summary>
-    /// Game score. Higher is better.
-    /// </summary>
-    public int Score
-    {
-        get
-        {
-            // two points per attempt under maximum
-            var score = 2 * (this.MaxAttempts - this.CurrentAttempt);
-            // three points if the first time a letter is used, it is in the correct position
-            // one point for each new letter out of place
-            // one more point for a previously guessed letter when it is in the correct position
-            var newLetters = new List<char>();
-            foreach (var turn in this._attempts)
-            {
-                foreach (var attemptDetail in turn.Details)
-                {
-                    var newLetter = !newLetters.Contains(attemptDetail.Letter);
-                    if (attemptDetail.PositionCorrect && newLetter)
-                    {
-                        score += 3;
-                        newLetters.Add(item: attemptDetail.Letter);
-                    }
-                    else if (attemptDetail.LetterCorrect && newLetter)
-                    {
-                        score += 1;
-                        newLetters.Add(item: attemptDetail.Letter);
-                    } else if (attemptDetail.PositionCorrect && !newLetter)
-                    {
-                        score += 1;
-                    }
-                }
-            }
-
-            return score;
-        }
     }
 }
