@@ -14,9 +14,9 @@ namespace WordMasterMind.Test;
 [TestClass]
 public class WordMasterMindTest
 {
-    private static ScrabbleDictionary GetScrabbleDictionary()
+    private static WordDictionaryDictionary GetScrabbleDictionary()
     {
-        return new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        return new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
     }
 
     /// <summary>
@@ -161,6 +161,9 @@ public class WordMasterMindTest
         Assert.IsTrue(condition: mastermind.Solved);
         TestAttempt(knownSecretWord: secretWord,
             attemptDetails: attempt);
+        Assert.AreEqual(
+            expected: mastermind.CurrentAttempt,
+            actual: mastermind.Attempts.Count());
     }
 
     [TestMethod]
@@ -197,6 +200,9 @@ public class WordMasterMindTest
             var attempt = mastermind.Attempt(wordAttempt: incorrectWord);
             TestAttempt(knownSecretWord: secretWord,
                 attemptDetails: attempt);
+            Assert.AreEqual(
+                expected: mastermind.CurrentAttempt,
+                actual: mastermind.Attempts.Count());
         }
 
         Assert.IsFalse(condition: mastermind.Solved);
@@ -257,7 +263,9 @@ public class WordMasterMindTest
         var attempt = mastermind.Attempt(wordAttempt: "where");
         TestAttempt(knownSecretWord: mastermind.SecretWord,
             attemptDetails: attempt);
-
+        Assert.AreEqual(
+            expected: mastermind.CurrentAttempt,
+            actual: mastermind.Attempts.Count());
         // this should throw an exception because we've changed the 'w' to 't' in a locked position
         var thrownException =
             Assert.ThrowsException<HardModeException>(action: () => mastermind.Attempt(wordAttempt: "there"));
@@ -283,6 +291,9 @@ public class WordMasterMindTest
             actual: mastermind.HardMode);
         WordMasterMindPlayer.ComputerGuess(mastermind: mastermind,
             turns: 1);
+        Assert.AreEqual(
+            expected: mastermind.CurrentAttempt,
+            actual: mastermind.Attempts.Count());
     }
 
     [TestMethod]
@@ -307,6 +318,9 @@ public class WordMasterMindTest
         TestAttempt(
             knownSecretWord: mastermind.SecretWord,
             attemptDetails: attempt);
+        Assert.AreEqual(
+            expected: mastermind.CurrentAttempt,
+            actual: mastermind.Attempts.Count());
         Assert.IsTrue(
             condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {false, true, false, false, false}));
         // now let's solve it
@@ -314,6 +328,9 @@ public class WordMasterMindTest
         TestAttempt(
             knownSecretWord: mastermind.SecretWord,
             attemptDetails: attempt);
+        Assert.AreEqual(
+            expected: mastermind.CurrentAttempt,
+            actual: mastermind.Attempts.Count());
         Assert.IsTrue(
             condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {true, true, true, true, true}));
         Assert.IsTrue(condition: mastermind.Solved);

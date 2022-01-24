@@ -37,7 +37,7 @@ public static class WordMasterMindPlayer
         var triedWords = new List<string>();
         while (!mastermind.Solved && (turns == -1 || turns-- > 0))
         {
-            var computerGuess = mastermind.ScrabbleDictionary.FindWord(
+            var computerGuess = mastermind.WordDictionaryDictionary.FindWord(
                 knownCharacters: currentWordStatus,
                 maxIterations: maximumDictionaryLookupAttemptsPerTry,
                 skipWords: triedWords);

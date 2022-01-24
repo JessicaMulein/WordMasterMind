@@ -11,7 +11,7 @@ public class WordMasterMindGame
     /// <summary>
     ///     Collection of attempts
     /// </summary>
-    private readonly IEnumerable<AttemptDetail>[] _attempts;
+    private readonly AttemptDetails[] _attempts;
 
     /// <summary>
     ///     Current word being guessed. Randomly selected from the Scrabble dictionary.
@@ -34,7 +34,7 @@ public class WordMasterMindGame
     /// <summary>
     ///     Scrabble Dictionary to use
     /// </summary>
-    public readonly ScrabbleDictionary ScrabbleDictionary;
+    public readonly WordDictionaryDictionary WordDictionaryDictionary;
 
     /// <summary>
     ///     Length of the word to be guessed
@@ -42,14 +42,14 @@ public class WordMasterMindGame
     public readonly int WordLength;
 
     public WordMasterMindGame(int minLength, int maxLength, bool hardMode = false,
-        ScrabbleDictionary? scrabbleDictionary = null, string? secretWord = null)
+        WordDictionaryDictionary? scrabbleDictionary = null, string? secretWord = null)
     {
         this.Solved = false;
         this.CurrentAttempt = 0;
         this.HardMode = hardMode;
-        this.ScrabbleDictionary = scrabbleDictionary ??
-                                  new ScrabbleDictionary(); // use the provided dictionary, or use the default one which is stored locally
-        this._secretWord = (secretWord ?? this.ScrabbleDictionary.GetRandomWord(minLength: minLength,
+        this.WordDictionaryDictionary = scrabbleDictionary ??
+                                        new WordDictionaryDictionary(); // use the provided dictionary, or use the default one which is stored locally
+        this._secretWord = (secretWord ?? this.WordDictionaryDictionary.GetRandomWord(minLength: minLength,
             maxLength: maxLength)).ToUpperInvariant();
 
         Debug.Assert(condition: this._secretWord != null,
@@ -61,13 +61,13 @@ public class WordMasterMindGame
             throw new InvalidLengthException(minLength: minLength,
                 maxLength: maxLength);
 
-        if (!this.ScrabbleDictionary.IsWord(word: this._secretWord))
+        if (!this.WordDictionaryDictionary.IsWord(word: this._secretWord))
             throw new NotInDictionaryException();
 
         this.MaxAttempts = GetMaxAttemptsForLength(
             length: this.WordLength,
             hardMode: this.HardMode);
-        this._attempts = new IEnumerable<AttemptDetail>[this.MaxAttempts];
+        this._attempts = new AttemptDetails[this.MaxAttempts];
         this._solvedLetters = new bool[this.WordLength];
     }
 
@@ -97,7 +97,7 @@ public class WordMasterMindGame
     /// <summary>
     ///     Gets the attempts so far
     /// </summary>
-    public IEnumerable<IEnumerable<AttemptDetail>> Attempts => this._attempts.Take(count: this.CurrentAttempt);
+    public IEnumerable<AttemptDetails> Attempts => this._attempts[..this.CurrentAttempt];
 
     public bool Solved { get; private set; }
 
@@ -120,7 +120,7 @@ public class WordMasterMindGame
             for (var i = 0; i < this.CurrentAttempt; i++)
             {
                 stringBuilder.Append(
-                    value: string.Concat(values: this._attempts[i].Select(selector: a => a.ToString())));
+                    value: string.Concat(values: this._attempts[i].Details.Select(selector: a => a.ToString())));
                 stringBuilder.Append(value: '\n');
             }
 
@@ -168,23 +168,23 @@ public class WordMasterMindGame
 
         wordAttempt = wordAttempt.ToUpperInvariant();
 
-        if (!this.ScrabbleDictionary.IsWord(word: wordAttempt))
+        if (!this.WordDictionaryDictionary.IsWord(word: wordAttempt))
             throw new NotInDictionaryException();
 
         // countAttemptLetterIndex is incremented each time the selector is fired, eg each letter
         var currentAttemptLetterIndex = 0;
         // the attempt hasn't been registered in the count yet
-        this._attempts[this.CurrentAttempt] = wordAttempt
+        this._attempts[this.CurrentAttempt] = new AttemptDetails(details: wordAttempt
             .Select(
                 selector: c => new AttemptDetail(
                     letterPosition: currentAttemptLetterIndex,
                     letter: c,
                     letterCorrect: this._secretWord.Contains(value: c),
-                    positionCorrect: this._secretWord[index: currentAttemptLetterIndex++] == c)).ToArray();
+                    positionCorrect: this._secretWord[index: currentAttemptLetterIndex++] == c)).ToArray());
 
         // update solved letters array
         for (var i = 0; i < this.WordLength; i++)
-            this._solvedLetters[i] |= this._attempts[this.CurrentAttempt].ElementAt(index: i).PositionCorrect;
+            this._solvedLetters[i] |= this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).PositionCorrect;
 
         // the attempt hasn't been registered in the count yet, checking for being at least second turn
         if (this.HardMode && this.CurrentAttempt >= 1)

@@ -5,7 +5,11 @@ using System.Text.Json;
 
 namespace WordMasterMind.Library.Models;
 
-public class ScrabbleDictionary
+/// <summary>
+///     This is a Word Dictionary (word list/book) - dictionary (data structure) of words grouped by length.
+///     It is designed for small scale usage. It is not (yet) optimized for a multi-user host.
+/// </summary>
+public class WordDictionaryDictionary
 {
     /// <summary>
     ///     Unalterable collection of dictionary words, organized by length
@@ -32,7 +36,7 @@ public class ScrabbleDictionary
     /// </summary>
     /// <param name="dictionary"></param>
     /// <exception cref="Exception"></exception>
-    public ScrabbleDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null)
+    public WordDictionaryDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null)
     {
         if (dictionary is not null)
         {
@@ -89,7 +93,7 @@ public class ScrabbleDictionary
     ///     and passes it to the standard constructor
     /// </summary>
     /// <param name="words"></param>
-    public ScrabbleDictionary(IEnumerable<string> words) : this(dictionary: FillDictionary(words: words))
+    public WordDictionaryDictionary(IEnumerable<string> words) : this(dictionary: FillDictionary(words: words))
     {
     }
 
@@ -98,7 +102,7 @@ public class ScrabbleDictionary
     ///     It will get passed through FillDictionary and then the standard constructor
     /// </summary>
     /// <param name="pathToDictionaryJson"></param>
-    public ScrabbleDictionary(string pathToDictionaryJson) : this(
+    public WordDictionaryDictionary(string pathToDictionaryJson) : this(
         words: JsonSerializer.Deserialize<string[]>(json: string.Join(separator: "\n",
             value: File.ReadAllLines(path: pathToDictionaryJson))) ?? throw new InvalidOperationException())
     {

@@ -32,7 +32,7 @@ public class ScrabbleDictionaryTest
     public void TestScrabbleDictionary()
     {
         var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+            new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
 
         // Test word check
         Assert.IsTrue(condition: scrabbleDictionary.IsWord(word: "hello"));
@@ -70,7 +70,7 @@ public class ScrabbleDictionaryTest
     public void TestRandomWordLengthUpperLimit()
     {
         var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+            new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             scrabbleDictionary.GetRandomWord(minLength: scrabbleDictionary.LongestWordLength + 1,
                 maxLength: scrabbleDictionary.LongestWordLength + 1));
@@ -82,7 +82,7 @@ public class ScrabbleDictionaryTest
     public void TestRandomWordLengthLowerLimit()
     {
         var scrabbleDictionary =
-            new ScrabbleDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+            new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
             scrabbleDictionary.GetRandomWord(minLength: scrabbleDictionary.ShortestWordLength - 1,
                 maxLength: scrabbleDictionary.ShortestWordLength - 1));
