@@ -6,9 +6,9 @@
 -----
 Welcome to **Word MasterMind**!
 
-Word Mastermind is a variation of [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)), popularized by the game Wordle, but with a few differences.
+Word MasterMind is a variation of [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)), popularized by the game Wordle, but with a few differences.
 
-In Word Mastermind, you can guess and the game will choose a random word length in the [Scrabble](https://en.wikipedia.org/wiki/Scrabble) [Dictionary](https://scrabble.merriam.com/)
+In Word MasterMind, you can guess and the game will choose a random word length in the [Scrabble](https://en.wikipedia.org/wiki/Scrabble) [Dictionary](https://scrabble.merriam.com/)
 
 Words available in the dictionary range from 2 letters to 15 letters. Playing a 2 letter game is probably too easy, but there seemed no reason to limit things.
 
