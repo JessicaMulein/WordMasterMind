@@ -16,7 +16,11 @@ public static class DailyWordGenerator
     /// </summary>
     public const int Seed = 0xBEEF;
 
-    public static readonly DateTime WordGeneratorEpoch = new(year: 2022,
+    /// <summary>
+    /// WordMasterMind's Birthday
+    /// </summary>
+    public static readonly DateTime WordGeneratorEpoch = new(
+        year: 2022,
         month: 1,
         day: 22);
 
