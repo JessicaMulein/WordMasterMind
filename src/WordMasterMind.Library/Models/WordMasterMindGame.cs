@@ -203,4 +203,42 @@ public class WordMasterMindGame
         // return the current attempt's record and advance the counter
         return this._attempts[this.CurrentAttempt++];
     }
+
+    /// <summary>
+    /// Game score. Higher is better.
+    /// </summary>
+    public int Score
+    {
+        get
+        {
+            // two points per attempt under maximum
+            var score = 2 * (this.MaxAttempts - this.CurrentAttempt);
+            // three points if the first time a letter is used, it is in the correct position
+            // one point for each new letter out of place
+            // one more point for a previously guessed letter when it is in the correct position
+            var newLetters = new List<char>();
+            foreach (var turn in this._attempts)
+            {
+                foreach (var attemptDetail in turn.Details)
+                {
+                    var newLetter = !newLetters.Contains(attemptDetail.Letter);
+                    if (attemptDetail.PositionCorrect && newLetter)
+                    {
+                        score += 3;
+                        newLetters.Add(item: attemptDetail.Letter);
+                    }
+                    else if (attemptDetail.LetterCorrect && newLetter)
+                    {
+                        score += 1;
+                        newLetters.Add(item: attemptDetail.Letter);
+                    } else if (attemptDetail.PositionCorrect && !newLetter)
+                    {
+                        score += 1;
+                    }
+                }
+            }
+
+            return score;
+        }
+    }
 }
