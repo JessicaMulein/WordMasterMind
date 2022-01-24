@@ -212,6 +212,15 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: GameOverException.GameOverText,
             actual: thrownException.Message);
+
+        // our Computer player needs to cover this same case where the game is over for test coverage
+        var thrownGuessException = Assert.ThrowsException<GameOverException>(() => WordMasterMindPlayer.ComputerGuess(
+            mastermind: mastermind,
+            turns: 1));
+        Assert.IsFalse(condition: thrownGuessException.Solved);
+        Assert.AreEqual(
+            expected: GameOverException.GameOverText,
+            actual: thrownGuessException.Message);
     }
 
     [TestMethod]
