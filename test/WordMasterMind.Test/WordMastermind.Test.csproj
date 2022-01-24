@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -10,15 +10,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus" Version="34.0.1"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0"/>
-        <PackageReference Include="MSTest.TestAdapter" Version="2.2.7"/>
-        <PackageReference Include="MSTest.TestFramework" Version="2.2.7"/>
-        <PackageReference Include="coverlet.collector" Version="3.1.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\WordMasterMind\WordMasterMind.csproj"/>
+        <PackageReference Include="Bogus" Version="34.0.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
+        <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
+        <PackageReference Include="coverlet.collector" Version="3.1.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -28,4 +24,7 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\WordMasterMind.Library\WordMasterMind.Library.csproj" />
+    </ItemGroup>
 </Project>

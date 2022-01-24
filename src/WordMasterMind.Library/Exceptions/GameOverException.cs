@@ -1,4 +1,4 @@
-namespace WordMasterMind.Exceptions;
+namespace WordMasterMind.Library.Exceptions;
 
 public class GameOverException : Exception
 {
@@ -8,6 +8,6 @@ public class GameOverException : Exception
 
     public GameOverException(bool solved = false) : base(message: solved ? SolvedText : GameOverText)
     {
-        this.Solved = solved;
+        Solved = solved;
     }
 }

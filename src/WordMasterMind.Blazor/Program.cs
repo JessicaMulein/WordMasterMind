@@ -1,7 +1,7 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using WordMasterMind;
+using WordMasterMind.Blazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args: args);
 builder.RootComponents.Add<App>(selector: "#app");

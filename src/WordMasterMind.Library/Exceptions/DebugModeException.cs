@@ -1,4 +1,4 @@
-namespace WordMasterMind.Exceptions;
+namespace WordMasterMind.Library.Exceptions;
 
 public class DebugModeException : Exception
 {
@@ -7,6 +7,6 @@ public class DebugModeException : Exception
 
     public DebugModeException(string paramName) : base(message: MessageText)
     {
-        this.ParamName = paramName;
+        ParamName = paramName;
     }
 }

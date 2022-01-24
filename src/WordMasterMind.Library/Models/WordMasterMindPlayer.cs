@@ -1,6 +1,6 @@
-using WordMasterMind.Exceptions;
+using WordMasterMind.Library.Exceptions;
 
-namespace WordMasterMind.Models;
+namespace WordMasterMind.Library.Models;
 
 public static class WordMasterMindPlayer
 {
@@ -16,7 +16,7 @@ public static class WordMasterMindPlayer
         }
     }
 
-    private static void AttemptAndUpdateMemory(in WordMasterMind mastermind, ref char[] currentWordStatus,
+    private static void AttemptAndUpdateMemory(in WordMasterMindGame mastermind, ref char[] currentWordStatus,
         ref List<char> mustIncludeLetters, string wordAttempt)
     {
         var attempt = mastermind.Attempt(wordAttempt: wordAttempt).ToArray();
@@ -26,7 +26,7 @@ public static class WordMasterMindPlayer
             attemptDetails: attempt);
     }
 
-    public static bool ComputerGuess(WordMasterMind mastermind, int turns = -1,
+    public static bool ComputerGuess(WordMasterMindGame mastermind, int turns = -1,
         int maximumDictionaryLookupAttemptsPerTry = 1000)
     {
         if (mastermind.Solved || mastermind.CurrentAttempt >= mastermind.MaxAttempts)

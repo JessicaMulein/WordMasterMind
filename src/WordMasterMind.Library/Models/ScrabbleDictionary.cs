@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace WordMasterMind.Models;
+namespace WordMasterMind.Library.Models;
 
 public class ScrabbleDictionary
 {
@@ -37,7 +37,7 @@ public class ScrabbleDictionary
         if (dictionary is not null)
         {
             // set this as the instance dictionary, made immutable
-            this._wordsByLength = dictionary.ToImmutableDictionary();
+            _wordsByLength = dictionary.ToImmutableDictionary();
         }
         else
         {
@@ -47,8 +47,8 @@ public class ScrabbleDictionary
             // wait for the task to complete
             result.Wait();
             // set up the instance dictionary with the result, made immutable
-            this._wordsByLength = result.Result.ToImmutableDictionary();
-            if (this._wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
+            _wordsByLength = result.Result.ToImmutableDictionary();
+            if (_wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
         }
 
         // temporary array while we find lengths with more than one word
@@ -56,12 +56,12 @@ public class ScrabbleDictionary
         int? shortest = null;
         int? longest = null;
         // ensure we traverse the dictionary in length order rather than addition order
-        var dictionaryLengths = this._wordsByLength.Keys.ToArray();
+        var dictionaryLengths = _wordsByLength.Keys.ToArray();
         Array.Sort(array: dictionaryLengths);
         foreach (var key in dictionaryLengths)
         {
             // if there are no words of this length, skip it
-            if (!this._wordsByLength[key: key].Any()) continue;
+            if (!_wordsByLength[key: key].Any()) continue;
 
             // add to the list of valid word lengths with at least one word
             validWordLengths.Add(item: key);
@@ -74,14 +74,14 @@ public class ScrabbleDictionary
 
         Debug.Assert(condition: shortest != null,
             message: nameof(shortest) + " != null");
-        this.ShortestWordLength = shortest.Value;
+        ShortestWordLength = shortest.Value;
 
         Debug.Assert(condition: longest != null,
             message: nameof(longest) + " != null");
-        this.LongestWordLength = longest.Value;
+        LongestWordLength = longest.Value;
 
         // now that the array is final, set it as the instance variable
-        this.ValidWordLengths = validWordLengths.ToImmutableArray();
+        ValidWordLengths = validWordLengths.ToImmutableArray();
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public class ScrabbleDictionary
                 dictionary[key: wordLength] = dictionary[key: wordLength].Append(element: word.ToUpperInvariant());
             else
                 dictionary.Add(key: wordLength,
-                    value: new[] {word.ToUpperInvariant()});
+                    value: new[] { word.ToUpperInvariant() });
         }
 
         return dictionary;
@@ -148,8 +148,8 @@ public class ScrabbleDictionary
     public bool IsWord(string word)
     {
         var length = word.Length;
-        return this._wordsByLength.ContainsKey(key: length) &&
-               this._wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
+        return _wordsByLength.ContainsKey(key: length) &&
+               _wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
     }
 
     /// <summary>
@@ -165,10 +165,10 @@ public class ScrabbleDictionary
         if (minLength > maxLength || maxLength < minLength)
             throw new ArgumentException(message: "minLength must be less than or equal to maxLength");
 
-        if (minLength < this.ShortestWordLength)
+        if (minLength < ShortestWordLength)
             throw new ArgumentException(message: "minLength must be greater than or equal to the shortest word length");
 
-        if (maxLength > this.LongestWordLength)
+        if (maxLength > LongestWordLength)
             throw new ArgumentException(message: "maxLength must be less than or equal to the longest word length");
 
         var random = new Random();
@@ -195,8 +195,8 @@ public class ScrabbleDictionary
             // set up a variable to contain a reference the dictionary entry for the length
             IEnumerable<string> wordsForLength;
             // if the dictionary does not contain any words of length, or the length had an empty array, loop again
-            if (!this._wordsByLength.ContainsKey(key: length) ||
-                !(wordsForLength = this._wordsByLength[key: length]).Any())
+            if (!_wordsByLength.ContainsKey(key: length) ||
+                !(wordsForLength = _wordsByLength[key: length]).Any())
             {
                 // there is no point to continue looping if min and max are locked to a value
                 if (nonRandomLength)
@@ -227,11 +227,11 @@ public class ScrabbleDictionary
     public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null,
         IEnumerable<char>? mustIncludeLetters = null)
     {
-        if (knownCharacters.Length < this.ShortestWordLength)
+        if (knownCharacters.Length < ShortestWordLength)
             throw new ArgumentException(
                 message: "knownCharacters array length must be greater than or equal to the shortest word length");
 
-        if (knownCharacters.Length > this.LongestWordLength)
+        if (knownCharacters.Length > LongestWordLength)
             throw new ArgumentException(
                 message: "knownCharacters array length must be less than or equal to the longest word length");
 
@@ -240,7 +240,7 @@ public class ScrabbleDictionary
 
         while (maxIterations-- > 0)
         {
-            var word = this.GetRandomWord(
+            var word = GetRandomWord(
                 minLength: knownCharacters.Length,
                 maxLength: knownCharacters.Length);
 

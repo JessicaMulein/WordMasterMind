@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WordMasterMind.Models;
+using WordMasterMind.Library.Models;
 
-namespace WordMasterMind;
+namespace WordMasterMind.Test;
 
 [TestClass]
 public class ScrabbleDictionaryTest

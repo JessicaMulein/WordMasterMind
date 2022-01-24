@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace WordMasterMind.Helpers;
+namespace WordMasterMind.Library.Helpers;
 
 public static class UnitTestDetector
 {

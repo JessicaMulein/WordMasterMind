@@ -1,4 +1,4 @@
-namespace WordMasterMind.Models;
+namespace WordMasterMind.Library.Models;
 
 public record AttemptDetail
 {
@@ -9,14 +9,14 @@ public record AttemptDetail
 
     public AttemptDetail(int letterPosition, char letter, bool letterCorrect, bool positionCorrect)
     {
-        this.LetterPosition = letterPosition;
-        this.Letter = letter;
-        this.LetterCorrect = letterCorrect;
-        this.PositionCorrect = positionCorrect;
+        LetterPosition = letterPosition;
+        Letter = letter;
+        LetterCorrect = letterCorrect;
+        PositionCorrect = positionCorrect;
     }
 
     public override string ToString()
     {
-        return WordMasterMind.GetEmojiFromAttemptDetail(attemptDetail: this);
+        return WordMasterMindGame.GetEmojiFromAttemptDetail(attemptDetail: this);
     }
 }

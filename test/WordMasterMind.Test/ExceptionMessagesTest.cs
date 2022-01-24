@@ -1,9 +1,9 @@
 using System;
 using Bogus;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WordMasterMind.Exceptions;
+using WordMasterMind.Library.Exceptions;
 
-namespace WordMasterMind;
+namespace WordMasterMind.Test;
 
 [TestClass]
 public class ExceptionMessagesTest

@@ -1,4 +1,4 @@
-namespace WordMasterMind.Exceptions;
+namespace WordMasterMind.Library.Exceptions;
 
 public class InvalidLengthException : Exception
 {
@@ -9,7 +9,7 @@ public class InvalidLengthException : Exception
 
     public InvalidLengthException(int minLength, int maxLength) : base(message: MessageText)
     {
-        this.MinLength = minLength;
-        this.MaxLength = maxLength;
+        MinLength = minLength;
+        MaxLength = maxLength;
     }
 }

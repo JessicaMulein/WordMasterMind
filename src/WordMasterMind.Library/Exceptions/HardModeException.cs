@@ -1,4 +1,4 @@
-namespace WordMasterMind.Exceptions;
+namespace WordMasterMind.Library.Exceptions;
 
 public class HardModeException : Exception
 {
