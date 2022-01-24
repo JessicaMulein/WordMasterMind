@@ -1,0 +1,35 @@
+<div id="game">
+    <header>
+        <div class="menu">
+            <button id="help-button" class="icon" aria-label="help">
+                <game-icon icon="help"></game-icon>
+            </button>
+        </div>
+        <div class="title">
+            Word MasterMind
+        </div>
+        <div class="menu">
+            <button id="statistics-button" class="icon" aria-label="statistics">
+                <game-icon icon="statistics"></game-icon>
+            </button>
+            <button id="settings-button" class="icon" aria-label="settings">
+                <game-icon icon="settings"></game-icon>
+            </button>
+        </div>
+    </header>
+    <div id="board-container">
+        <div id="board" style="width: 350px; height: 420px;">
+            <game-row letters="" length="5"></game-row>
+            <game-row letters="" length="5"></game-row>
+            <game-row letters="" length="5"></game-row>
+            <game-row letters="" length="5"></game-row>
+            <game-row letters="" length="5"></game-row>
+            <game-row letters="" length="5"></game-row>
+        </div>
+    </div>
+    <game-keyboard></game-keyboard>
+    <game-modal></game-modal>
+    <game-page></game-page>
+    <div class="toaster" id="game-toaster"></div>
+    <div class="toaster" id="system-toaster"></div>
+</div>
