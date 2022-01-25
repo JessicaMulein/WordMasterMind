@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
+using WordMasterMind.Library.Exceptions;
 
 namespace WordMasterMind.Library.Models;
 
@@ -11,6 +12,11 @@ namespace WordMasterMind.Library.Models;
 /// </summary>
 public class WordDictionaryDictionary
 {
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        AllowTrailingCommas = true
+    };
+
     /// <summary>
     ///     Unalterable collection of dictionary words, organized by length
     /// </summary>
@@ -103,8 +109,10 @@ public class WordDictionaryDictionary
     /// </summary>
     /// <param name="pathToDictionaryJson"></param>
     public WordDictionaryDictionary(string pathToDictionaryJson) : this(
-        words: JsonSerializer.Deserialize<string[]>(json: string.Join(separator: "\n",
-            value: File.ReadAllLines(path: pathToDictionaryJson))) ?? throw new InvalidOperationException())
+        words: JsonSerializer.Deserialize<string[]>(
+            json: string.Join(separator: "\n",
+                value: File.ReadAllLines(path: pathToDictionaryJson)),
+            options: _jsonSerializerOptions) ?? throw new InvalidOperationException())
     {
     }
 
@@ -144,6 +152,72 @@ public class WordDictionaryDictionary
         return FillDictionary(words: dictionaryWords);
     }
 
+
+    /// <summary>
+    ///     Save the dictionary to a binary encoded file
+    /// </summary>
+    /// <param name="outputFilename"></param>
+    /// <exception cref="FileAlreadyExistsException"></exception>
+    public void SerializeLengthDictionary(string outputFilename)
+    {
+        if (File.Exists(path: outputFilename))
+            throw new FileAlreadyExistsException(message: $"File already exists: {outputFilename}");
+
+        using var stream = new StreamWriter(path: outputFilename);
+        var writer = new BinaryWriter(output: stream.BaseStream);
+        writer.Write(value: this._wordsByLength.Count);
+        foreach (var kvp in this._wordsByLength)
+        {
+            writer.Write(value: kvp.Key);
+            writer.Write(value: kvp.Value.Count());
+            foreach (var word in kvp.Value) writer.Write(value: word);
+        }
+
+        writer.Flush();
+        stream.Flush();
+        stream.Close();
+    }
+
+    /// <summary>
+    ///     Read a binary encoded file and re-create a sorted dictionary from it
+    /// </summary>
+    /// <param name="inputFilename"></param>
+    /// <returns></returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    private static WordDictionaryDictionary LoadDictionaryFromSerializedLengthDictionary(string inputFilename)
+    {
+        if (!File.Exists(path: inputFilename))
+            throw new FileNotFoundException(message: "File not found",
+                fileName: inputFilename);
+
+        var stream = new StreamReader(path: inputFilename);
+        var reader = new BinaryReader(input: stream.BaseStream);
+
+        var count = reader.ReadInt32();
+        var dictionary = new Dictionary<int, IEnumerable<string>>(capacity: count);
+        for (var n = 0; n < count; n++)
+        {
+            var key = reader.ReadInt32();
+            var wordCount = reader.ReadInt32();
+            var words = new List<string>(capacity: wordCount);
+            for (var i = 0; i < wordCount; i++)
+            {
+                var value = reader.ReadString();
+                words.Add(item: value);
+            }
+
+            dictionary.Add(key: key,
+                value: words);
+        }
+
+        return new WordDictionaryDictionary(dictionary: dictionary);
+    }
+
+    /// <summary>
+    ///     Returns the number of words in the dictionary for a given word length
+    /// </summary>
+    /// <param name="length"></param>
+    /// <returns></returns>
     public int WordsForLength(int length)
     {
         return !this._wordsByLength
@@ -152,6 +226,13 @@ public class WordDictionaryDictionary
             : this._wordsByLength[key: length].Count();
     }
 
+    /// <summary>
+    ///     Returns the word at the given array index for a given word length
+    /// </summary>
+    /// <param name="length"></param>
+    /// <param name="wordIndex"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public string WordAtIndex(int length, int wordIndex)
     {
         if (!this._wordsByLength.ContainsKey(key: length))
@@ -251,6 +332,16 @@ public class WordDictionaryDictionary
         throw new Exception(message: "Dictionary doesn't seem to have any words of the requested parameters");
     }
 
+    /// <summary>
+    ///     Attempts to find a word in the dictionary given some additional constraints
+    /// </summary>
+    /// <param name="knownCharacters"></param>
+    /// <param name="maxIterations"></param>
+    /// <param name="skipWords"></param>
+    /// <param name="mustIncludeLetters"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="Exception"></exception>
     public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null,
         IEnumerable<char>? mustIncludeLetters = null)
     {
