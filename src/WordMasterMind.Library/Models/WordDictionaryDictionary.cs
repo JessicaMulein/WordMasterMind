@@ -197,8 +197,9 @@ public class WordDictionaryDictionary
         foreach (var (key, value) in this._wordsByLength)
         {
             writer.Write(value: key);
-            writer.Write(value: value.Count());
-            foreach (var word in value)
+            var words = value.ToArray();
+            writer.Write(value: words.Length);
+            foreach (var word in words)
             {
                 wordCount++;
                 writer.Write(value: word);
