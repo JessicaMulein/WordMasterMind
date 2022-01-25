@@ -17,6 +17,8 @@ public class WordDictionaryDictionary
         AllowTrailingCommas = true
     };
 
+    private readonly Dictionary<int, int> _wordCountByLength;
+
     /// <summary>
     ///     Unalterable collection of dictionary words, organized by length
     /// </summary>
@@ -67,6 +69,7 @@ public class WordDictionaryDictionary
             if (this._wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
         }
 
+        var wordCountByLength = new Dictionary<int, int>();
         // temporary array while we find lengths with more than one word
         var validWordLengths = new List<int>();
         int? shortest = null;
@@ -74,19 +77,30 @@ public class WordDictionaryDictionary
         // ensure we traverse the dictionary in length order rather than addition order
         var dictionaryLengths = this._wordsByLength.Keys.ToArray();
         Array.Sort(array: dictionaryLengths);
-        foreach (var key in dictionaryLengths)
+        var totalWords = 0;
+        foreach (var length in dictionaryLengths)
         {
             // if there are no words of this length, skip it
-            if (!this._wordsByLength[key: key].Any()) continue;
+            if (!this._wordsByLength[key: length].Any()) continue;
 
             // add to the list of valid word lengths with at least one word
-            validWordLengths.Add(item: key);
+            validWordLengths.Add(item: length);
 
-            shortest ??= key;
+            var wordsForLength = this._wordsByLength[key: length].Count();
+            wordCountByLength.Add(
+                key: length,
+                value: wordsForLength);
+
+            totalWords += wordsForLength;
+
+            shortest ??= length;
 
             // let this replace every time, the final value will be the longest
-            longest = key;
+            longest = length;
         }
+
+        this.WordCount = totalWords;
+        this._wordCountByLength = wordCountByLength;
 
         Debug.Assert(condition: shortest != null,
             message: nameof(shortest) + " != null");
@@ -98,11 +112,6 @@ public class WordDictionaryDictionary
 
         // now that the array is final, set it as the instance variable
         this.ValidWordLengths = validWordLengths.ToImmutableArray();
-
-        // do the expensive computation once
-        this.WordLengths = this.LiveWordLengths;
-        // must have WordLengths filled in before this
-        this.WordCount = this.LiveWordCount;
     }
 
     /// <summary>
@@ -127,21 +136,6 @@ public class WordDictionaryDictionary
             options: JsonSerializerOptions) ?? throw new InvalidOperationException())
     {
     }
-
-    private IEnumerable<int> LiveWordLengths
-    {
-        get
-        {
-            var lengths = this._wordsByLength
-                .Keys
-                .Where(predicate: length => this.WordsForLength(length: length) > 0)
-                .ToArray();
-            Array.Sort(array: lengths);
-            return lengths;
-        }
-    }
-
-    private int LiveWordCount => this.WordLengths.Sum(selector: this.WordsForLength);
 
     /// <summary>
     ///     Helper method to make a dictionary organized by lengths from a simple array of words
@@ -254,10 +248,10 @@ public class WordDictionaryDictionary
     /// <returns></returns>
     public int WordsForLength(int length)
     {
-        return !this._wordsByLength
+        return !this._wordCountByLength
             .ContainsKey(key: length)
             ? 0
-            : this._wordsByLength[key: length].Count();
+            : this._wordCountByLength[key: length];
     }
 
     /// <summary>
