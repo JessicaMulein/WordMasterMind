@@ -31,7 +31,7 @@ public class ScrabbleDictionaryTest
 
     private static WordDictionaryDictionary GetWordDictionary()
     {
-        return new(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        return new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
     }
 
     [TestMethod]

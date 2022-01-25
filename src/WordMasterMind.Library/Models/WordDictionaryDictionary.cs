@@ -12,7 +12,7 @@ namespace WordMasterMind.Library.Models;
 /// </summary>
 public class WordDictionaryDictionary
 {
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
         AllowTrailingCommas = true
     };
@@ -35,7 +35,13 @@ public class WordDictionaryDictionary
     /// <summary>
     ///     Word lengths known to have at least one word
     /// </summary>
+    // ReSharper disable once MemberCanBePrivate.Global
     public readonly IEnumerable<int> ValidWordLengths;
+
+    public readonly int WordCount;
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public readonly IEnumerable<int> WordLengths;
 
     /// <summary>
     ///     Standard constructor takes a dictionary of strings, organized by length
@@ -92,6 +98,11 @@ public class WordDictionaryDictionary
 
         // now that the array is final, set it as the instance variable
         this.ValidWordLengths = validWordLengths.ToImmutableArray();
+
+        // do the expensive computation once
+        this.WordLengths = this.LiveWordLengths;
+        // must have WordLengths filled in before this
+        this.WordCount = this.LiveWordCount;
     }
 
     /// <summary>
@@ -99,6 +110,7 @@ public class WordDictionaryDictionary
     ///     and passes it to the standard constructor
     /// </summary>
     /// <param name="words"></param>
+    // ReSharper disable once MemberCanBePrivate.Global
     public WordDictionaryDictionary(IEnumerable<string> words) : this(dictionary: FillDictionary(words: words))
     {
     }
@@ -112,9 +124,24 @@ public class WordDictionaryDictionary
         words: JsonSerializer.Deserialize<string[]>(
             json: string.Join(separator: "\n",
                 value: File.ReadAllLines(path: pathToDictionaryJson)),
-            options: _jsonSerializerOptions) ?? throw new InvalidOperationException())
+            options: JsonSerializerOptions) ?? throw new InvalidOperationException())
     {
     }
+
+    private IEnumerable<int> LiveWordLengths
+    {
+        get
+        {
+            var lengths = this._wordsByLength
+                .Keys
+                .Where(predicate: length => this.WordsForLength(length: length) > 0)
+                .ToArray();
+            Array.Sort(array: lengths);
+            return lengths;
+        }
+    }
+
+    private int LiveWordCount => this.WordLengths.Sum(selector: this.WordsForLength);
 
     /// <summary>
     ///     Helper method to make a dictionary organized by lengths from a simple array of words
@@ -158,24 +185,30 @@ public class WordDictionaryDictionary
     /// </summary>
     /// <param name="outputFilename"></param>
     /// <exception cref="FileAlreadyExistsException"></exception>
-    public void SerializeLengthDictionary(string outputFilename)
+    public int SerializeLengthDictionary(string outputFilename)
     {
         if (File.Exists(path: outputFilename))
             throw new FileAlreadyExistsException(message: $"File already exists: {outputFilename}");
 
+        var wordCount = 0;
         using var stream = new StreamWriter(path: outputFilename);
         var writer = new BinaryWriter(output: stream.BaseStream);
         writer.Write(value: this._wordsByLength.Count);
-        foreach (var kvp in this._wordsByLength)
+        foreach (var (key, value) in this._wordsByLength)
         {
-            writer.Write(value: kvp.Key);
-            writer.Write(value: kvp.Value.Count());
-            foreach (var word in kvp.Value) writer.Write(value: word);
+            writer.Write(value: key);
+            writer.Write(value: value.Count());
+            foreach (var word in value)
+            {
+                wordCount++;
+                writer.Write(value: word);
+            }
         }
 
         writer.Flush();
         stream.Flush();
         stream.Close();
+        return wordCount;
     }
 
     /// <summary>
@@ -184,7 +217,7 @@ public class WordDictionaryDictionary
     /// <param name="inputFilename"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    private static WordDictionaryDictionary LoadDictionaryFromSerializedLengthDictionary(string inputFilename)
+    public static WordDictionaryDictionary LoadDictionaryFromSerializedLengthDictionary(string inputFilename)
     {
         if (!File.Exists(path: inputFilename))
             throw new FileNotFoundException(message: "File not found",
@@ -366,27 +399,13 @@ public class WordDictionaryDictionary
             if (skipWordsArray is not null && skipWordsArray.Contains(value: word)) continue;
 
             // check the must include list
-            var allLetters = true;
-            foreach (var mustIncludeLetter in mustIncludeLettersArray)
-                if (!word.Contains(value: mustIncludeLetter))
-                {
-                    allLetters = false;
-                    break;
-                }
+            var allLetters =
+                mustIncludeLettersArray.All(predicate: mustIncludeLetter => word.Contains(value: mustIncludeLetter));
 
             if (!allLetters) continue;
 
-            var allMatch = true;
-            for (var i = 0; i < knownCharacters.Length; i++)
-            {
-                if (knownCharacters[i] == '\0' || knownCharacters[i] == ' ') continue;
-
-                if (word[index: i] != knownCharacters[i])
-                {
-                    allMatch = false;
-                    break;
-                }
-            }
+            var allMatch = !knownCharacters.Where(predicate: (c, i) => c != '\0' && c != ' ' && word[index: i] != c)
+                .Any();
 
             if (allMatch)
                 return word;

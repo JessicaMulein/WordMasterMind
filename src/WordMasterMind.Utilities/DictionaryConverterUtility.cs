@@ -21,6 +21,7 @@ public static class DictionaryConverterUtility
         using var streamWriter = new StreamWriter(path: outputTextFilename,
             append: false);
         streamWriter.Write(value: "[\n");
+        var linesProcessed = 0;
         while (!streamReader.EndOfStream)
         {
             var newWord = streamReader.ReadLine();
@@ -31,6 +32,8 @@ public static class DictionaryConverterUtility
                 Console.WriteLine(value: $"Word {newWord} is too long. Aborting.");
                 return false;
             }
+
+            linesProcessed++;
 
             newWord = newWord.ToUpperInvariant();
 
@@ -48,6 +51,10 @@ public static class DictionaryConverterUtility
         streamWriter.Write(value: "]\n");
         streamWriter.Flush();
         streamWriter.Close();
+
+        Console.WriteLine(format: "Processed {0} lines.",
+            arg0: linesProcessed);
+
         return true;
     }
 
@@ -88,8 +95,11 @@ public static class DictionaryConverterUtility
             return result ? 0 : 1;
 
         var dictionary = new WordDictionaryDictionary(pathToDictionaryJson: jsonOutputFile);
-        dictionary.SerializeLengthDictionary(outputFilename: binaryOutputFile);
-
+        Console.WriteLine(format: "Dictionary contains {0} words.",
+            arg0: dictionary.WordCount);
+        var wordsAdded = dictionary.SerializeLengthDictionary(outputFilename: binaryOutputFile);
+        Console.WriteLine(format: "Serialized {0} words to file",
+            arg0: wordsAdded);
         return result ? 0 : 1;
     }
 }
