@@ -42,9 +42,6 @@ public class WordDictionaryDictionary
 
     public readonly int WordCount;
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public readonly IEnumerable<int> WordLengths;
-
     /// <summary>
     ///     Standard constructor takes a dictionary of strings, organized by length
     /// </summary>
