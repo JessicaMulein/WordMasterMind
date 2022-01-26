@@ -15,7 +15,8 @@ public class WordMasterMindTest
 {
     private static WordDictionaryDictionary GetWordDictionary()
     {
-        return new WordDictionaryDictionary(pathToDictionaryJson: GetTestRoot(fileName: "scrabble-dictionary.json"));
+        return WordDictionaryDictionary.NewFromSerializedLengthDictionary(
+            inputFilename: GetTestRoot(fileName: "scrabble-dictionary.bin"));
     }
 
     /// <summary>

@@ -122,19 +122,6 @@ public class WordDictionaryDictionary
     }
 
     /// <summary>
-    ///     This constructor creates a list of words from a JSON file with an array of strings containing the words
-    ///     It will get passed through FillDictionary and then the standard constructor
-    /// </summary>
-    /// <param name="pathToDictionaryJson"></param>
-    public WordDictionaryDictionary(string pathToDictionaryJson) : this(
-        words: JsonSerializer.Deserialize<string[]>(
-            json: string.Join(separator: "\n",
-                value: File.ReadAllLines(path: pathToDictionaryJson)),
-            options: JsonSerializerOptions) ?? throw new InvalidOperationException())
-    {
-    }
-
-    /// <summary>
     ///     Helper method to make a dictionary organized by lengths from a simple array of words
     /// </summary>
     /// <param name="words"></param>
@@ -170,7 +157,6 @@ public class WordDictionaryDictionary
         return FillDictionary(words: dictionaryWords);
     }
 
-
     /// <summary>
     ///     Save the dictionary to a binary encoded file
     /// </summary>
@@ -196,6 +182,7 @@ public class WordDictionaryDictionary
                 writer.Write(value: word);
             }
         }
+
         writer.Flush();
 
         return wordCount;
@@ -207,7 +194,7 @@ public class WordDictionaryDictionary
     /// <param name="inputFilename"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public static WordDictionaryDictionary LoadDictionaryFromSerializedLengthDictionary(string inputFilename)
+    public static WordDictionaryDictionary NewFromSerializedLengthDictionary(string inputFilename)
     {
         if (!File.Exists(path: inputFilename))
             throw new FileNotFoundException(message: "File not found",
@@ -232,10 +219,25 @@ public class WordDictionaryDictionary
             dictionary.Add(key: key,
                 value: words);
         }
+
         reader.Close();
         stream.Close();
 
         return new WordDictionaryDictionary(dictionary: dictionary);
+    }
+
+    /// <summary>
+    ///     This constructor creates a list of words from a JSON file with an array of strings containing the words
+    ///     It will get passed through FillDictionary and then the standard constructor
+    /// </summary>
+    /// <param name="pathToDictionaryJson"></param>
+    public static WordDictionaryDictionary NewFromJson(string pathToDictionaryJson)
+    {
+        return new(
+            words: JsonSerializer
+                .Deserialize<string[]>(
+                    json: File.ReadAllText(path: pathToDictionaryJson),
+                    options: JsonSerializerOptions) ?? throw new InvalidOperationException());
     }
 
     /// <summary>
