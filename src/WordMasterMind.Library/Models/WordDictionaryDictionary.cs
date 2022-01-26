@@ -196,10 +196,8 @@ public class WordDictionaryDictionary
                 writer.Write(value: word);
             }
         }
-
         writer.Flush();
-        stream.Flush();
-        stream.Close();
+
         return wordCount;
     }
 
@@ -215,8 +213,8 @@ public class WordDictionaryDictionary
             throw new FileNotFoundException(message: "File not found",
                 fileName: inputFilename);
 
-        var stream = new StreamReader(path: inputFilename);
-        var reader = new BinaryReader(input: stream.BaseStream);
+        using var stream = new StreamReader(path: inputFilename);
+        using var reader = new BinaryReader(input: stream.BaseStream);
 
         var count = reader.ReadInt32();
         var dictionary = new Dictionary<int, IEnumerable<string>>(capacity: count);
@@ -234,6 +232,8 @@ public class WordDictionaryDictionary
             dictionary.Add(key: key,
                 value: words);
         }
+        reader.Close();
+        stream.Close();
 
         return new WordDictionaryDictionary(dictionary: dictionary);
     }

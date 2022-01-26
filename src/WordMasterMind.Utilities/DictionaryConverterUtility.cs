@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using WordMasterMind.Library.Models;
 
@@ -58,6 +59,30 @@ public static class DictionaryConverterUtility
         return true;
     }
 
+    public static bool FileIsJson(string filename, out object? decodedJson, out bool fileIsAlphabeticOnly)
+    {
+        var fileText = File.ReadAllText(path: filename);
+        fileIsAlphabeticOnly = Regex.IsMatch(input: fileText,
+            pattern: @"^[a-zA-Z\r\n]$");
+
+        try
+        {
+            decodedJson = JsonSerializer.Deserialize<object>(
+                json: fileText,
+                options: new JsonSerializerOptions
+                {
+                    AllowTrailingCommas = true
+                }) ?? throw new InvalidOperationException();
+
+            return true;
+        }
+        catch
+        {
+            decodedJson = null;
+            return false;
+        }
+    }
+
     public static int Main(string[] arguments)
     {
         const string usage = "Usage: DictionaryConverterUtility.exe (json|binary) <inputFilename> [<outputFilename>]";
@@ -67,9 +92,10 @@ public static class DictionaryConverterUtility
             return 1;
         }
 
-        var jsonMode = arguments[0].ToLowerInvariant().Equals(value: "json");
-        var binaryMode = arguments[0].ToLowerInvariant().Equals(value: "binary");
-        if (!jsonMode && !binaryMode)
+        var result = false;
+        var makeJsonOutput = arguments[0].ToLowerInvariant().Equals(value: "json");
+        var makeBinaryOutput = arguments[0].ToLowerInvariant().Equals(value: "binary");
+        if (!makeJsonOutput && !makeBinaryOutput)
         {
             Console.WriteLine(value: "Invalid mode. Must be json or binary.");
             Console.WriteLine(value: usage);
@@ -78,28 +104,64 @@ public static class DictionaryConverterUtility
 
         var outputFile = arguments.Length > 2 ? arguments[2] : null;
 
-        var jsonOutputFile = binaryMode ? Path.GetTempFileName() : outputFile ?? arguments[1] + ".json";
-        var binaryOutputFile = outputFile ?? arguments[1] + ".bin";
+        var jsonOutputFile = makeBinaryOutput
+            ? Path.GetTempFileName()
+            : outputFile ?? Path.ChangeExtension(path: arguments[1],
+                extension: ".json");
+        var binaryOutputFile = outputFile ?? Path.ChangeExtension(path: arguments[1],
+            extension: ".bin");
 
-        var result = ConvertFile(
-            inputTextFilename: arguments[1],
-            outputTextFilename: jsonOutputFile,
-            wordLengthAbort: DefaultMaximumWordLength,
-            permitNonAlpha: true,
-            forceCreate: true);
+        var fileIsJson = FileIsJson(filename: arguments[1],
+            decodedJson: out _,
+            fileIsAlphabeticOnly: out var fileIsAlphabeticOnly);
 
-        if (!result)
+        if (fileIsJson)
+            Console.WriteLine(value: "JSON input file detected.");
+
+        if (fileIsJson && makeJsonOutput)
             return 1;
 
-        if (!binaryMode)
+        if (fileIsAlphabeticOnly)
+            Console.WriteLine(value: "Alphabetic input file detected.");
+
+        if (makeJsonOutput && !fileIsAlphabeticOnly)
+        {
+            Console.WriteLine(value: "text input file is not alphabetic only. Aborting.");
+            return 1;
+        }
+
+        if (makeJsonOutput && !fileIsJson && fileIsAlphabeticOnly)
+            result = ConvertFile(
+                inputTextFilename: arguments[1],
+                outputTextFilename: jsonOutputFile,
+                wordLengthAbort: DefaultMaximumWordLength,
+                permitNonAlpha: true,
+                forceCreate: true);
+
+        if (makeJsonOutput)
             return result ? 0 : 1;
 
-        var dictionary = new WordDictionaryDictionary(pathToDictionaryJson: jsonOutputFile);
-        Console.WriteLine(format: "Dictionary contains {0} words.",
-            arg0: dictionary.WordCount);
-        var wordsAdded = dictionary.SerializeLengthDictionary(outputFilename: binaryOutputFile);
+        var dictionary = new WordDictionaryDictionary(
+            pathToDictionaryJson: fileIsJson ? arguments[1] : jsonOutputFile);
+        var wordsAdded = dictionary.SerializeLengthDictionary(
+            outputFilename: binaryOutputFile);
+
         Console.WriteLine(format: "Serialized {0} words to file",
             arg0: wordsAdded);
-        return result ? 0 : 1;
+        Console.WriteLine(format: "Dictionary contains {0} words.",
+            arg0: dictionary.WordCount);
+        Console.WriteLine(value: "Verifying dictionary file...");
+
+        var dictionary2 = WordDictionaryDictionary
+            .LoadDictionaryFromSerializedLengthDictionary(
+                inputFilename: binaryOutputFile);
+        Console.WriteLine(format: "Dictionary contains {0} words.",
+            arg0: dictionary2.WordCount);
+
+        if (dictionary2.WordCount == dictionary.WordCount)
+            return result ? 0 : 1;
+
+        Console.WriteLine(value: "Dictionary verification failed.");
+        return 1;
     }
 }

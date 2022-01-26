@@ -116,4 +116,26 @@ public class ScrabbleDictionaryTest
             expected: "PACAS",
             actual: oneYearWord);
     }
+
+    [TestMethod]
+    public void TestBinarySerializationAndLoading()
+    {
+        var dictionary = GetWordDictionary();
+        var binaryOutputFile = Path.GetTempFileName();
+        File.Delete(path: binaryOutputFile);
+        Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
+        var wordsAdded = dictionary.SerializeLengthDictionary(outputFilename: binaryOutputFile);
+        Assert.AreEqual(
+            expected: dictionary.WordCount,
+            actual: wordsAdded);
+        Assert.IsTrue(condition: File.Exists(path: binaryOutputFile));
+
+        var dictionary2 = WordDictionaryDictionary.LoadDictionaryFromSerializedLengthDictionary(
+            inputFilename: binaryOutputFile);
+        Assert.AreEqual(
+            expected: dictionary2.WordCount,
+            actual: dictionary.WordCount);
+        File.Delete(path: binaryOutputFile);
+        Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
+    }
 }
