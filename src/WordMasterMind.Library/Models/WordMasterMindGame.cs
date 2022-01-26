@@ -107,7 +107,7 @@ public class WordMasterMindGame
     {
         get
         {
-            if (!this.Solved && !IsDebug) throw new DebugModeException(paramName: nameof(this.SecretWord));
+            if (!this.Solved && !IsDebug) return string.Empty;
             return this._secretWord;
         }
     }
