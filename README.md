@@ -8,9 +8,12 @@ Welcome to **Word MasterMind**!
 
 Word MasterMind is a variation of [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)), popularized by the game Wordle, but with a few differences.
 
-In Word MasterMind, you can guess and the game will choose a random word length in the [Scrabble](https://en.wikipedia.org/wiki/Scrabble) [Dictionary](https://scrabble.merriam.com/)
+In Word MasterMind, you can guess and the game will choose a random word length in either the [Scrabble](https://en.wikipedia.org/wiki/Scrabble) [Dictionary](https://scrabble.merriam.com/), one of a couple other provided word lists, or we've given you the tools to use your own.
 
-Words available in the dictionary range from 2 letters to 15 letters. Playing a 2 letter game is probably too easy, but there seemed no reason to limit things.
+Words available in the Scrabble dictionary range from 2 letters to 15 letters.
+- Detailed information on the other dictionaries is forthcoming
+
+Playing a 2 letter game is probably too easy, but there seemed no reason to limit things.
 
 Unlike Wordle, the number of tries varies with the word length.
 
@@ -25,7 +28,7 @@ Each guess must be a valid word of the correct length. Hit the enter button to s
 
 After each guess, the color of the tiles will change to show how close your guess was to the word.
 
-Scoring:
+Scoring (idea):
 
 *   Two (2) points per attempt under maximum
 *   Three (3) additional points each first time a letter is used, it is in the correct position
