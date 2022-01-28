@@ -25,10 +25,10 @@ public static class DailyWordGenerator
         day: 22);
 
     public static string WordOfTheDay(int length = Constants.StandardLength, DateTime? date = null,
-        WordDictionaryDictionary? dictionary = null)
+        LiteralDictionary? dictionary = null)
     {
         date = date ?? DateTime.Now;
-        dictionary = dictionary ?? new WordDictionaryDictionary();
+        dictionary = dictionary ?? new LiteralDictionary();
         var rnd = new Random(Seed: Seed);
         // calculate the days since the creation of the game
         var daysSinceEpoch = date.Value.Subtract(value: WordGeneratorEpoch).TotalDays;
@@ -38,7 +38,7 @@ public static class DailyWordGenerator
         for (var skips = 0; skips < daysSinceEpoch; skips++)
             wordIndex = rnd.Next(
                 minValue: 0,
-                maxValue: dictionary.WordsForLength(length: length) - 1);
+                maxValue: dictionary.WordCountForLength(length: length) - 1);
         return dictionary.WordAtIndex(
             length: length,
             wordIndex: wordIndex);

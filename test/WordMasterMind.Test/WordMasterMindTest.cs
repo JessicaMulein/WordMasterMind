@@ -13,9 +13,9 @@ namespace WordMasterMind.Test;
 [TestClass]
 public class WordMasterMindTest
 {
-    private static WordDictionaryDictionary GetWordDictionary()
+    private static LiteralDictionary GetWordDictionary()
     {
-        return WordDictionaryDictionary.NewFromSerializedLengthDictionary(
+        return LiteralDictionary.Deserialize(
             inputFilename: GetTestRoot(fileName: "scrabble-dictionary.bin"));
     }
 

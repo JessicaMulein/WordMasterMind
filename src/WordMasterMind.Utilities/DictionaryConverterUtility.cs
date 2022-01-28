@@ -141,9 +141,9 @@ public static class DictionaryConverterUtility
         if (makeJsonOutput)
             return result ? 0 : 1;
 
-        var dictionary = WordDictionaryDictionary.NewFromJson(
+        var dictionary = LiteralDictionary.NewFromJson(
             pathToDictionaryJson: fileIsJson ? arguments[1] : jsonOutputFile);
-        var wordsAdded = dictionary.SerializeLengthDictionary(
+        var wordsAdded = dictionary.Serialize(
             outputFilename: binaryOutputFile);
 
         Console.WriteLine(format: "Serialized {0} words to file",
@@ -152,8 +152,8 @@ public static class DictionaryConverterUtility
             arg0: dictionary.WordCount);
         Console.WriteLine(value: "Verifying dictionary file...");
 
-        var dictionary2 = WordDictionaryDictionary
-            .NewFromSerializedLengthDictionary(
+        var dictionary2 = LiteralDictionary
+            .Deserialize(
                 inputFilename: binaryOutputFile);
         Console.WriteLine(format: "Dictionary contains {0} words.",
             arg0: dictionary2.WordCount);

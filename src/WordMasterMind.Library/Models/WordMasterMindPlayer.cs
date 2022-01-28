@@ -24,7 +24,7 @@ public static class WordMasterMindPlayer
         if (turn == 1 && mastermind.WordLength == 5 && !noAdieu)
             return "adieu".ToUpperInvariant();
 
-        return mastermind.WordDictionaryDictionary.FindWord(
+        return mastermind.LiteralDictionary.FindWord(
             knownCharacters: mastermind.SolvedLettersAsChars,
             maxIterations: maximumDictionaryLookupAttemptsPerTry,
             skipWords: excludeWords,

@@ -29,9 +29,9 @@ public class ScrabbleDictionaryTest
                 path2: fileName);
     }
 
-    private static WordDictionaryDictionary GetWordDictionary()
+    private static LiteralDictionary GetWordDictionary()
     {
-        return WordDictionaryDictionary.NewFromSerializedLengthDictionary(
+        return LiteralDictionary.Deserialize(
             inputFilename: GetTestRoot(fileName: "scrabble-dictionary.bin"));
     }
 
@@ -126,13 +126,13 @@ public class ScrabbleDictionaryTest
         File.Delete(path: binaryOutputFile);
         Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
 
-        var wordsAdded = dictionary.SerializeLengthDictionary(outputFilename: binaryOutputFile);
+        var wordsAdded = dictionary.Serialize(outputFilename: binaryOutputFile);
         Assert.AreEqual(
             expected: dictionary.WordCount,
             actual: wordsAdded);
         Assert.IsTrue(condition: File.Exists(path: binaryOutputFile));
 
-        var dictionary2 = WordDictionaryDictionary.NewFromSerializedLengthDictionary(
+        var dictionary2 = LiteralDictionary.Deserialize(
             inputFilename: binaryOutputFile);
         Assert.AreEqual(
             expected: dictionary2.WordCount,

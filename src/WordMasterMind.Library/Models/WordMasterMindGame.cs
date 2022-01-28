@@ -27,14 +27,14 @@ public class WordMasterMindGame
     public readonly bool HardMode;
 
     /// <summary>
+    ///     Scrabble Dictionary to use
+    /// </summary>
+    public readonly LiteralDictionary LiteralDictionary;
+
+    /// <summary>
     ///     How many attempts are allowed before the game is over
     /// </summary>
     public readonly int MaxAttempts;
-
-    /// <summary>
-    ///     Scrabble Dictionary to use
-    /// </summary>
-    public readonly WordDictionaryDictionary WordDictionaryDictionary;
 
     /// <summary>
     ///     Length of the word to be guessed
@@ -42,14 +42,14 @@ public class WordMasterMindGame
     public readonly int WordLength;
 
     public WordMasterMindGame(int minLength, int maxLength, bool hardMode = false,
-        WordDictionaryDictionary? scrabbleDictionary = null, string? secretWord = null)
+        LiteralDictionary? scrabbleDictionary = null, string? secretWord = null)
     {
         this.Solved = false;
         this.CurrentAttempt = 0;
         this.HardMode = hardMode;
-        this.WordDictionaryDictionary = scrabbleDictionary ??
-                                        new WordDictionaryDictionary(); // use the provided dictionary, or use the default one which is stored locally
-        this._secretWord = (secretWord ?? this.WordDictionaryDictionary.GetRandomWord(minLength: minLength,
+        this.LiteralDictionary = scrabbleDictionary ??
+                                 new LiteralDictionary(); // use the provided dictionary, or use the default one which is stored locally
+        this._secretWord = (secretWord ?? this.LiteralDictionary.GetRandomWord(minLength: minLength,
             maxLength: maxLength)).ToUpperInvariant();
 
         Debug.Assert(condition: this._secretWord != null,
@@ -61,7 +61,7 @@ public class WordMasterMindGame
             throw new InvalidLengthException(minLength: minLength,
                 maxLength: maxLength);
 
-        if (!this.WordDictionaryDictionary.IsWord(word: this._secretWord))
+        if (!this.LiteralDictionary.IsWord(word: this._secretWord))
             throw new NotInDictionaryException();
 
         this.MaxAttempts = GetMaxAttemptsForLength(
@@ -216,7 +216,7 @@ public class WordMasterMindGame
 
         wordAttempt = wordAttempt.ToUpperInvariant();
 
-        if (!this.WordDictionaryDictionary.IsWord(word: wordAttempt))
+        if (!this.LiteralDictionary.IsWord(word: wordAttempt))
             throw new NotInDictionaryException();
 
         // countAttemptLetterIndex is incremented each time the selector is fired, eg each letter
