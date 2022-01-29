@@ -20,6 +20,11 @@ public partial class LiteralDictionary
     private readonly ImmutableDictionary<int, IEnumerable<string>> _wordsByLength;
 
     /// <summary>
+    ///     Notes/Description of the dictionary.
+    /// </summary>
+    public readonly string Description;
+
+    /// <summary>
     ///     Longest word length with at least one word.
     /// </summary>
     public readonly int LongestWordLength;
@@ -126,9 +131,4 @@ public partial class LiteralDictionary
             description: description)
     {
     }
-
-    /// <summary>
-    ///     Notes/Description of the dictionary.
-    /// </summary>
-    public string Description { get; }
 }
