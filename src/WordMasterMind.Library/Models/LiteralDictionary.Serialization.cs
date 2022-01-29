@@ -6,11 +6,13 @@ public partial class LiteralDictionary
 {
     /// <summary>
     ///     Read a binary encoded file and re-create a sorted dictionary from it
+    ///     TODO: re-serialize dictionaries with Description included, add to deserialize
     /// </summary>
     /// <param name="inputFilename"></param>
+    /// <param name="description"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public static LiteralDictionary Deserialize(string inputFilename)
+    public static LiteralDictionary Deserialize(string inputFilename, string? description = null)
     {
         if (!File.Exists(path: inputFilename))
             throw new FileNotFoundException(message: "File not found",
@@ -39,7 +41,9 @@ public partial class LiteralDictionary
         reader.Close();
         stream.Close();
 
-        return new LiteralDictionary(dictionary: dictionary);
+        return new LiteralDictionary(
+            dictionary: dictionary,
+            description: description);
     }
 
     /// <summary>

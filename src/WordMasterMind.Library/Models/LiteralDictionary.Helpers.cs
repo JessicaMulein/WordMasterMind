@@ -1,9 +1,15 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace WordMasterMind.Library.Models;
 
 public partial class LiteralDictionary
 {
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        AllowTrailingCommas = true
+    };
+
     /// <summary>
     ///     Helper method to make a dictionary organized by lengths from a simple array of words
     /// </summary>

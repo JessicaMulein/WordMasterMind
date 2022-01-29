@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Text.Json;
 
 namespace WordMasterMind.Library.Models;
 
@@ -10,20 +9,18 @@ namespace WordMasterMind.Library.Models;
 /// </summary>
 public partial class LiteralDictionary
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
-    {
-        AllowTrailingCommas = true
-    };
-
+    /// <summary>
+    ///     Quick look up table with counts of words for each length.
+    /// </summary>
     private readonly Dictionary<int, int> _wordCountByLength;
 
     /// <summary>
-    ///     Unalterable collection of dictionary words, organized by length
+    ///     Unalterable collection of dictionary words, organized by length.
     /// </summary>
     private readonly ImmutableDictionary<int, IEnumerable<string>> _wordsByLength;
 
     /// <summary>
-    ///     Longest word length with at least one word
+    ///     Longest word length with at least one word.
     /// </summary>
     public readonly int LongestWordLength;
 
@@ -38,6 +35,9 @@ public partial class LiteralDictionary
     // ReSharper disable once MemberCanBePrivate.Global
     public readonly IEnumerable<int> ValidWordLengths;
 
+    /// <summary>
+    ///     Total count of words in the dictionary
+    /// </summary>
     public readonly int WordCount;
 
     /// <summary>
@@ -45,7 +45,7 @@ public partial class LiteralDictionary
     /// </summary>
     /// <param name="dictionary"></param>
     /// <exception cref="Exception"></exception>
-    public LiteralDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null)
+    public LiteralDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null, string? description = null)
     {
         if (dictionary is not null)
         {
@@ -97,6 +97,7 @@ public partial class LiteralDictionary
             longest = length;
         }
 
+        this.Description = description ?? string.Empty;
         this.WordCount = totalWords;
         this._wordCountByLength = wordCountByLength;
 
@@ -117,22 +118,17 @@ public partial class LiteralDictionary
     ///     and passes it to the standard constructor
     /// </summary>
     /// <param name="words"></param>
+    /// <param name="description"></param>
     // ReSharper disable once MemberCanBePrivate.Global
-    public LiteralDictionary(IEnumerable<string> words) : this(dictionary: FillDictionary(words: words))
+    public LiteralDictionary(IEnumerable<string> words, string? description = null)
+        : this(
+            dictionary: FillDictionary(words: words),
+            description: description)
     {
     }
 
     /// <summary>
     ///     Notes/Description of the dictionary.
     /// </summary>
-    public string Description { get; private set; }
-
-    /// <summary>
-    ///     Sets the optional dictionary description after loading
-    /// </summary>
-    /// <param name="description"></param>
-    internal void SetDescription(string description)
-    {
-        this.Description = description;
-    }
+    public string Description { get; }
 }
