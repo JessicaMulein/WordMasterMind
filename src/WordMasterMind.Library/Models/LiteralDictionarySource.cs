@@ -46,4 +46,27 @@ public record LiteralDictionarySource
         CrosswordDictionary,
         EnglishDictionary
     };
+
+    /// <summary>
+    ///     Creates a literal dictionary from the source
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static LiteralDictionary NewFromSource(LiteralDictionarySource source)
+    {
+        return source.FileType switch
+        {
+            LiteralDictionaryFileType.TextWithNewLines => new LiteralDictionary(
+                words: File.ReadLines(path: source.FileName),
+                description: source.Description),
+            LiteralDictionaryFileType.JsonStringArray => LiteralDictionary.NewFromJson(
+                pathToDictionaryJson: source.FileName,
+                description: source.Description),
+            LiteralDictionaryFileType.Binary => LiteralDictionary.Deserialize(
+                inputFilename: source.FileName,
+                description: source.Description),
+            _ => throw new Exception(message: "Unknown file type")
+        };
+    }
 }

@@ -1,0 +1,18 @@
+@using WordMasterMind.Library.Models
+<select name="@Name" id="@Name">
+    @foreach (var source in Sources)
+    {
+        <option value="@source.FileType.ToString()" id="src-@source.SourceType.ToString().ToLowerInvariant()">@source.Description</option>
+    }
+</select>
+
+@code {
+    public string Name { get; set; }
+    public static IEnumerable<LiteralDictionarySource> Sources => LiteralDictionarySource.Sources;
+
+    public DictionarySourceList(string name = "sourcesList")
+    {
+        Name = name;
+    }
+
+}

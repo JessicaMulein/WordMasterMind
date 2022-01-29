@@ -1,5 +1,4 @@
 using System.Text.Json;
-using WordMasterMind.Library.Enumerations;
 
 namespace WordMasterMind.Library.Models;
 
@@ -18,22 +17,5 @@ public partial class LiteralDictionary
                     json: File.ReadAllText(path: pathToDictionaryJson),
                     options: JsonSerializerOptions) ?? throw new InvalidOperationException(),
             description: description);
-    }
-
-    public static LiteralDictionary NewFromSource(LiteralDictionarySource source)
-    {
-        return source.FileType switch
-        {
-            LiteralDictionaryFileType.TextWithNewLines => new LiteralDictionary(
-                words: File.ReadLines(path: source.FileName),
-                description: source.Description),
-            LiteralDictionaryFileType.JsonStringArray => NewFromJson(
-                pathToDictionaryJson: source.FileName,
-                description: source.Description),
-            LiteralDictionaryFileType.Binary => Deserialize(
-                inputFilename: source.FileName,
-                description: source.Description),
-            _ => throw new Exception(message: "Unknown file type")
-        };
     }
 }
