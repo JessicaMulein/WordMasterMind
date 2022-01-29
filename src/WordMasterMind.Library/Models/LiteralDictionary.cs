@@ -49,6 +49,7 @@ public partial class LiteralDictionary
     ///     Standard constructor takes a dictionary of strings, organized by length
     /// </summary>
     /// <param name="dictionary"></param>
+    /// <param name="description"></param>
     /// <exception cref="Exception"></exception>
     public LiteralDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null, string? description = null)
     {
