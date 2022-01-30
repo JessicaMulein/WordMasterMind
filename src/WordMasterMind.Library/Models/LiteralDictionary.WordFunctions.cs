@@ -25,6 +25,14 @@ public partial class LiteralDictionary
         return maxWords == -1 ? words : words.Take(count: maxWords);
     }
 
+    public IEnumerable<string> AllWords(int skip = 0, int take = -1)
+    {
+        return this._wordsByLength.Values
+            .SelectMany(selector: x => x)
+            .Skip(count: skip)
+            .Take(count: take);
+    }
+
     /// <summary>
     ///     Returns the word at the given array index for a given word length
     /// </summary>

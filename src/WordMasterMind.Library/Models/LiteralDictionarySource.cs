@@ -69,4 +69,18 @@ public record LiteralDictionarySource
             _ => throw new Exception(message: "Unknown file type")
         };
     }
+
+    public static LiteralDictionary NewFromSourceType(LiteralDictionarySources sourceType)
+    {
+        return sourceType switch
+        {
+            LiteralDictionarySources.Scrabble =>
+                NewFromSource(source: ScrabbleDictionary),
+            LiteralDictionarySources.Crossword =>
+                NewFromSource(source: CrosswordDictionary),
+            LiteralDictionarySources.English =>
+                NewFromSource(source: EnglishDictionary),
+            _ => throw new Exception(message: "Unknown source type")
+        };
+    }
 }

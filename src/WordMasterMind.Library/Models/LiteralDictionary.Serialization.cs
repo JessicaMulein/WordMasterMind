@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using WordMasterMind.Library.Exceptions;
 
 namespace WordMasterMind.Library.Models;
@@ -75,5 +76,10 @@ public partial class LiteralDictionary
         writer.Flush();
 
         return wordCount;
+    }
+
+    public JsonObject ToJson()
+    {
+        throw new NotImplementedException();
     }
 }
