@@ -1,5 +1,6 @@
 namespace WordMasterMind.Blazor.Components;
 
-public partial class GameBoard
+public partial class WordMasterMindGame
 {
+    
 }
