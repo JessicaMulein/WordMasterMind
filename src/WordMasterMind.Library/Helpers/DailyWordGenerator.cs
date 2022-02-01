@@ -24,13 +24,19 @@ public static class DailyWordGenerator
         month: 1,
         day: 22);
 
+    /// <summary>
+    /// Gets the puzzle number for a given date. Day 1 is the WordGeneratorEpoch.
+    /// Previous dates just go backwards for simplicity.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
     public static int PuzzleNumber(DateTime? date = null)
     {
         date = date ?? DateTime.Now;
-        return (int) Math.Floor(d: date.Value.Subtract(value: WordGeneratorEpoch).TotalDays) + 1;
+        return Math.Abs(value: (int) Math.Floor(d: date.Value.Subtract(value: WordGeneratorEpoch).TotalDays)) + 1;
     }
 
-    public static int WordOffsetForDay(DateTime? date = null, int wordsForLength = Constants.StandardLength)
+    public static int WordIndexForDay(DateTime? date = null, int wordsForLength = Constants.StandardLength)
     {
         // an RNG with a pre-determined seed will generate a repeatable sequence
         var rnd = new Random(Seed: Seed);
@@ -51,7 +57,7 @@ public static class DailyWordGenerator
         dictionary = dictionary ?? new LiteralDictionary();
         return dictionary.WordAtIndex(
             length: length,
-            wordIndex: WordOffsetForDay(
+            wordIndex: WordIndexForDay(
                 date: date,
                 wordsForLength: dictionary.WordCountForLength(
                     length: length)));
