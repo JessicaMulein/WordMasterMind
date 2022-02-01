@@ -18,17 +18,3 @@
     </div>
     <game-keyboard></game-keyboard>
 }
-
-@code {
-    public WordMasterMindGame? Game { get; private set; }
-    public LiteralDictionarySources? DictionarySource { get; private set; }
-    public LiteralDictionary? LiteralDictionary { get; private set; }
-    public GameState State { get; private set; }
-
-    public GameStateMachine()
-    {
-        Game = null;
-        State = GameState.Rules;
-    }
-
-}
