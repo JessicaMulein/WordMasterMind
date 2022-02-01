@@ -51,7 +51,8 @@ public static class DailyWordGenerator
         return wordIndex;
     }
 
-    public static string WordOfTheDay(int length = Constants.StandardLength, DateTime? date = null,
+    public static string WordOfTheDay(DateTime? date = null,
+        int length = Constants.StandardLength,
         LiteralDictionary? dictionary = null)
     {
         dictionary = dictionary ?? new LiteralDictionary();

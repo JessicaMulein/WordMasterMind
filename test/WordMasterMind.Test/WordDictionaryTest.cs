@@ -100,8 +100,8 @@ public class LiteralDictionaryTest
         var literalDictionary = GetWordDictionary();
 
         var dayOneWord = DailyWordGenerator.WordOfTheDay(
-            length: 5,
             date: DailyWordGenerator.WordGeneratorEpoch,
+            length: 5,
             dictionary: literalDictionary);
         Assert.AreEqual(
             // ReSharper disable once StringLiteralTypo
@@ -109,8 +109,8 @@ public class LiteralDictionaryTest
             actual: dayOneWord);
 
         var oneYearWord = DailyWordGenerator.WordOfTheDay(
-            length: 5,
             date: DailyWordGenerator.WordGeneratorEpoch.AddYears(value: 1),
+            length: 5,
             dictionary: literalDictionary);
         Assert.AreEqual(
             // ReSharper disable once StringLiteralTypo
