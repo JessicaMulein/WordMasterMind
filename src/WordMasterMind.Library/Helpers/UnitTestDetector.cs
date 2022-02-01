@@ -9,7 +9,7 @@ public static class UnitTestDetector
     private static readonly HashSet<string> UnitTestAttributes = new()
     {
         "Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute",
-        "NUnit.Framework.TestFixtureAttribute"
+        "NUnit.Framework.TestFixtureAttribute",
     };
 
     /// <summary>

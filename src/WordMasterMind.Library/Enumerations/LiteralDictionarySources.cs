@@ -15,5 +15,5 @@ public enum LiteralDictionarySources
     /// <summary>
     ///     English (simplified)
     /// </summary>
-    English
+    English,
 }

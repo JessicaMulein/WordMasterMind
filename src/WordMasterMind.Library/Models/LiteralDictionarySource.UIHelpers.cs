@@ -15,7 +15,7 @@ public partial record LiteralDictionarySource
             LiteralDictionaryFileType.TextWithNewLines => nameof(LiteralDictionaryFileType.TextWithNewLines),
             LiteralDictionaryFileType.JsonStringArray => nameof(LiteralDictionaryFileType.JsonStringArray),
             LiteralDictionaryFileType.Binary => nameof(LiteralDictionaryFileType.Binary),
-            _ => throw new Exception(message: "Unknown file type")
+            _ => throw new Exception(message: "Unknown file type"),
         };
     }
 
@@ -33,7 +33,7 @@ public partial record LiteralDictionarySource
             LiteralDictionaryFileType.TextWithNewLines => nameof(LiteralDictionaryFileType.TextWithNewLines),
             LiteralDictionaryFileType.JsonStringArray => nameof(LiteralDictionaryFileType.JsonStringArray),
             LiteralDictionaryFileType.Binary => nameof(LiteralDictionaryFileType.Binary),
-            _ => throw new Exception(message: "Unknown file type")
+            _ => throw new Exception(message: "Unknown file type"),
         };
     }
 

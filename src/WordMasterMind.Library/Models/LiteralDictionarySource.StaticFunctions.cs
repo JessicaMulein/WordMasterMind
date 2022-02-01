@@ -42,7 +42,7 @@ public partial record LiteralDictionarySource
             LiteralDictionaryFileType.Binary => Models.LiteralDictionary.Deserialize(
                 inputFilename: source.FileName,
                 description: source.Description),
-            _ => throw new Exception(message: "Unknown file type")
+            _ => throw new Exception(message: "Unknown file type"),
         };
     }
 
@@ -56,7 +56,7 @@ public partial record LiteralDictionarySource
                 NewFromSource(source: CrosswordDictionary),
             LiteralDictionarySources.English =>
                 NewFromSource(source: EnglishDictionary),
-            _ => throw new Exception(message: "Unknown source type")
+            _ => throw new Exception(message: "Unknown source type"),
         };
     }
 }

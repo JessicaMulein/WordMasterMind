@@ -71,7 +71,7 @@ public static class DictionaryConverterUtility
                 json: fileText,
                 options: new JsonSerializerOptions
                 {
-                    AllowTrailingCommas = true
+                    AllowTrailingCommas = true,
                 }) ?? throw new InvalidOperationException();
 
             return true;

@@ -15,5 +15,5 @@ public enum LiteralDictionaryFileType
     /// <summary>
     ///     Binary serialized dictionary created by this library
     /// </summary>
-    Binary
+    Binary,
 }

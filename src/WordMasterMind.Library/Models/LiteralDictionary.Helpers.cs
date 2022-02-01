@@ -7,7 +7,7 @@ public partial class LiteralDictionary
 {
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
-        AllowTrailingCommas = true
+        AllowTrailingCommas = true,
     };
 
     /// <summary>
@@ -28,6 +28,19 @@ public partial class LiteralDictionary
             else
                 dictionary.Add(key: wordLength,
                     value: new[] {word.ToUpperInvariant()});
+        }
+
+        return AlphabetizeDictionary(dictionary: dictionary);
+    }
+
+    private static Dictionary<int, IEnumerable<string>> AlphabetizeDictionary(
+        in Dictionary<int, IEnumerable<string>> dictionary)
+    {
+        foreach (var (length, wordsForLength) in dictionary)
+        {
+            var arrayToSort = wordsForLength.ToArray();
+            Array.Sort(array: arrayToSort);
+            dictionary[key: length] = arrayToSort;
         }
 
         return dictionary;

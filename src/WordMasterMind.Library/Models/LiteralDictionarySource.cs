@@ -25,6 +25,6 @@ public partial record LiteralDictionarySource
     {
         LiteralDictionary,
         CrosswordDictionary,
-        EnglishDictionary
+        EnglishDictionary,
     };
 }
