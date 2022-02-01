@@ -27,25 +27,33 @@ public static class DailyWordGenerator
     public static int PuzzleNumber(DateTime? date = null)
     {
         date = date ?? DateTime.Now;
-        return (int)Math.Floor(d: date.Value.Subtract(value: WordGeneratorEpoch).TotalDays) + 1;
+        return (int) Math.Floor(d: date.Value.Subtract(value: WordGeneratorEpoch).TotalDays) + 1;
+    }
+
+    public static int WordOffsetForDay(DateTime? date = null, int wordsForLength = Constants.StandardLength)
+    {
+        // an RNG with a pre-determined seed will generate a repeatable sequence
+        var rnd = new Random(Seed: Seed);
+        var wordIndex = 0;
+        var puzzleNumber = PuzzleNumber(date: date);
+        // skip puzzleNumber - 1 entries in the randomizer seed to get to that day's index
+        // pick a number between 0 and the maximum
+        for (var skips = 0; skips < puzzleNumber - 1; skips++)
+            wordIndex = rnd.Next(
+                minValue: 0,
+                maxValue: wordsForLength - 1);
+        return wordIndex;
     }
 
     public static string WordOfTheDay(int length = Constants.StandardLength, DateTime? date = null,
         LiteralDictionary? dictionary = null)
     {
         dictionary = dictionary ?? new LiteralDictionary();
-        var rnd = new Random(Seed: Seed);
-        // calculate the days since the creation of the game
-
-        // skip that many entries in the randomizer seed to get to that day's index
-        var wordIndex = 0;
-        for (var skips = 0; skips < PuzzleNumber(date: date); skips++)
-            wordIndex = rnd.Next(
-                minValue: 0,
-                maxValue: dictionary.WordCountForLength(length: length) - 1);
-
         return dictionary.WordAtIndex(
             length: length,
-            wordIndex: wordIndex);
+            wordIndex: WordOffsetForDay(
+                date: date,
+                wordsForLength: dictionary.WordCountForLength(
+                    length: length)));
     }
 }
