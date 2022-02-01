@@ -3,13 +3,13 @@
     protected async override Task OnParametersSetAsync()
     {
         if (CssClass is { })
-            await JSRuntime.InvokeVoidAsync("window.JsFunctions.addCssClassToBody", CssClass);
+            await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.addCssClassToBody", CssClass);
 
         if (Language is { })
-            await JSRuntime.InvokeVoidAsync("window.JsFunctions.setLanguageOfBody", Language);
+            await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setLanguageOfBody", Language);
 
         if (TextDirection is { })
-            await JSRuntime.InvokeVoidAsync("window.JsFunctions.setTextDirectionOfBody", TextDirection);
+            await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setTextDirectionOfBody", TextDirection);
     }
 
     [Parameter]

@@ -1,0 +1,43 @@
+@using global::WordMasterMind.Blazor.Interfaces
+@using global::WordMasterMind.Blazor.Enumerations
+@inject IGameStateMachine _gameStateMachineMachine
+<div id="game">
+    <header>
+        <div class="menu">
+            <button id="help-button" class="icon" aria-label="help">
+                <game-icon icon="help"></game-icon>
+            </button>
+        </div>
+        <div class="title">
+            Word MasterMind
+        </div>
+        <div class="menu">
+            <button id="statistics-button" class="icon" aria-label="statistics">
+                <i class="fal fa-chart-line"></i>
+            </button>
+            <button id="settings-button" class="icon" aria-label="settings">
+                <i class="fas fa-cogs"></i>
+            </button>
+        </div>
+    </header>
+    @if (_gameStateMachineMachine.State is GameState.Rules)
+    {
+        <Splash></Splash>
+    } else if (_gameStateMachineMachine.State is GameState.SourceSelection)
+    {
+        <DictionarySourceList></DictionarySourceList>
+    } else if (_gameStateMachineMachine.State is GameState.LengthSelection)
+    {
+    } else if (_gameStateMachineMachine.State is GameState.Playing or GameState.GameOver)
+    {
+        <div id="board-container">
+            <GameBoard></GameBoard>
+        </div>
+        @if (_gameStateMachineMachine.State is GameState.Playing)
+        {
+            <GameKeyboard></GameKeyboard>
+        }
+    } else {
+        <h3>Unknown state</h3>
+    }
+</div>

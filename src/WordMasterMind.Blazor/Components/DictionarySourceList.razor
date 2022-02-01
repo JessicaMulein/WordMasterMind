@@ -1,7 +1,6 @@
-@using WordMasterMind.Library.Models
 <select name="@Name" id="@Name">
     @foreach (var source in Sources)
     {
-        <option value="@source.FileType.ToString()" id="src-@source.SourceType.ToString().ToLowerInvariant()">@source.Description</option>
+        <option value="@source.FileTypeString" id="src-@source.SourceTypeString.ToLowerInvariant()">@source.Description</option>
     }
 </select>

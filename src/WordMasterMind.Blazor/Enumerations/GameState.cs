@@ -1,4 +1,4 @@
-namespace WordMasterMind.Library.Enumerations;
+namespace WordMasterMind.Blazor.Enumerations;
 
 public enum GameState
 {
@@ -6,5 +6,5 @@ public enum GameState
     SourceSelection = 1,
     LengthSelection = 2,
     Playing = 3,
-    GameOver = 4
+    GameOver = 4,
 }

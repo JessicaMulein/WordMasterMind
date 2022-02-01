@@ -1,10 +1,11 @@
+using WordMasterMind.Blazor.Interfaces;
 using WordMasterMind.Library.Models;
 
 namespace WordMasterMind.Blazor.Components;
 
 public partial class DictionarySourceList
 {
-    public DictionarySourceList(string name = "sourcesList")
+    public DictionarySourceList(IGameStateMachine gameStateMachineMachine, string name = "sourcesList")
     {
         this.Name = name;
     }

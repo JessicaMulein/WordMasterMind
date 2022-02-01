@@ -172,6 +172,7 @@ public class WordMasterMindGame
             var solvedLetters = new char[this.WordLength];
             for (var i = 0; i < this.WordLength; i++)
                 solvedLetters[i] = this._solvedLetters[i] ? this._secretWord[index: i] : ' ';
+
             return solvedLetters;
         }
     }

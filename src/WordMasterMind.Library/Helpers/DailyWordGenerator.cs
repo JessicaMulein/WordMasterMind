@@ -39,6 +39,7 @@ public static class DailyWordGenerator
             wordIndex = rnd.Next(
                 minValue: 0,
                 maxValue: dictionary.WordCountForLength(length: length) - 1);
+
         return dictionary.WordAtIndex(
             length: length,
             wordIndex: wordIndex);

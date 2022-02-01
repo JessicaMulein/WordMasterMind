@@ -1,38 +1,47 @@
+using WordMasterMind.Blazor.Enumerations;
+using WordMasterMind.Blazor.Interfaces;
 using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Helpers;
 using WordMasterMind.Library.Models;
 
-namespace WordMasterMind.Blazor.Components;
+namespace WordMasterMind.Blazor.Models;
 
-public partial class GameStateMachine
+public class GameStateMachine : IGameStateMachine
 {
     private GameState _gameState;
+    private bool newGame = true;
 
     public GameStateMachine()
     {
+        this.DictionarySource = null;
         this.Game = null;
+        this.LiteralDictionary = null;
         this.State = GameState.Rules;
         this.WordLength = Constants.StandardLength;
-        this.DictionarySource = null;
-        this.LiteralDictionary = null;
     }
 
     public bool HardMode { get; private set; }
-    public Library.Models.WordMasterMindGame? Game { get; private set; }
-    public LiteralDictionarySources? DictionarySource { get; private set; }
-    public int? WordLength { get; private set; }
-    public LiteralDictionary? LiteralDictionary { get; private set; }
+    public WordMasterMindGame? Game { get; private set; }
+    public LiteralDictionarySources? DictionarySource { get; }
+    public LiteralDictionary? LiteralDictionary { get; }
+    public int? WordLength { get; }
 
     public GameState State
     {
         get => this._gameState;
-        private set
+        set
         {
             var oldState = this._gameState;
+            if (this.newGame)
+            {
+                this.newGame = false;
+                oldState = GameState.Rules;
+            }
+
             switch (oldState)
             {
                 case GameState.Rules:
-                    if (value != GameState.SourceSelection)
+                    if (value is not GameState.SourceSelection && value is not GameState.Rules)
                         throw new Exception(message: "SourceSelection state can only be entered from Rules state");
                     break;
                 case GameState.SourceSelection:
@@ -50,7 +59,7 @@ public partial class GameStateMachine
                     if (this.WordLength is null)
                         throw new Exception(message: "Cannot start playing without a word length");
 
-                    this.Game = new Library.Models.WordMasterMindGame(
+                    this.Game = new WordMasterMindGame(
                         minLength: this.WordLength.Value,
                         maxLength: this.WordLength.Value,
                         hardMode: this.HardMode,
@@ -86,7 +95,15 @@ public partial class GameStateMachine
         }
     }
 
+    public event Action OnStateChange;
+
+    private void NotifyStateChanged()
+    {
+        this.OnStateChange?.Invoke();
+    }
+
     public void OnStateChanged(GameState oldState, GameState newState)
     {
+        this.NotifyStateChanged();
     }
 }
