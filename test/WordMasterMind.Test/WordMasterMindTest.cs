@@ -16,7 +16,7 @@ public class WordMasterMindTest
     private static LiteralDictionary GetWordDictionary()
     {
         return LiteralDictionary.Deserialize(
-            inputFilename: GetTestRoot(fileName: "scrabble-dictionary.bin"));
+            inputFilename: GetTestRoot(fileName: "collins-scrabble.bin"));
     }
 
     /// <summary>

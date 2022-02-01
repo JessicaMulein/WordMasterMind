@@ -6,9 +6,9 @@ public partial record LiteralDictionarySource
 {
     public static LiteralDictionarySource LiteralDictionary => new(
         sourceType: LiteralDictionarySources.Scrabble,
-        fileName: "scrabble-dictionary.bin",
+        fileName: "collins-scrabble.bin",
         fileType: LiteralDictionaryFileType.Binary,
-        description: "Scrabble dictionary");
+        description: "Collins Scrabble dictionary");
 
 
     public static LiteralDictionarySource CrosswordDictionary => new(

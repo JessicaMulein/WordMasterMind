@@ -59,7 +59,7 @@ public partial class LiteralDictionary
     private static async Task<Dictionary<int, IEnumerable<string>>> LoadDictionaryFromWebJsonWordArray()
     {
         var dictionaryWords =
-            await new HttpClient().GetFromJsonAsync<string[]>(requestUri: "/scrabble-dictionary.json");
+            await new HttpClient().GetFromJsonAsync<string[]>(requestUri: "/collins-scrabble.json");
         if (dictionaryWords is null || !dictionaryWords.Any())
             throw new Exception(message: "Dictionary could not be retrieved");
 

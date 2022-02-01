@@ -59,11 +59,15 @@ public static class DictionaryConverterUtility
         return true;
     }
 
-    public static bool FileIsJson(string filename, out object? decodedJson, out bool fileIsAlphabeticOnly)
+    public static bool FileIsAlphabeticOnly(string filename)
+    {
+        return File.ReadAllLines(filename).Any(predicate: line => Regex.IsMatch(input: line,
+            pattern: @"^[a-zA-Z]+[\s]*$"));
+    }
+
+    public static bool FileIsJson(string filename, out object? decodedJson)
     {
         var fileText = File.ReadAllText(path: filename);
-        fileIsAlphabeticOnly = Regex.IsMatch(input: fileText,
-            pattern: @"^[a-zA-Z\r\n]$");
 
         try
         {
@@ -112,8 +116,7 @@ public static class DictionaryConverterUtility
             extension: ".bin");
 
         var fileIsJson = FileIsJson(filename: arguments[1],
-            decodedJson: out _,
-            fileIsAlphabeticOnly: out var fileIsAlphabeticOnly);
+            decodedJson: out _);
 
         if (fileIsJson)
             Console.WriteLine(value: "JSON input file detected.");
@@ -121,6 +124,7 @@ public static class DictionaryConverterUtility
         if (fileIsJson && makeJsonOutput)
             return 1;
 
+        var fileIsAlphabeticOnly = FileIsAlphabeticOnly(filename: arguments[1]);
         if (fileIsAlphabeticOnly)
             Console.WriteLine(value: "Alphabetic input file detected.");
 

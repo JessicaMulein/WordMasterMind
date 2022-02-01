@@ -32,13 +32,16 @@ public class LiteralDictionaryTest
     private static LiteralDictionary GetWordDictionary()
     {
         return LiteralDictionary.Deserialize(
-            inputFilename: GetTestRoot(fileName: "scrabble-dictionary.bin"));
+            inputFilename: GetTestRoot(fileName: "collins-scrabble.bin"));
     }
 
     [TestMethod]
     public void TestLiteralDictionary()
     {
         var literalDictionary = GetWordDictionary();
+        Assert.AreEqual(
+            expected: 279496, // known size of collins scrabble dictionary
+            actual: literalDictionary.WordCount);
 
         // Test word check
         Assert.IsTrue(condition: literalDictionary.IsWord(word: "hello"));
@@ -114,7 +117,7 @@ public class LiteralDictionaryTest
             dictionary: literalDictionary);
         Assert.AreEqual(
             // ReSharper disable once StringLiteralTypo
-            expected: "PACAS",
+            expected: "PAKKA",
             actual: oneYearWord);
     }
 
