@@ -140,4 +140,12 @@ public class LiteralDictionaryTest
         File.Delete(path: binaryOutputFile);
         Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
     }
+
+    [TestMethod]
+    public void TestDailyPuzzleNumberEpoch()
+    {
+        Assert.AreEqual(
+            expected: 1,
+            actual: DailyWordGenerator.PuzzleNumber(date: DailyWordGenerator.WordGeneratorEpoch));
+    }
 }
