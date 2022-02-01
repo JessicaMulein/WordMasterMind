@@ -42,12 +42,12 @@ public class WordMasterMindGame
     public readonly int WordLength;
 
     public WordMasterMindGame(int minLength, int maxLength, bool hardMode = false,
-        LiteralDictionary? scrabbleDictionary = null, string? secretWord = null)
+        LiteralDictionary? literalDictionary = null, string? secretWord = null)
     {
         this.Solved = false;
         this.CurrentAttempt = 0;
         this.HardMode = hardMode;
-        this.LiteralDictionary = scrabbleDictionary ??
+        this.LiteralDictionary = literalDictionary ??
                                  new LiteralDictionary(); // use the provided dictionary, or use the default one which is stored locally
         this._secretWord = (secretWord ?? this.LiteralDictionary.GetRandomWord(minLength: minLength,
             maxLength: maxLength)).ToUpperInvariant();

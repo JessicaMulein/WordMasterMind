@@ -21,7 +21,7 @@ public record LiteralDictionarySource
         this.Description = description;
     }
 
-    public static LiteralDictionarySource ScrabbleDictionary => new(
+    public static LiteralDictionarySource LiteralDictionary => new(
         sourceType: LiteralDictionarySources.Scrabble,
         fileName: "scrabble-dictionary.bin",
         fileType: LiteralDictionaryFileType.Binary,
@@ -42,7 +42,7 @@ public record LiteralDictionarySource
 
     public static IEnumerable<LiteralDictionarySource> Sources => new[]
     {
-        ScrabbleDictionary,
+        LiteralDictionary,
         CrosswordDictionary,
         EnglishDictionary
     };
@@ -60,10 +60,10 @@ public record LiteralDictionarySource
             LiteralDictionaryFileType.TextWithNewLines => new LiteralDictionary(
                 words: File.ReadLines(path: source.FileName),
                 description: source.Description),
-            LiteralDictionaryFileType.JsonStringArray => LiteralDictionary.NewFromJson(
+            LiteralDictionaryFileType.JsonStringArray => Models.LiteralDictionary.NewFromJson(
                 pathToDictionaryJson: source.FileName,
                 description: source.Description),
-            LiteralDictionaryFileType.Binary => LiteralDictionary.Deserialize(
+            LiteralDictionaryFileType.Binary => Models.LiteralDictionary.Deserialize(
                 inputFilename: source.FileName,
                 description: source.Description),
             _ => throw new Exception(message: "Unknown file type")
@@ -75,7 +75,7 @@ public record LiteralDictionarySource
         return sourceType switch
         {
             LiteralDictionarySources.Scrabble =>
-                NewFromSource(source: ScrabbleDictionary),
+                NewFromSource(source: LiteralDictionary),
             LiteralDictionarySources.Crossword =>
                 NewFromSource(source: CrosswordDictionary),
             LiteralDictionarySources.English =>

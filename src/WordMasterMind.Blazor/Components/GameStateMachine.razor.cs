@@ -17,6 +17,7 @@ public partial class GameStateMachine
         this.LiteralDictionary = null;
     }
 
+    public bool HardMode { get; private set; }
     public Library.Models.WordMasterMindGame? Game { get; private set; }
     public LiteralDictionarySources? DictionarySource { get; private set; }
     public int? WordLength { get; private set; }
@@ -48,18 +49,30 @@ public partial class GameStateMachine
 
                     if (this.WordLength is null)
                         throw new Exception(message: "Cannot start playing without a word length");
+
+                    this.Game = new Library.Models.WordMasterMindGame(
+                        minLength: this.WordLength.Value,
+                        maxLength: this.WordLength.Value,
+                        hardMode: this.HardMode,
+                        literalDictionary: this.LiteralDictionary,
+                        secretWord: null);
                     break;
                 case GameState.Playing:
                     if (value != GameState.GameOver)
                         throw new Exception(message: "GameOver state can only be entered from Playing state");
 
+                    if (this.Game is null) throw new Exception(message: "Unexpected game state");
+
                     if (!this.Game.GameOver) throw new Exception(message: "Game is not over!");
 
-                    if (this.Game is null) throw new Exception(message: "Unexpected game state");
                     break;
                 case GameState.GameOver:
                     if (value != GameState.Rules)
                         throw new Exception(message: "Rules state can only be entered from GameOver state");
+
+                    if (this.Game is null) throw new Exception(message: "Unexpected game state");
+
+                    this.Game = null;
 
                     break;
                 default:

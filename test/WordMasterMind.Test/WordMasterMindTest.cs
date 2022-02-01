@@ -64,15 +64,15 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWordTooShort()
     {
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             new WordMasterMindGame(
                 minLength: Constants.StandardLength,
                 maxLength: Constants.StandardLength,
                 hardMode: false,
-                scrabbleDictionary: scrabbleDictionary,
+                literalDictionary: literalDictionary,
                 // secretWord is valid, but not long enough
-                secretWord: scrabbleDictionary.GetRandomWord(minLength: 3,
+                secretWord: literalDictionary.GetRandomWord(minLength: 3,
                     maxLength: Constants.StandardLength - 1)));
         Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
@@ -81,15 +81,15 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWordTooLong()
     {
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             new WordMasterMindGame(
                 minLength: Constants.StandardLength,
                 maxLength: Constants.StandardLength,
                 hardMode: false,
-                scrabbleDictionary: scrabbleDictionary,
+                literalDictionary: literalDictionary,
                 // secretWord is valid, but too long
-                secretWord: scrabbleDictionary.GetRandomWord(minLength: Constants.StandardLength + 1,
+                secretWord: literalDictionary.GetRandomWord(minLength: Constants.StandardLength + 1,
                     maxLength: Constants.StandardLength + 1)));
         Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
@@ -100,13 +100,13 @@ public class WordMasterMindTest
     {
         // secretWord is made up word not in dictionary
         const string expectedSecretWord = "fizzbuzz";
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         var thrownException = Assert.ThrowsException<NotInDictionaryException>(action: () =>
             new WordMasterMindGame(
                 minLength: 8,
                 maxLength: 8,
                 hardMode: false,
-                scrabbleDictionary: scrabbleDictionary,
+                literalDictionary: literalDictionary,
                 secretWord: expectedSecretWord));
         Assert.AreEqual(expected: NotInDictionaryException.MessageText,
             actual: thrownException.Message);
@@ -115,13 +115,13 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindAttemptLengthMismatch()
     {
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         var mastermind = new WordMasterMindGame(
             minLength: Constants.StandardLength,
             maxLength: Constants.StandardLength,
             hardMode: false,
-            scrabbleDictionary: scrabbleDictionary,
-            secretWord: scrabbleDictionary.GetRandomWord(minLength: Constants.StandardLength,
+            literalDictionary: literalDictionary,
+            secretWord: literalDictionary.GetRandomWord(minLength: Constants.StandardLength,
                 maxLength: Constants.StandardLength));
         Assert.AreEqual(
             expected: Constants.StandardLength,
@@ -141,14 +141,14 @@ public class WordMasterMindTest
         var rnd = new Random();
         var length = rnd.Next(minValue: 3,
             maxValue: 5);
-        var scrabbleDictionary = GetWordDictionary();
-        var secretWord = scrabbleDictionary.GetRandomWord(minLength: length,
+        var literalDictionary = GetWordDictionary();
+        var secretWord = literalDictionary.GetRandomWord(minLength: length,
             maxLength: length);
         var mastermind = new WordMasterMindGame(
             minLength: length,
             maxLength: length,
             hardMode: false,
-            scrabbleDictionary: scrabbleDictionary,
+            literalDictionary: literalDictionary,
             secretWord: secretWord);
         Assert.AreEqual(
             expected: length,
@@ -172,18 +172,18 @@ public class WordMasterMindTest
         var rnd = new Random();
         var length = rnd.Next(minValue: 3,
             maxValue: 5);
-        var scrabbleDictionary = GetWordDictionary();
-        var secretWord = scrabbleDictionary.GetRandomWord(minLength: length,
+        var literalDictionary = GetWordDictionary();
+        var secretWord = literalDictionary.GetRandomWord(minLength: length,
             maxLength: length);
         var incorrectWord = secretWord;
         while (incorrectWord.Equals(value: secretWord))
-            incorrectWord = scrabbleDictionary.GetRandomWord(minLength: length,
+            incorrectWord = literalDictionary.GetRandomWord(minLength: length,
                 maxLength: length);
         var mastermind = new WordMasterMindGame(
             minLength: length,
             maxLength: length,
             hardMode: false,
-            scrabbleDictionary: scrabbleDictionary,
+            literalDictionary: literalDictionary,
             secretWord: secretWord);
         Assert.AreEqual(
             expected: length,
@@ -234,12 +234,12 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindWithProvidedRandomWordAndInvalidAttempt()
     {
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         var mastermind = new WordMasterMindGame(
             minLength: Constants.StandardLength,
             maxLength: Constants.StandardLength,
             hardMode: false,
-            scrabbleDictionary: scrabbleDictionary);
+            literalDictionary: literalDictionary);
         Assert.AreEqual(
             expected: Constants.StandardLength,
             actual: mastermind.WordLength);
@@ -262,13 +262,13 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestWordMasterMindHardMode()
     {
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         const string expectedWord = "while";
         var mastermind = new WordMasterMindGame(
             minLength: expectedWord.Length,
             maxLength: expectedWord.Length,
             hardMode: true,
-            scrabbleDictionary: scrabbleDictionary,
+            literalDictionary: literalDictionary,
             secretWord: expectedWord);
         Assert.AreEqual(
             expected: expectedWord.Length,
@@ -294,12 +294,12 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestAttemptsToString()
     {
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         var mastermind = new WordMasterMindGame(
             minLength: Constants.StandardLength,
             maxLength: Constants.StandardLength,
             hardMode: false,
-            scrabbleDictionary: scrabbleDictionary);
+            literalDictionary: literalDictionary);
         Assert.AreEqual(
             expected: Constants.StandardLength,
             actual: mastermind.WordLength);
@@ -317,12 +317,12 @@ public class WordMasterMindTest
     public void TestSolvedLetters()
     {
         var expectedWord = "hello";
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         var mastermind = new WordMasterMindGame(
             minLength: expectedWord.Length,
             maxLength: expectedWord.Length,
             hardMode: false,
-            scrabbleDictionary: scrabbleDictionary,
+            literalDictionary: literalDictionary,
             secretWord: expectedWord);
         Assert.AreEqual(
             expected: expectedWord.Length,
@@ -357,10 +357,10 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestAttemptsFunction()
     {
-        var scrabbleDictionary = GetWordDictionary();
+        var literalDictionary = GetWordDictionary();
         foreach (var hardMode in new[] {false, true})
-            for (var length = scrabbleDictionary.ShortestWordLength;
-                 length <= scrabbleDictionary.LongestWordLength;
+            for (var length = literalDictionary.ShortestWordLength;
+                 length <= literalDictionary.LongestWordLength;
                  length++)
             {
                 var attemptsForLength = WordMasterMindGame.GetMaxAttemptsForLength(
