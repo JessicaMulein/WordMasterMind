@@ -53,22 +53,25 @@ public partial class LiteralDictionary
     /// <exception cref="Exception"></exception>
     public LiteralDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null, string? description = null)
     {
+        ImmutableDictionary<int, IEnumerable<string>> wordsByLength;
         if (dictionary is not null)
         {
             // set this as the instance dictionary, made immutable
-            this._wordsByLength = dictionary.ToImmutableDictionary();
+            wordsByLength = AlphabetizeDictionary(dictionary: dictionary).ToImmutableDictionary();
         }
         else
         {
             // this is a Blazor WebAssembly app, essentially self-hosted.
             // LoadDirectlyFromJsonFile() is a helper method that grabs it using HTTP to localhost
-            var result = Task.Run(function: async () => await LoadDictionaryFromWebJson());
+            var result = Task.Run(function: async () => await LoadDictionaryFromWebJsonWordArray());
             // wait for the task to complete
             result.Wait();
             // set up the instance dictionary with the result, made immutable
-            this._wordsByLength = result.Result.ToImmutableDictionary();
-            if (this._wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
+            wordsByLength = AlphabetizeDictionary(dictionary: result.Result).ToImmutableDictionary();
         }
+
+        if (wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
+        this._wordsByLength = wordsByLength;
 
         // now that the dictionary is loaded, tally up the word counts and analyze the dictionary
 

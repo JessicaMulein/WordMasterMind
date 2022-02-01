@@ -19,15 +19,17 @@ public partial class LiteralDictionary
     {
         var dictionary = new Dictionary<int, IEnumerable<string>>();
         foreach (var word in words
-                     .Select(selector: w => w.Trim())
+                     .Select(selector: w => w
+                         .Trim()
+                         .ToUpperInvariant())
                      .Where(predicate: w => w.Length > 0))
         {
             var wordLength = word.Length;
             if (dictionary.ContainsKey(key: wordLength))
-                dictionary[key: wordLength] = dictionary[key: wordLength].Append(element: word.ToUpperInvariant());
+                dictionary[key: wordLength] = dictionary[key: wordLength].Append(element: word);
             else
                 dictionary.Add(key: wordLength,
-                    value: new[] {word.ToUpperInvariant()});
+                    value: new[] {word});
         }
 
         return AlphabetizeDictionary(dictionary: dictionary);
@@ -39,6 +41,9 @@ public partial class LiteralDictionary
         foreach (var (length, wordsForLength) in dictionary)
         {
             var arrayToSort = wordsForLength.ToArray();
+            // skip empty arrays
+            if (!arrayToSort.Any())
+                continue;
             Array.Sort(array: arrayToSort);
             dictionary[key: length] = arrayToSort;
         }
@@ -51,7 +56,7 @@ public partial class LiteralDictionary
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    private static async Task<Dictionary<int, IEnumerable<string>>> LoadDictionaryFromWebJson()
+    private static async Task<Dictionary<int, IEnumerable<string>>> LoadDictionaryFromWebJsonWordArray()
     {
         var dictionaryWords =
             await new HttpClient().GetFromJsonAsync<string[]>(requestUri: "/scrabble-dictionary.json");
