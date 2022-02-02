@@ -1,4 +1,4 @@
-<select name="@Name" id="@Name">
+<select name="@SelectName" id="lstDictionarySourceList" bind="@SourceTypeString">
     @foreach (var source in Sources)
     {
         <option value="@source.FileTypeString" id="src-@source.SourceTypeString.ToLowerInvariant()">@source.Description</option>

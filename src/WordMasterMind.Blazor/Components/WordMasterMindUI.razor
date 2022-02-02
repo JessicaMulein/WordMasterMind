@@ -1,6 +1,5 @@
 @using global::WordMasterMind.Blazor.Interfaces
 @using global::WordMasterMind.Blazor.Enumerations
-@inject IGameStateMachine _gameStateMachineMachine
 <div id="game">
     <header>
         <div class="menu">
@@ -20,20 +19,31 @@
             </button>
         </div>
     </header>
-    @if (_gameStateMachineMachine.State is GameState.Rules)
+    @if (GameStateMachine.State is GameState.Rules)
     {
-        <Splash></Splash>
-    } else if (_gameStateMachineMachine.State is GameState.SourceSelection)
+        <RulesDialog OnClose=@OnRulesDialogClose></RulesDialog>
+    } else if (GameStateMachine.State is GameState.SourceSelection)
     {
-        <DictionarySourceList></DictionarySourceList>
-    } else if (_gameStateMachineMachine.State is GameState.LengthSelection)
+        <DictionarySourceList SelectName="SourcesList"></DictionarySourceList>
+        <button class="icon" aria-label="back" onclick="@OnBackClick"><i class="fas fa-step-backward"></i></button>
+        <button class="icon" aria-label="next" onclick="@OnNextClick"><i class="fas fa-step-forward"></i></button>
+    } else if (GameStateMachine.State is GameState.LengthSelection)
     {
-    } else if (_gameStateMachineMachine.State is GameState.Playing or GameState.GameOver)
+        <select>
+            @if (GameStateMachine.LiteralDictionary != null)
+            {
+                foreach (var length in GameStateMachine.LiteralDictionary.ValidWordLengths)
+                {
+                    <option value=@length>@length</option>
+                }
+            }
+        </select>
+    } else if (GameStateMachine.State is GameState.Playing or GameState.GameOver)
     {
         <div id="board-container">
             <GameBoard></GameBoard>
         </div>
-        @if (_gameStateMachineMachine.State is GameState.Playing)
+        @if (GameStateMachine.State is GameState.Playing)
         {
             <GameKeyboard></GameKeyboard>
         }

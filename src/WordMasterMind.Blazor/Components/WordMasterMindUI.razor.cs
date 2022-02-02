@@ -1,10 +1,44 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
+using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Interfaces;
+using WordMasterMind.Library.Enumerations;
+using WordMasterMind.Library.Models;
 
 namespace WordMasterMind.Blazor.Components;
 
-public class WordMasterMindGame
+// ReSharper disable once InconsistentNaming
+public partial class WordMasterMindUI
 {
-    public WordMasterMindGame(IGameStateMachine gameStateMachineMachine)
+#pragma warning disable CS8618
+    [Inject] public IGameStateMachine GameStateMachine { get; set; }
+#pragma warning restore CS8618
+
+    private async Task OnRulesDialogClose(bool accepted)
     {
+        await Task.Run(action: () =>
+        {
+            // this will fire events within the state machine setter
+            this.GameStateMachine.State = GameState.SourceSelection;
+        });
+    }
+
+    public async Task OnBackClick()
+    {
+        await Task.Run(action: () => { this.GameStateMachine.State = GameState.Rules; });
+    }
+
+    public async Task OnNextClick()
+    {
+        await Task.Run(action: () =>
+        {
+            var literalDictionarySourceType = this.GameStateMachine.DictionarySourceType;
+            if (literalDictionarySourceType != null)
+            {
+                this.GameStateMachine.DictionarySourceType = literalDictionarySourceType;
+                this.GameStateMachine.State = GameState.LengthSelection;
+            }
+        });
     }
 }

@@ -25,8 +25,8 @@ public static class DailyWordGenerator
         day: 22);
 
     /// <summary>
-    /// Gets the puzzle number for a given date. Day 1 is the WordGeneratorEpoch.
-    /// Previous dates just go backwards for simplicity.
+    ///     Gets the puzzle number for a given date. Day 1 is the WordGeneratorEpoch.
+    ///     Previous dates just go backwards for simplicity.
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>

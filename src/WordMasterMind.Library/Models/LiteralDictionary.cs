@@ -106,6 +106,8 @@ public partial class LiteralDictionary
             longest = length;
         }
 
+        validWordLengths.Sort();
+
         this.Description = description ?? string.Empty;
         this.WordCount = totalWords;
         this._wordCountByLength = wordCountByLength;

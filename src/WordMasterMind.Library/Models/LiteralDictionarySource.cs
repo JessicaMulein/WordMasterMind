@@ -10,12 +10,12 @@ public partial record LiteralDictionarySource
     public readonly string Description;
     public readonly string FileName;
     public readonly LiteralDictionaryFileType FileType;
-    public readonly LiteralDictionarySources SourceType;
+    public readonly LiteralDictionarySourceType SourceTypeType;
 
-    private LiteralDictionarySource(LiteralDictionarySources sourceType, string fileName,
+    private LiteralDictionarySource(LiteralDictionarySourceType sourceTypeType, string fileName,
         LiteralDictionaryFileType fileType, string description)
     {
-        this.SourceType = sourceType;
+        this.SourceTypeType = sourceTypeType;
         this.FileName = fileName;
         this.FileType = fileType;
         this.Description = description;
@@ -23,8 +23,8 @@ public partial record LiteralDictionarySource
 
     public static IEnumerable<LiteralDictionarySource> Sources => new[]
     {
-        LiteralDictionary,
-        CrosswordDictionary,
-        EnglishDictionary,
+        ScrabbleDictionarySource,
+        CrosswordDictionarySource,
+        EnglishDictionarySource,
     };
 }

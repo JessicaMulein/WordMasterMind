@@ -1,6 +1,6 @@
 namespace WordMasterMind.Library.Enumerations;
 
-public enum LiteralDictionarySources
+public enum LiteralDictionarySourceType
 {
     /// <summary>
     ///     Standard Scrabble Dictionary
