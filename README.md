@@ -3,6 +3,7 @@
 - A C# Blazor WebAssembly quick wordle clone based on the scrabble dictionary
 - Self-contained
 
+![Rules Screenshot](https://raw.githubusercontent.com/FreddieMercurial/WordMasterMind/main/WordMasterMindRules.png)
 -----
 Welcome to **Word MasterMind**!
 
