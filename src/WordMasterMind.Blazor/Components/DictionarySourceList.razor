@@ -1,6 +1,7 @@
-<select name="@SelectName" id="lstDictionarySourceList" bind="@SourceTypeString">
+<select class="form-control" bind="@SourceTypeString">
+    <option selected disabled value="">select a dictionary</option>
     @foreach (var source in Sources)
     {
-        <option value="@source.FileTypeString" id="src-@source.SourceTypeString.ToLowerInvariant()">@source.Description</option>
+        <option value="@source.SourceTypeString">@source.Description</option>
     }
 </select>

@@ -13,19 +13,15 @@ public partial class DictionarySourceList
     [Inject]
     public IGameStateMachine GameStateMachine { get; set; }
 
-    [ParameterAttribute] public string SelectName { get; set; }
-
     public static IEnumerable<LiteralDictionarySource> Sources => LiteralDictionarySource.Sources;
 
     private string? _sourceTypeString;
     private string? SourceTypeString
     {
-        get
-        {
-            return _sourceTypeString;
-        }
+        get =>  this._sourceTypeString;
         set
         {
+            this._sourceTypeString = value;
             GameStateMachine.DictionarySourceType = value is null ? LiteralDictionarySourceType.Crossword : (LiteralDictionarySourceType)Enum.Parse(
                 enumType: typeof(LiteralDictionarySourceType),
                 value: value);

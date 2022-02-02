@@ -1,5 +1,3 @@
-@using global::WordMasterMind.Blazor.Interfaces
-@using global::WordMasterMind.Blazor.Enumerations
 <div id="game">
     <header>
         <div class="menu">
@@ -24,9 +22,9 @@
         <RulesDialog OnClose=@OnRulesDialogClose></RulesDialog>
     } else if (GameStateMachine.State is GameState.SourceSelection)
     {
-        <DictionarySourceList SelectName="SourcesList"></DictionarySourceList>
-        <button class="icon" aria-label="back" onclick="@OnBackClick"><i class="fas fa-step-backward"></i></button>
-        <button class="icon" aria-label="next" onclick="@OnNextClick"><i class="fas fa-step-forward"></i></button>
+        <DictionarySourceList></DictionarySourceList>
+        <button class="icon" aria-label="back" onclick=@OnBackClick><i class="fas fa-step-backward"></i></button>
+        <button class="icon" aria-label="next" onclick=@OnNextClick><i class="fas fa-step-forward"></i></button>
     } else if (GameStateMachine.State is GameState.LengthSelection)
     {
         <select>
