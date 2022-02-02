@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using WordMasterMind.Blazor.Interfaces;
 using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Models;
 
@@ -9,16 +10,25 @@ namespace WordMasterMind.Blazor.Components;
 
 public partial class DictionarySourceList
 {
-    [ParameterAttribute] public string SelectName { get; set; }
+    [Inject]
+    public IGameStateMachine GameStateMachine { get; set; }
 
-    public LiteralDictionarySourceType Type
-    {
-        get => this.SourceTypeString is null ? LiteralDictionarySourceType.Crossword : (LiteralDictionarySourceType) Enum.Parse(
-            enumType: typeof(LiteralDictionarySourceType),
-            value: this.SourceTypeString);
-    }
+    [ParameterAttribute] public string SelectName { get; set; }
 
     public static IEnumerable<LiteralDictionarySource> Sources => LiteralDictionarySource.Sources;
 
-    public string? SourceTypeString { get; set; }
+    private string? _sourceTypeString;
+    private string? SourceTypeString
+    {
+        get
+        {
+            return _sourceTypeString;
+        }
+        set
+        {
+            GameStateMachine.DictionarySourceType = value is null ? LiteralDictionarySourceType.Crossword : (LiteralDictionarySourceType)Enum.Parse(
+                enumType: typeof(LiteralDictionarySourceType),
+                value: value);
+        }
+    }
 }
