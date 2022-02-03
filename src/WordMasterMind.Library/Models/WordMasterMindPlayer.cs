@@ -42,7 +42,7 @@ public static class WordMasterMindPlayer
         int maximumDictionaryLookupAttemptsPerTry = 1000,
         IEnumerable<string>? excludeWords = null,
         IEnumerable<char>? mustIncludeLetters = null,
-        bool noStrategy = false)
+        bool noStrategy = false, bool avoidSecretWord = false)
     {
         if (turn == 1 && mastermind.WordLength == 5 && !noStrategy)
             return RandomFiveLetterStrategy;
@@ -54,6 +54,8 @@ public static class WordMasterMindPlayer
             mustIncludeLetters: mustIncludeLetters);
     }
 
+    public const int DefaultTries = 1000;
+
     /// <summary>
     ///     Attempts to solve the current puzzle from whatever turn it is on.
     /// </summary>
@@ -61,10 +63,11 @@ public static class WordMasterMindPlayer
     /// <param name="turns"></param>
     /// <param name="maximumDictionaryLookupAttemptsPerTry"></param>
     /// <param name="noStrategy"></param>
+    /// <param name="avoidSecretWord">Avoid the secret word (to do too many attempts)</param>
     /// <returns></returns>
     /// <exception cref="GameOverException"></exception>
     public static bool AttemptComputerSolve(WordMasterMindGame mastermind, int turns = -1,
-        int maximumDictionaryLookupAttemptsPerTry = 1000, bool noStrategy = false)
+        int maximumDictionaryLookupAttemptsPerTry = DefaultTries, bool noStrategy = false, bool avoidSecretWord = false)
     {
         if (mastermind.Solved || mastermind.CurrentAttempt >= mastermind.MaxAttempts)
             throw new GameOverException(solved: mastermind.Solved);
@@ -75,12 +78,20 @@ public static class WordMasterMindPlayer
         while (!mastermind.Solved && (turns == -1 || turns-- > 0))
         {
             var computerGuess = ComputerGuessWord(
-                turn: turn++,
+                turn: turn,
                 mastermind: mastermind,
                 maximumDictionaryLookupAttemptsPerTry: maximumDictionaryLookupAttemptsPerTry,
                 excludeWords: triedWords,
                 mustIncludeLetters: mustIncludeLetters,
                 noStrategy: noStrategy);
+
+            if (triedWords.Contains(computerGuess) || (avoidSecretWord && computerGuess.Equals(mastermind.SecretWord)))
+            {
+                continue;
+            }
+
+            // advance the turn counter
+            turn++;
 
             triedWords.Add(item: computerGuess);
 

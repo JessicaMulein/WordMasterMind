@@ -199,7 +199,10 @@ public class WordMasterMindTest
         {
             WordMasterMindPlayer.AttemptComputerSolve(
                 mastermind: mastermind,
-                turns: 1);
+                turns: 1,
+                maximumDictionaryLookupAttemptsPerTry: WordMasterMindPlayer.DefaultTries,
+                noStrategy: false,
+                avoidSecretWord: true);
             var attempt = mastermind.Attempts.Last();
             TestAttempt(knownSecretWord: secretWord,
                 attemptDetails: attempt);
