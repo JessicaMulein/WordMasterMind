@@ -1,4 +1,3 @@
-using System;
 using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Interfaces;
 using WordMasterMind.Library.Enumerations;
@@ -9,10 +8,10 @@ namespace WordMasterMind.Blazor.Models;
 
 public class GameStateMachine : IGameStateMachine
 {
+    private readonly int? _wordLength;
     private LiteralDictionarySourceType? _dictionarySourceType;
     private GameState _gameState;
     private bool _hardMode;
-    private readonly int? _wordLength;
 
     public GameStateMachine()
     {

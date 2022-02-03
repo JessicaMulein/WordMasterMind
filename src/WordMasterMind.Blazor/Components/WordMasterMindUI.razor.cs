@@ -1,10 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Interfaces;
-using WordMasterMind.Library.Enumerations;
-using WordMasterMind.Library.Models;
 
 namespace WordMasterMind.Blazor.Components;
 

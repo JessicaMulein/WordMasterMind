@@ -61,7 +61,7 @@ public static class DictionaryConverterUtility
 
     public static bool FileIsAlphabeticOnly(string filename)
     {
-        return File.ReadAllLines(filename).Any(predicate: line => Regex.IsMatch(input: line,
+        return File.ReadAllLines(path: filename).Any(predicate: line => Regex.IsMatch(input: line,
             pattern: @"^[a-zA-Z]+[\s]*$"));
     }
 

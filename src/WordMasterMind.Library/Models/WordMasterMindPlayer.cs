@@ -4,6 +4,8 @@ namespace WordMasterMind.Library.Models;
 
 public static class WordMasterMindPlayer
 {
+    public const int DefaultTries = 1000;
+
     public static readonly IEnumerable<string> FiveLetterStrategies = new[]
     {
         "ADIEU",
@@ -22,7 +24,7 @@ public static class WordMasterMindPlayer
         {
             var rnd = new Random();
             var strategies = FiveLetterStrategies.ToArray();
-            return strategies[rnd.Next(strategies.Length - 1)];
+            return strategies[rnd.Next(maxValue: strategies.Length - 1)];
         }
     }
 
@@ -54,8 +56,6 @@ public static class WordMasterMindPlayer
             mustIncludeLetters: mustIncludeLetters);
     }
 
-    public const int DefaultTries = 1000;
-
     /// <summary>
     ///     Attempts to solve the current puzzle from whatever turn it is on.
     /// </summary>
@@ -85,10 +85,8 @@ public static class WordMasterMindPlayer
                 mustIncludeLetters: mustIncludeLetters,
                 noStrategy: noStrategy);
 
-            if (triedWords.Contains(computerGuess) || (avoidSecretWord && computerGuess.Equals(mastermind.SecretWord)))
-            {
-                continue;
-            }
+            if (triedWords.Contains(item: computerGuess) ||
+                avoidSecretWord && computerGuess.Equals(value: mastermind.SecretWord)) continue;
 
             // advance the turn counter
             turn++;
@@ -102,10 +100,7 @@ public static class WordMasterMindPlayer
             attempt.Details
                 .Where(predicate: d => d.LetterCorrect)
                 .ToList()
-                .ForEach(action: d =>
-                {
-                    mustIncludeLetters.Add(item: d.Letter);
-                });
+                .ForEach(action: d => { mustIncludeLetters.Add(item: d.Letter); });
         }
 
         return mastermind.Solved;
