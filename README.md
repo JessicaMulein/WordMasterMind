@@ -19,7 +19,7 @@ Playing a 2 letter game is probably too easy, but there seemed no reason to limi
 Unlike Wordle, the number of tries varies with the word length.
 
 *   One (1) Attempt per letter in the secret word
-*   One (1) additional Attempt normally, or Two (2) additional Attempts if you've selected **Hard Mode**
+*   One (1) additional Attempt
 
 Therefore, a 3 letter word will give you 4 attempts, a 5 letter will give you 6 like Wordle, and a bonus try for Hard Mode. A 15 letter word would give you 16 attempts.
 

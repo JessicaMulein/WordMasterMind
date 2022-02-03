@@ -65,8 +65,7 @@ public class WordMasterMindGame
             throw new NotInDictionaryException();
 
         this.MaxAttempts = GetMaxAttemptsForLength(
-            length: this.WordLength,
-            hardMode: this.HardMode);
+            length: this.WordLength);
         this._attempts = new AttemptDetails[this.MaxAttempts];
         this._solvedLetters = new bool[this.WordLength];
     }
@@ -203,9 +202,9 @@ public class WordMasterMindGame
         return stringBuilder.ToString();
     }
 
-    public static int GetMaxAttemptsForLength(int length, bool hardMode)
+    public static int GetMaxAttemptsForLength(int length)
     {
-        return length + (hardMode ? 2 : 1);
+        return length + 1;
     }
 
     public AttemptDetails Attempt(string wordAttempt)

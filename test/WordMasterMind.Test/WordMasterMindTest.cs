@@ -193,8 +193,7 @@ public class WordMasterMindTest
             actual: mastermind.HardMode);
         for (var i = 0;
              i < WordMasterMindGame.GetMaxAttemptsForLength(
-                 length: length,
-                 hardMode: mastermind.HardMode);
+                 length: length);
              i++)
         {
             WordMasterMindPlayer.AttemptComputerSolve(
@@ -367,10 +366,9 @@ public class WordMasterMindTest
                  length++)
             {
                 var attemptsForLength = WordMasterMindGame.GetMaxAttemptsForLength(
-                    length: length,
-                    hardMode: hardMode);
+                    length: length);
                 Assert.AreEqual(
-                    expected: length + (hardMode ? 2 : 1),
+                    expected: length + 1,
                     actual: attemptsForLength);
             }
     }
