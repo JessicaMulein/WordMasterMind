@@ -4,6 +4,29 @@ namespace WordMasterMind.Library.Models;
 
 public static class WordMasterMindPlayer
 {
+    public static readonly IEnumerable<string> FiveLetterStrategies = new[]
+    {
+        "ADIEU",
+        "AROSE",
+        "ARISE",
+        "IDEAL",
+        "LINTY",
+        "RAISE",
+        "SOARE",
+        "SOUTH",
+    };
+
+    public static string RandomFiveLetterStrategy
+    {
+        get
+        {
+            var rnd = new Random();
+            var strategies = FiveLetterStrategies.ToArray();
+            return strategies[rnd.Next(strategies.Length - 1)];
+        }
+    }
+
+
     /// <summary>
     ///     The computer strategy starts with adieu if the game is 5 letters and it is not specifically disabled
     /// </summary>
@@ -12,17 +35,17 @@ public static class WordMasterMindPlayer
     /// <param name="maximumDictionaryLookupAttemptsPerTry"></param>
     /// <param name="excludeWords"></param>
     /// <param name="mustIncludeLetters"></param>
-    /// <param name="noAdieu"></param>
+    /// <param name="noStrategy"></param>
     /// <returns></returns>
     public static string ComputerGuessWord(WordMasterMindGame mastermind,
         int turn,
         int maximumDictionaryLookupAttemptsPerTry = 1000,
         IEnumerable<string>? excludeWords = null,
         IEnumerable<char>? mustIncludeLetters = null,
-        bool noAdieu = false)
+        bool noStrategy = false)
     {
-        if (turn == 1 && mastermind.WordLength == 5 && !noAdieu)
-            return "adieu".ToUpperInvariant();
+        if (turn == 1 && mastermind.WordLength == 5 && !noStrategy)
+            return RandomFiveLetterStrategy;
 
         return mastermind.LiteralDictionary.FindWord(
             knownCharacters: mastermind.SolvedLettersAsChars,
@@ -37,11 +60,11 @@ public static class WordMasterMindPlayer
     /// <param name="mastermind"></param>
     /// <param name="turns"></param>
     /// <param name="maximumDictionaryLookupAttemptsPerTry"></param>
-    /// <param name="noAdieu"></param>
+    /// <param name="noStrategy"></param>
     /// <returns></returns>
     /// <exception cref="GameOverException"></exception>
     public static bool AttemptComputerSolve(WordMasterMindGame mastermind, int turns = -1,
-        int maximumDictionaryLookupAttemptsPerTry = 1000, bool noAdieu = false)
+        int maximumDictionaryLookupAttemptsPerTry = 1000, bool noStrategy = false)
     {
         if (mastermind.Solved || mastermind.CurrentAttempt >= mastermind.MaxAttempts)
             throw new GameOverException(solved: mastermind.Solved);
@@ -57,7 +80,7 @@ public static class WordMasterMindPlayer
                 maximumDictionaryLookupAttemptsPerTry: maximumDictionaryLookupAttemptsPerTry,
                 excludeWords: triedWords,
                 mustIncludeLetters: mustIncludeLetters,
-                noAdieu: noAdieu);
+                noStrategy: noStrategy);
 
             triedWords.Add(item: computerGuess);
 
@@ -67,7 +90,11 @@ public static class WordMasterMindPlayer
             // future word guesses must include these letters
             attempt.Details
                 .Where(predicate: d => d.LetterCorrect)
-                .ToList().ForEach(action: d => { mustIncludeLetters.Add(item: d.Letter); });
+                .ToList()
+                .ForEach(action: d =>
+                {
+                    mustIncludeLetters.Add(item: d.Letter);
+                });
         }
 
         return mastermind.Solved;
