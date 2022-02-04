@@ -147,8 +147,6 @@ public partial class LiteralDictionary
                 continue;
             }
 
-            ;
-
             /* at this point we have a length that is included in the dictionary
              * and we have at least one word of that length
              * this is guaranteed to return a word of the desired length
@@ -217,8 +215,8 @@ public partial class LiteralDictionary
     /// <summary>
     ///     Attempts to find a word in the dictionary given some additional constraints
     /// </summary>
-    /// <param name="knownCharacters"></param>
-    /// <param name="maxIterations"></param>
+    /// <param name="regex"></param>
+    /// <param name="puzzleLength"></param>
     /// <param name="skipWords"></param>
     /// <param name="mustIncludeLetters"></param>
     /// <returns></returns>
@@ -240,11 +238,10 @@ public partial class LiteralDictionary
                     pattern: regex))
             // check the skip words list
             .Where(
-                predicate: w => skipWordsArray is null || !skipWordsArray.Contains(value: w))
+                predicate: w => !skipWordsArray.Contains(value: w))
             // check the must include list
             .Where(
-                predicate: w => mustIncludeLettersArray.All(predicate: mustIncludeLetter
-                    => w.Contains(value: mustIncludeLetter))).ToArray();
+                predicate: w => mustIncludeLettersArray.All(predicate: w.Contains)).ToArray();
 
         switch (words.Length)
         {
