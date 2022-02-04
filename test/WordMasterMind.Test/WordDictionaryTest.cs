@@ -91,7 +91,8 @@ public class LiteralDictionaryTest
     {
         var literalDictionary = GetWordDictionary();
         var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
-            literalDictionary.GetRandomWord(minLength: literalDictionary.ShortestWordLength - 1,
+            literalDictionary.GetRandomWord(
+                minLength: literalDictionary.ShortestWordLength - 1,
                 maxLength: literalDictionary.ShortestWordLength - 1));
         Assert.AreEqual(expected: "minLength must be greater than or equal to the shortest word length",
             actual: thrownException.Message);

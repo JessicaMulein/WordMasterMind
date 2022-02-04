@@ -231,8 +231,7 @@ public class WordMasterMindGame
                         letterPosition: currentAttemptLetterIndex,
                         letter: c,
                         evaluation: this._secretWord[index: currentAttemptLetterIndex++] == c
-                            ?
-                            LetterEvaluation.Correct
+                            ? LetterEvaluation.Correct
                             : this._secretWord.Contains(value: c)
                                 ? LetterEvaluation.Present
                                 : LetterEvaluation.Absent)).ToArray());

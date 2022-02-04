@@ -75,7 +75,8 @@ public class WordMasterMindTest
                 hardMode: false,
                 literalDictionary: literalDictionary,
                 // secretWord is valid, but not long enough
-                secretWord: literalDictionary.GetRandomWord(minLength: 3,
+                secretWord: literalDictionary.GetRandomWord(
+                    minLength: 3,
                     maxLength: Constants.StandardLength - 1)));
         Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);

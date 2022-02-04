@@ -28,7 +28,7 @@ public static class WordMasterMindPlayer
         {
             var rnd = new Random();
             var strategies = FiveLetterStrategies.ToArray();
-            return strategies[rnd.Next(maxValue: strategies.Length - 1)];
+            return strategies[rnd.Next(maxValue: strategies.Length)];
         }
     }
 

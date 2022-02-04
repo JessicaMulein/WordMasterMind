@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace WordMasterMind.Library.Models;
 
 public partial class LiteralDictionary
@@ -67,6 +69,29 @@ public partial class LiteralDictionary
                this._wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
     }
 
+    public int RandomLength(int minLength = -1, int maxLength = -1)
+    {
+        if (minLength == -1) minLength = this.ShortestWordLength;
+
+        if (maxLength == -1) maxLength = this.LongestWordLength;
+
+        if (minLength > maxLength || maxLength < minLength)
+            throw new ArgumentException(message: "minLength must be less than or equal to maxLength");
+
+        if (minLength < this.ShortestWordLength)
+            throw new ArgumentException(message: "minLength must be greater than or equal to the shortest word length");
+
+        if (maxLength > this.LongestWordLength)
+            throw new ArgumentException(message: "maxLength must be less than or equal to the longest word length");
+
+        var random = new Random();
+        var nonRandomLength = minLength == maxLength;
+        return nonRandomLength
+            ? maxLength
+            : random.Next(minValue: minLength,
+                maxValue: maxLength);
+    }
+
     /// <summary>
     ///     Gets a random word from the dictionary from a random length between minLength and maxLength
     /// </summary>
@@ -77,15 +102,6 @@ public partial class LiteralDictionary
     /// <exception cref="Exception"></exception>
     public string GetRandomWord(int minLength, int maxLength)
     {
-        if (minLength > maxLength || maxLength < minLength)
-            throw new ArgumentException(message: "minLength must be less than or equal to maxLength");
-
-        if (minLength < this.ShortestWordLength)
-            throw new ArgumentException(message: "minLength must be greater than or equal to the shortest word length");
-
-        if (maxLength > this.LongestWordLength)
-            throw new ArgumentException(message: "maxLength must be less than or equal to the longest word length");
-
         var random = new Random();
         /* maxTries is the number of tries to find a word of length between minLength and maxLength
          * that is of a length included in the dictionary. Although the dictionary is known to have
@@ -102,11 +118,9 @@ public partial class LiteralDictionary
         while (maxTries-- > 0)
         {
             // get a random length between minLength and maxLength
-            var nonRandomLength = minLength == maxLength;
-            var length = nonRandomLength
-                ? maxLength
-                : random.Next(minValue: minLength,
-                    maxValue: maxLength);
+            var length = this.RandomLength(
+                minLength: minLength,
+                maxLength: maxLength);
             // set up a variable to contain a reference the dictionary entry for the length
             IEnumerable<string> wordsForLength;
             // if the dictionary does not contain any words of length, or the length had an empty array, loop again
@@ -114,7 +128,7 @@ public partial class LiteralDictionary
                 !(wordsForLength = this._wordsByLength[key: length]).Any())
             {
                 // there is no point to continue looping if min and max are locked to a value
-                if (nonRandomLength)
+                if (minLength == maxLength)
                     break;
 
                 // continue looping, but skip the following code
@@ -186,5 +200,51 @@ public partial class LiteralDictionary
         }
 
         throw new Exception(message: "Number of iterations exceeded without finding a matching word");
+    }
+
+    /// <summary>
+    ///     Attempts to find a word in the dictionary given some additional constraints
+    /// </summary>
+    /// <param name="knownCharacters"></param>
+    /// <param name="maxIterations"></param>
+    /// <param name="skipWords"></param>
+    /// <param name="mustIncludeLetters"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="Exception"></exception>
+    public string FindWord(string regex, int puzzleLength, IEnumerable<string>? skipWords = null,
+        IEnumerable<char>? mustIncludeLetters = null)
+    {
+        var skipWordsArray = skipWords is null ? Array.Empty<string>() : skipWords.ToArray();
+        var mustIncludeLettersArray = mustIncludeLetters is null ? new List<char>() : mustIncludeLetters.ToList();
+
+        var length = this.RandomLength(
+            minLength: puzzleLength,
+            maxLength: puzzleLength);
+        var words = this._wordsByLength[key: length]
+            .Where(
+                predicate: w => Regex.IsMatch(
+                    input: w,
+                    pattern: regex))
+            // check the skip words list
+            .Where(
+                predicate: w => skipWordsArray is null || !skipWordsArray.Contains(value: w))
+            // check the must include list
+            .Where(
+                predicate: w => mustIncludeLettersArray.All(predicate: mustIncludeLetter
+                    => w.Contains(value: mustIncludeLetter))).ToArray();
+
+        switch (words.Length)
+        {
+            case 0:
+                throw new Exception(message: "No words found");
+            case 1:
+                return words.First();
+            default:
+            {
+                var rnd = new Random();
+                return words[rnd.Next(maxValue: words.Length)];
+            }
+        }
     }
 }

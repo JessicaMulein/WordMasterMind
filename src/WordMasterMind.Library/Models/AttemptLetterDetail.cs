@@ -22,7 +22,7 @@ public record AttemptLetterDetail
 
     public static AttemptLetterDetail FromEvaluation(LetterEvaluation evaluation, char letter, int letterPosition)
     {
-        return new(
+        return new AttemptLetterDetail(
             letterPosition: letterPosition,
             letter: letter,
             evaluation: evaluation);

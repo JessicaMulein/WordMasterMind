@@ -47,7 +47,7 @@ public static class DailyWordGenerator
         for (var skips = 0; skips < puzzleNumber - 1; skips++)
             wordIndex = rnd.Next(
                 minValue: 0,
-                maxValue: wordsForLength - 1);
+                maxValue: wordsForLength);
         return wordIndex;
     }
 
