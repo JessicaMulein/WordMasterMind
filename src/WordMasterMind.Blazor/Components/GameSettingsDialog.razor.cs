@@ -3,10 +3,10 @@ using WordMasterMind.Blazor.Interfaces;
 
 namespace WordMasterMind.Blazor.Components;
 
-public partial class GameSettings
+public partial class GameSettingsDialog
 {
     [Inject] public IGameStateMachine GameStateMachine { get; set; }
-    
+
     [Parameter] public EventCallback<bool> OnClose { get; set; }
 
     private Task ModalCancel()

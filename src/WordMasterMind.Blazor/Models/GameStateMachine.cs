@@ -103,7 +103,8 @@ public class GameStateMachine : IGameStateMachine
 
                     this.Game = null;
                     break;
-
+                case GameState.Settings:
+                    break;
                 default:
                     throw new Exception(message: $"Unknown game state: {this._gameState}");
             }

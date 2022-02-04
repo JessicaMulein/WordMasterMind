@@ -20,6 +20,15 @@ public partial class WordMasterMindUI
         });
     }
 
+    private async Task OnGameSettingsDialogClose(bool accepted)
+    {
+        await Task.Run(action: () =>
+        {
+            // this will fire events within the state machine setter
+            this.GameStateMachine.State = GameState.Settings;
+        });
+    }
+
     public async Task OnBackClick()
     {
         await Task.Run(action: () => { this.GameStateMachine.State = GameState.Rules; });
