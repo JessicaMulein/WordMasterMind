@@ -1,9 +1,14 @@
 <div class="game-row row">
     @if (Letters.Length > 0)
     {
-        @foreach (var letter in Letters)
+        var solvedLetters = GameStateMachine.Game.SolvedLettersAsChars();
+        var index = 0;
+        foreach (var letter in Letters)
         {
-            <GameTile letter="{letter}"/>
+            var solvedLetter = solvedLetters[index++];
+            var letterIsSolved = solvedLetter.Equals(obj: letter);
+            var evaluation = letterIsSolved ? nameof(LetterEvaluation.Correct) : solvedLetters.Contains(value: letter) ? nameof(LetterEvaluation.Present) : nameof(LetterEvaluation.Absent);
+            <GameTile letter="@letter" evaluation="@evaluation.ToLowerInvariant()" reveal="@letterIsSolved.ToString().ToLowerInvariant()"/>
         }
     }
     else
