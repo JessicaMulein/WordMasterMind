@@ -1,8 +1,8 @@
 <div id="board" style="width: 350px; height: 420px;">
-    <game-row letters="" length="5"></game-row>
-    <game-row letters="" length="5"></game-row>
-    <game-row letters="" length="5"></game-row>
-    <game-row letters="" length="5"></game-row>
-    <game-row letters="" length="5"></game-row>
-    <game-row letters="" length="5"></game-row>
+    @if (GameStateMachine.Game is not null) {
+        @for (var i = 0; i < GameStateMachine.Game.MaxAttempts; i++)
+        {
+            <GameRow letters="" length="@GameStateMachine.Game.WordLength"></GameRow>
+        }
+    }
 </div>

@@ -1,0 +1,16 @@
+<div class="game-row row">
+    @if (Letters.Length > 0)
+    {
+        @foreach (var letter in Letters)
+        {
+            <GameTile letter="{letter}"/>
+        }
+    }
+    else
+    {
+        @for (var counter = 0; counter < Length; counter++)
+        {
+            <GameTile letter=""></GameTile>
+        }
+    }
+</div>
