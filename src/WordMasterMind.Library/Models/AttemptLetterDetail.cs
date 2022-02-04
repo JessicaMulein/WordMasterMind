@@ -19,12 +19,4 @@ public record AttemptLetterDetail
     {
         return WordMasterMindGame.GetEmojiFromAttemptDetail(attemptLetterDetail: this);
     }
-
-    public static AttemptLetterDetail FromEvaluation(LetterEvaluation evaluation, char letter, int letterPosition)
-    {
-        return new AttemptLetterDetail(
-            letterPosition: letterPosition,
-            letter: letter,
-            evaluation: evaluation);
-    }
 }
