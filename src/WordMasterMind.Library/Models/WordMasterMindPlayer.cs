@@ -1,3 +1,4 @@
+using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Exceptions;
 
 namespace WordMasterMind.Library.Models;
@@ -6,6 +7,7 @@ public static class WordMasterMindPlayer
 {
     public const int DefaultTries = 1000;
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public static readonly IEnumerable<string> FiveLetterStrategies = new[]
     {
         "ADIEU",
@@ -14,10 +16,12 @@ public static class WordMasterMindPlayer
         "IDEAL",
         "LINTY",
         "RAISE",
+        // ReSharper disable once StringLiteralTypo
         "SOARE",
         "SOUTH",
     };
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public static string RandomFiveLetterStrategy
     {
         get
@@ -40,6 +44,7 @@ public static class WordMasterMindPlayer
     /// <param name="noStrategy"></param>
     /// <param name="avoidSecretWord"></param>
     /// <returns></returns>
+    // ReSharper disable once MemberCanBePrivate.Global
     public static string ComputerGuessWord(WordMasterMindGame mastermind,
         int turn,
         int maximumDictionaryLookupAttemptsPerTry = 1000,
@@ -52,7 +57,7 @@ public static class WordMasterMindPlayer
 
         if (avoidSecretWord)
         {
-            var tmp =(excludeWords ?? Array.Empty<string>()).ToList();
+            var tmp = (excludeWords ?? Array.Empty<string>()).ToList();
             if (!tmp.Contains(value: mastermind.SecretWord))
             {
                 tmp.Add(item: mastermind.SecretWord);
@@ -61,7 +66,7 @@ public static class WordMasterMindPlayer
         }
 
         return mastermind.LiteralDictionary.FindWord(
-            knownCharacters: mastermind.SolvedLettersAsChars,
+            knownCharacters: mastermind.SolvedLettersAsChars(),
             maxIterations: maximumDictionaryLookupAttemptsPerTry,
             skipWords: excludeWords,
             mustIncludeLetters: mustIncludeLetters);
@@ -109,7 +114,7 @@ public static class WordMasterMindPlayer
             // add all matched letters to the mustIncludeLetters list
             // future word guesses must include these letters
             attempt.Details
-                .Where(predicate: d => d.LetterPresent)
+                .Where(predicate: d => d.Evaluation is LetterEvaluation.Present or LetterEvaluation.Correct)
                 .ToList()
                 .ForEach(action: d => { mustIncludeLetters.Add(item: d.Letter); });
         }

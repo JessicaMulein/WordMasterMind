@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Text;
+using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Exceptions;
 using WordMasterMind.Library.Helpers;
 
@@ -144,19 +145,20 @@ public class WordMasterMindGame
             foreach (var attemptDetail in turn.Details)
             {
                 var newLetter = !newLetters.Contains(item: attemptDetail.Letter);
-                if (attemptDetail.LetterCorrect && newLetter)
+                switch (attemptDetail.Evaluation)
                 {
-                    score += 3;
-                    newLetters.Add(item: attemptDetail.Letter);
-                }
-                else if (attemptDetail.LetterPresent && newLetter)
-                {
-                    score += 1;
-                    newLetters.Add(item: attemptDetail.Letter);
-                }
-                else if (attemptDetail.LetterCorrect && !newLetter)
-                {
-                    score += 1;
+                    case LetterEvaluation.Correct:
+                        score += newLetter ? 3 : 1;
+                        newLetters.Add(item: attemptDetail.Letter);
+                        break;
+                    case LetterEvaluation.Present:
+                        score += newLetter ? 1 : 0;
+                        newLetters.Add(item: attemptDetail.Letter);
+                        break;
+                    case LetterEvaluation.Absent:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
@@ -164,16 +166,13 @@ public class WordMasterMindGame
         }
     }
 
-    public char[] SolvedLettersAsChars
+    public char[] SolvedLettersAsChars(char filler = ' ')
     {
-        get
-        {
-            var solvedLetters = new char[this.WordLength];
-            for (var i = 0; i < this.WordLength; i++)
-                solvedLetters[i] = this._solvedLetters[i] ? this._secretWord[index: i] : ' ';
+        var solvedLetters = new char[this.WordLength];
+        for (var i = 0; i < this.WordLength; i++)
+            solvedLetters[i] = this._solvedLetters[i] ? this._secretWord[index: i] : filler;
 
-            return solvedLetters;
-        }
+        return solvedLetters;
     }
 
     private static string GetEmojiFromConst(in string constValue)
@@ -181,21 +180,23 @@ public class WordMasterMindGame
         return WebUtility.HtmlDecode(value: constValue);
     }
 
-    public static string GetEmojiFromAttemptDetail(in AttemptDetail attemptDetail)
+    public static string GetEmojiFromAttemptDetail(in AttemptLetterDetail attemptLetterDetail)
     {
-        var emojiColor = Constants.BlackEmoji;
-        if (attemptDetail.LetterCorrect) emojiColor = Constants.GreenEmoji;
-
-        else if (attemptDetail.LetterPresent) emojiColor = Constants.YellowEmoji;
+        var emojiColor = attemptLetterDetail.Evaluation switch
+        {
+            LetterEvaluation.Correct => Constants.GreenEmoji,
+            LetterEvaluation.Present => Constants.YellowEmoji,
+            _ => Constants.BlackEmoji,
+        };
 
         return GetEmojiFromConst(constValue: emojiColor);
     }
 
-    public static string AttemptToEmojiString(IEnumerable<AttemptDetail> attemptDetails)
+    public static string AttemptToEmojiString(IEnumerable<AttemptLetterDetail> attemptDetails)
     {
         var stringBuilder = new StringBuilder();
         foreach (var attemptDetail in attemptDetails)
-            stringBuilder.Append(value: GetEmojiFromAttemptDetail(attemptDetail: attemptDetail));
+            stringBuilder.Append(value: GetEmojiFromAttemptDetail(attemptLetterDetail: attemptDetail));
 
         stringBuilder.Append(value: '\n');
 
@@ -226,15 +227,20 @@ public class WordMasterMindGame
             attemptNumber: this.CurrentAttempt + 1,
             details: wordAttempt
                 .Select(
-                    selector: c => new AttemptDetail(
+                    selector: c => new AttemptLetterDetail(
                         letterPosition: currentAttemptLetterIndex,
                         letter: c,
-                        letterPresent: this._secretWord.Contains(value: c),
-                        letterCorrect: this._secretWord[index: currentAttemptLetterIndex++] == c)).ToArray());
+                        evaluation: this._secretWord[index: currentAttemptLetterIndex++] == c
+                            ?
+                            LetterEvaluation.Correct
+                            : this._secretWord.Contains(value: c)
+                                ? LetterEvaluation.Present
+                                : LetterEvaluation.Absent)).ToArray());
 
         // update solved letters array
         for (var i = 0; i < this.WordLength; i++)
-            this._solvedLetters[i] |= this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).LetterCorrect;
+            this._solvedLetters[i] |=
+                this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).Evaluation is LetterEvaluation.Correct;
 
         // the attempt hasn't been registered in the count yet, checking for being at least second turn
         if (this.HardMode && this.CurrentAttempt >= 1)

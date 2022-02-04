@@ -5,14 +5,12 @@ namespace WordMasterMind.Blazor.Components;
 
 public partial class GameTile
 {
-    [CascadingParameter]
-    public char Letter { get; set; }
+    [CascadingParameter] public char Letter { get; set; }
 
     [CascadingParameter] public string Evaluation { get; set; } = nameof(LetterEvaluation.Absent).ToLowerInvariant();
 
     public LetterEvaluation LetterEvaluation
     {
-
         get => (LetterEvaluation) Enum.Parse(
             enumType: typeof(LetterEvaluation),
             value: this.Evaluation,
@@ -20,6 +18,5 @@ public partial class GameTile
         set => this.Evaluation = value.ToString().ToLowerInvariant();
     }
 
-    [CascadingParameter]
-    public bool Reveal { get; set; }
+    [CascadingParameter] public bool Reveal { get; set; }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Exceptions;
 using WordMasterMind.Library.Helpers;
 using WordMasterMind.Library.Models;
@@ -51,13 +52,15 @@ public class WordMasterMindTest
         {
             var correspondingSecretLetter = knownSecretWord[index: positionIndex++];
             var letterMatch = knownSecretWord.Contains(value: position.Letter);
-            Assert.AreEqual(
-                expected: letterMatch,
-                actual: position.LetterPresent);
             var positionMatch = position.Letter.Equals(obj: correspondingSecretLetter);
+            var expected = positionMatch
+                ? LetterEvaluation.Correct
+                : letterMatch
+                    ? LetterEvaluation.Present
+                    : LetterEvaluation.Absent;
             Assert.AreEqual(
-                expected: positionMatch,
-                actual: position.LetterCorrect);
+                expected: expected,
+                actual: position.Evaluation);
         }
     }
 
