@@ -3,6 +3,9 @@ using WordMasterMind.Library.Enumerations;
 
 namespace WordMasterMind.Blazor.Components;
 
+/// <summary>
+/// GameTile is used by GameRow/GameBoard and the Rules splash, but notably rules does not use GameRow.
+/// </summary>
 public partial class GameTile
 {
     [CascadingParameter] public char Letter { get; set; }
