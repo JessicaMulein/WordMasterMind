@@ -21,7 +21,7 @@ public static class DictionaryConverterUtility
         using var streamReader = new StreamReader(path: inputTextFilename);
         using var streamWriter = new StreamWriter(path: outputTextFilename,
             append: false);
-        streamWriter.Write(value: "[\n");
+        streamWriter.WriteLine(value: "[");
         var linesProcessed = 0;
         while (!streamReader.EndOfStream)
         {
@@ -45,11 +45,11 @@ public static class DictionaryConverterUtility
                 return false;
             }
 
-            streamWriter.Write(value: $"\t\"{newWord}\",\n");
+            streamWriter.WriteLine(value: $"\t\"{newWord}\",");
         }
 
         streamReader.Close();
-        streamWriter.Write(value: "]\n");
+        streamWriter.WriteLine(value: "]");
         streamWriter.Flush();
         streamWriter.Close();
 

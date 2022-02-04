@@ -118,15 +118,47 @@ public class WordMasterMindGame
         {
             var stringBuilder = new StringBuilder();
             for (var i = 0; i < this.CurrentAttempt; i++)
-            {
-                stringBuilder.Append(
-                    value: string.Concat(values: this._attempts[i].Details.Select(selector: a => a.ToString())));
-                stringBuilder.Append(value: '\n');
-            }
+                // join all of the emojis for each attempt and append
+                stringBuilder.AppendLine(
+                    value: string.Concat(
+                        values: this._attempts[i].Details
+                            .Select(selector: a => a.ToString())));
 
             return stringBuilder.ToString();
         }
     }
+
+    public string PuzzleHeader
+    {
+        get
+        {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append(value: $"Word MasterMind W{this.WordLength}:");
+            var puzzleNumber = DailyWordGenerator.PuzzleNumberForWordOfTheDay(word: this.SecretWord,
+                dictionary: this.LiteralDictionary);
+            if (puzzleNumber >= 0)
+            {
+                stringBuilder.Append(value: $"P{puzzleNumber}");
+            }
+            else
+            {
+                var wordIndex = this.LiteralDictionary.IndexForWord(word: this.SecretWord);
+                stringBuilder.Append(value: $"I{wordIndex}");
+            }
+
+            stringBuilder.Append(value: $" {this.Attempts.Count()}/{this.MaxAttempts}");
+            return stringBuilder.ToString();
+        }
+    }
+
+    public string AttemptHistoryString => string.Concat(
+        values: new[]
+        {
+            this.PuzzleHeader,
+            Environment.NewLine,
+            this.AttemptHistoryEmojiString,
+            Environment.NewLine,
+        });
 
     /// <summary>
     ///     Game score. Higher is better.

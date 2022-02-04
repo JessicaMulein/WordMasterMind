@@ -63,4 +63,17 @@ public static class DailyWordGenerator
                 wordsForLength: dictionary.WordCountForLength(
                     length: length)));
     }
+
+    public static int PuzzleNumberForWordOfTheDay(string word, LiteralDictionary dictionary)
+    {
+        var rnd = new Random(Seed: Seed);
+        var wordIndex = dictionary.IndexForWord(word: word);
+        // return number of skips when we match the word
+        for (var puzzleNumber = 0; puzzleNumber < dictionary.WordCountForLength(length: word.Length); puzzleNumber++)
+            if (wordIndex == rnd.Next(
+                    minValue: 0,
+                    maxValue: dictionary.WordCountForLength(length: word.Length)))
+                return puzzleNumber + 1;
+        return -1;
+    }
 }
