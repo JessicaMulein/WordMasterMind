@@ -1,22 +1,38 @@
+using System.Diagnostics;
+using WordMasterMind.Library.Enumerations;
+
 namespace WordMasterMind.Library.Models;
 
 public record AttemptDetail
 {
     public readonly char Letter;
-    public readonly bool LetterCorrect;
+    public readonly bool LetterPresent;
     public readonly int LetterPosition;
-    public readonly bool PositionCorrect;
+    public readonly bool LetterCorrect;
 
-    public AttemptDetail(int letterPosition, char letter, bool letterCorrect, bool positionCorrect)
+    public LetterEvaluation Evaluation => this.LetterCorrect switch
+    {
+        true => LetterEvaluation.Correct,
+        _ => this.LetterPresent ? LetterEvaluation.Present : LetterEvaluation.Absent,
+    };
+
+    public AttemptDetail(int letterPosition, char letter, bool letterPresent, bool letterCorrect)
     {
         this.LetterPosition = letterPosition;
         this.Letter = letter;
+        this.LetterPresent = letterPresent;
         this.LetterCorrect = letterCorrect;
-        this.PositionCorrect = positionCorrect;
     }
 
     public override string ToString()
     {
         return WordMasterMindGame.GetEmojiFromAttemptDetail(attemptDetail: this);
     }
+
+    public static AttemptDetail FromEvaluation(LetterEvaluation evaluation, char letter, int letterPosition) 
+        => new AttemptDetail(
+            letterPosition: letterPosition,
+            letter: letter,
+            letterPresent: evaluation is LetterEvaluation.Present or LetterEvaluation.Correct,
+            letterCorrect: evaluation is LetterEvaluation.Correct);
 }

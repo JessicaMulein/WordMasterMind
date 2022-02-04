@@ -53,11 +53,11 @@ public class WordMasterMindTest
             var letterMatch = knownSecretWord.Contains(value: position.Letter);
             Assert.AreEqual(
                 expected: letterMatch,
-                actual: position.LetterCorrect);
+                actual: position.LetterPresent);
             var positionMatch = position.Letter.Equals(obj: correspondingSecretLetter);
             Assert.AreEqual(
                 expected: positionMatch,
-                actual: position.PositionCorrect);
+                actual: position.LetterCorrect);
         }
     }
 

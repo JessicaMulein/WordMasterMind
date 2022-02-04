@@ -144,17 +144,17 @@ public class WordMasterMindGame
             foreach (var attemptDetail in turn.Details)
             {
                 var newLetter = !newLetters.Contains(item: attemptDetail.Letter);
-                if (attemptDetail.PositionCorrect && newLetter)
+                if (attemptDetail.LetterCorrect && newLetter)
                 {
                     score += 3;
                     newLetters.Add(item: attemptDetail.Letter);
                 }
-                else if (attemptDetail.LetterCorrect && newLetter)
+                else if (attemptDetail.LetterPresent && newLetter)
                 {
                     score += 1;
                     newLetters.Add(item: attemptDetail.Letter);
                 }
-                else if (attemptDetail.PositionCorrect && !newLetter)
+                else if (attemptDetail.LetterCorrect && !newLetter)
                 {
                     score += 1;
                 }
@@ -184,9 +184,9 @@ public class WordMasterMindGame
     public static string GetEmojiFromAttemptDetail(in AttemptDetail attemptDetail)
     {
         var emojiColor = Constants.BlackEmoji;
-        if (attemptDetail.PositionCorrect) emojiColor = Constants.GreenEmoji;
+        if (attemptDetail.LetterCorrect) emojiColor = Constants.GreenEmoji;
 
-        else if (attemptDetail.LetterCorrect) emojiColor = Constants.YellowEmoji;
+        else if (attemptDetail.LetterPresent) emojiColor = Constants.YellowEmoji;
 
         return GetEmojiFromConst(constValue: emojiColor);
     }
@@ -229,12 +229,12 @@ public class WordMasterMindGame
                     selector: c => new AttemptDetail(
                         letterPosition: currentAttemptLetterIndex,
                         letter: c,
-                        letterCorrect: this._secretWord.Contains(value: c),
-                        positionCorrect: this._secretWord[index: currentAttemptLetterIndex++] == c)).ToArray());
+                        letterPresent: this._secretWord.Contains(value: c),
+                        letterCorrect: this._secretWord[index: currentAttemptLetterIndex++] == c)).ToArray());
 
         // update solved letters array
         for (var i = 0; i < this.WordLength; i++)
-            this._solvedLetters[i] |= this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).PositionCorrect;
+            this._solvedLetters[i] |= this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).LetterCorrect;
 
         // the attempt hasn't been registered in the count yet, checking for being at least second turn
         if (this.HardMode && this.CurrentAttempt >= 1)

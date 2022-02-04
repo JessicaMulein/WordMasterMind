@@ -38,6 +38,7 @@ public static class WordMasterMindPlayer
     /// <param name="excludeWords"></param>
     /// <param name="mustIncludeLetters"></param>
     /// <param name="noStrategy"></param>
+    /// <param name="avoidSecretWord"></param>
     /// <returns></returns>
     public static string ComputerGuessWord(WordMasterMindGame mastermind,
         int turn,
@@ -48,6 +49,16 @@ public static class WordMasterMindPlayer
     {
         if (turn == 1 && mastermind.WordLength == 5 && !noStrategy)
             return RandomFiveLetterStrategy;
+
+        if (avoidSecretWord)
+        {
+            var tmp =(excludeWords ?? Array.Empty<string>()).ToList();
+            if (!tmp.Contains(value: mastermind.SecretWord))
+            {
+                tmp.Add(item: mastermind.SecretWord);
+                excludeWords = tmp.ToArray();
+            }
+        }
 
         return mastermind.LiteralDictionary.FindWord(
             knownCharacters: mastermind.SolvedLettersAsChars,
@@ -98,7 +109,7 @@ public static class WordMasterMindPlayer
             // add all matched letters to the mustIncludeLetters list
             // future word guesses must include these letters
             attempt.Details
-                .Where(predicate: d => d.LetterCorrect)
+                .Where(predicate: d => d.LetterPresent)
                 .ToList()
                 .ForEach(action: d => { mustIncludeLetters.Add(item: d.Letter); });
         }
