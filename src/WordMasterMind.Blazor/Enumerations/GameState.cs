@@ -7,4 +7,5 @@ public enum GameState
     LengthSelection = 2,
     Playing = 3,
     GameOver = 4,
+    Settings = 5,
 }

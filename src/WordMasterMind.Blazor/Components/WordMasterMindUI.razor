@@ -45,6 +45,8 @@
         {
             <GameKeyboard></GameKeyboard>
         }
+    } else if (GameStateMachine.State is GameState.Settings) {
+        <GameSettings></GameSettings>
     } else {
         <h3>Unknown state</h3>
     }
