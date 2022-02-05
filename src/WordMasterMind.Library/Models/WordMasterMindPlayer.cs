@@ -11,6 +11,7 @@ public static class WordMasterMindPlayer
     public static readonly IEnumerable<string> FiveLetterStrategies = new[]
     {
         "ADIEU",
+        "ALOFT",
         "AROSE",
         "ARISE",
         "IDEAL",
