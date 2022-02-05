@@ -20,6 +20,7 @@ public static class WordMasterMindPlayer
         // ReSharper disable once StringLiteralTypo
         "SOARE",
         "SOUTH",
+        "WILDS",
     };
 
     // ReSharper disable once MemberCanBePrivate.Global
