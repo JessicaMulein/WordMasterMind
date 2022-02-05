@@ -10,13 +10,9 @@ public partial record LiteralDictionarySource
 
     private static string FileTypeToString(LiteralDictionaryFileType fileType)
     {
-        return fileType switch
-        {
-            LiteralDictionaryFileType.TextWithNewLines => nameof(LiteralDictionaryFileType.TextWithNewLines),
-            LiteralDictionaryFileType.JsonStringArray => nameof(LiteralDictionaryFileType.JsonStringArray),
-            LiteralDictionaryFileType.Binary => nameof(LiteralDictionaryFileType.Binary),
-            _ => throw new Exception(message: "Unknown file type"),
-        };
+        return Enum.GetName(
+            enumType: typeof(LiteralDictionaryFileType),
+            value: fileType) ?? throw new InvalidOperationException("Unknown file type");
     }
 
     public static LiteralDictionaryFileType StringToFileType(string fileType)
@@ -28,14 +24,9 @@ public partial record LiteralDictionarySource
 
     private static string SourceTypeToString(LiteralDictionarySourceType sourceType)
     {
-        return sourceType switch
-        {
-            LiteralDictionarySourceType.Scrabble => nameof(LiteralDictionarySourceType.Scrabble),
-            LiteralDictionarySourceType.Crossword => nameof(LiteralDictionarySourceType.Crossword),
-            LiteralDictionarySourceType.English => nameof(LiteralDictionarySourceType.English),
-            LiteralDictionarySourceType.Other => nameof(LiteralDictionarySourceType.Other),
-            _ => throw new Exception(message: "Unknown source type"),
-        };
+        return Enum.GetName(
+            enumType: typeof(LiteralDictionarySourceType),
+            value: sourceType) ?? throw new InvalidOperationException(message: "Unknown source type");
     }
 
     public static LiteralDictionarySourceType StringToSourceType(string sourceType)
