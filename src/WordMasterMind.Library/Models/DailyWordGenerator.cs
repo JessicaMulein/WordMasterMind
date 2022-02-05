@@ -39,22 +39,14 @@ public static class DailyWordGenerator
         return Math.Abs(value: (int) Math.Floor(d: date.Value.Subtract(value: WordGeneratorEpoch).TotalDays)) + 1;
     }
 
-    public static int SourceTypeToSeed(LiteralDictionarySourceType sourceType, string description)
+    public static int SourceTypeToSeed(string description)
     {
         var md5 = MD5.Create();
-        var sourceName = Enum.GetName(enumType: typeof(LiteralDictionarySourceType),
-            value: sourceType);
-        if (sourceName is null)
-            throw new Exception(message: nameof(sourceType));
-        var hashKey = string.Join(separator: '|',
-            values: new {sourceName, description}).ToLowerInvariant();
-
-        var hash = md5.ComputeHash(buffer: Encoding.ASCII.GetBytes(s: hashKey));
+        var hash = md5.ComputeHash(buffer: Encoding.ASCII.GetBytes(s: description.ToLowerInvariant()));
         var seed = Seed;
         for (var offset = 0; offset < hash.Length; offset += 4)
-            seed = seed ^ BitConverter.ToInt32(value: hash,
+            seed ^= BitConverter.ToInt32(value: hash,
                 startIndex: offset);
-
         return seed;
     }
 
@@ -63,16 +55,15 @@ public static class DailyWordGenerator
     ///     unlikely to be correct
     ///     TODO: investigate and improve puzzle sequence generator
     /// </summary>
-    /// <param name="sourceType"></param>
     /// <param name="dictionaryDescription"></param>
     /// <param name="wordLength"></param>
     /// <param name="advance"></param>
     /// <returns></returns>
-    public static Random RandomSequenceGenerator(LiteralDictionarySourceType sourceType, string dictionaryDescription,
+    public static Random RandomSequenceGenerator(string dictionaryDescription,
         int wordLength,
         int advance = 0)
     {
-        var rnd = new Random(Seed: SourceTypeToSeed(sourceType: sourceType,
+        var rnd = new Random(Seed: SourceTypeToSeed(
             description: dictionaryDescription));
         // skip wordLength entries
         for (var i = 0; i < wordLength; i++) rnd.Next();
@@ -84,13 +75,12 @@ public static class DailyWordGenerator
         return rnd2;
     }
 
-    public static int WordIndexForDay(LiteralDictionarySourceType sourceType, string dictionaryDescription,
+    public static int WordIndexForDay(string dictionaryDescription,
         int wordLength, int wordsForLength,
         DateTime? date = null)
     {
         // an RNG with a pre-determined seed will generate a repeatable sequence
         var rnd = RandomSequenceGenerator(
-            sourceType: sourceType,
             dictionaryDescription: dictionaryDescription,
             wordLength: wordLength);
 
@@ -115,7 +105,6 @@ public static class DailyWordGenerator
         return dictionary.WordAtIndex(
             length: length,
             wordIndex: WordIndexForDay(
-                sourceType: dictionary.SourceType,
                 dictionaryDescription: dictionary.Description,
                 wordLength: length,
                 wordsForLength: dictionary.WordCountForLength(
@@ -126,7 +115,6 @@ public static class DailyWordGenerator
     public static int PuzzleNumberForWordOfTheDay(string word, LiteralDictionary dictionary)
     {
         var rnd = RandomSequenceGenerator(
-            sourceType: dictionary.SourceType,
             dictionaryDescription: dictionary.Description,
             wordLength: word.Length,
             advance: 0);

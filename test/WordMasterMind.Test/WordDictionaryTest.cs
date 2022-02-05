@@ -120,7 +120,7 @@ public class LiteralDictionaryTest
             dictionary: literalDictionary);
         Assert.AreEqual(
             // ReSharper disable once StringLiteralTypo
-            expected: "ABOVE",
+            expected: "CODON",
             actual: oneYearWord);
     }
 
