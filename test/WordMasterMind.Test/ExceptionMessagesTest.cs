@@ -2,6 +2,7 @@ using System;
 using Bogus;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordMasterMind.Library.Exceptions;
+using WordMasterMind.Library.Helpers;
 
 namespace WordMasterMind.Test;
 
@@ -42,11 +43,42 @@ public class ExceptionMessagesTest
     [TestMethod]
     public void HardModeExceptionTest()
     {
+        var letterPosition = new Faker().Random.Int(
+            min: 0,
+            max: Constants.StandardLength);
+        var letter = new Faker().Random.Char(
+            min: 'A',
+            max: 'Z');
+
         var thrownException =
-            Assert.ThrowsException<HardModeException>(action: () => throw new HardModeException());
+            Assert.ThrowsException<HardModeException>(action: () => throw new HardModeException(
+                letterPosition: letterPosition,
+                letter: letter,
+                solved: false));
         Assert.AreEqual(
-            expected: "You cannot change a letter that is in the correct position.",
+            expected: $"The word must contain the letter {letter}.",
             actual: thrownException.Message);
+        Assert.AreEqual(
+            expected: letterPosition,
+            actual: thrownException.LetterPosition);
+        Assert.AreEqual(
+            expected: letter,
+            actual: thrownException.Letter);
+
+        thrownException =
+            Assert.ThrowsException<HardModeException>(action: () => throw new HardModeException(
+                letterPosition: letterPosition,
+                letter: letter,
+                solved: true));
+        Assert.AreEqual(
+            expected: $"{letter} must remain in the correct position.",
+            actual: thrownException.Message);
+        Assert.AreEqual(
+            expected: letterPosition,
+            actual: thrownException.LetterPosition);
+        Assert.AreEqual(
+            expected: letter,
+            actual: thrownException.Letter);
     }
 
     [TestMethod]

@@ -289,11 +289,11 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: mastermind.CurrentAttempt,
             actual: mastermind.Attempts.Count());
-        // this should throw an exception because we've changed the 'w' to 't' in a locked position
+        // this should throw an exception because we've changed the 'w' to 't' in a locked position, and 
         var thrownException =
             Assert.ThrowsException<HardModeException>(action: () => mastermind.Attempt(wordAttempt: "there"));
         Assert.AreEqual(
-            expected: HardModeException.MessageText,
+            expected: "W must remain in the correct position.",
             actual: thrownException.Message);
     }
 

@@ -14,6 +14,8 @@ public class WordMasterMindGame
     /// </summary>
     private readonly AttemptDetails[] _attempts;
 
+    private readonly bool[] _foundLetters;
+
     /// <summary>
     ///     Current word being guessed. Randomly selected from the Scrabble dictionary.
     /// </summary>
@@ -69,6 +71,7 @@ public class WordMasterMindGame
             length: this.WordLength);
         this._attempts = new AttemptDetails[this.MaxAttempts];
         this._solvedLetters = new bool[this.WordLength];
+        this._foundLetters = new bool[this.WordLength];
     }
 
     public bool[] SolvedLetters
@@ -78,6 +81,19 @@ public class WordMasterMindGame
             var copy = new bool[this.WordLength];
             Array.Copy(
                 sourceArray: this._solvedLetters,
+                destinationArray: copy,
+                length: this.WordLength);
+            return copy;
+        }
+    }
+
+    public bool[] FoundLetters
+    {
+        get
+        {
+            var copy = new bool[this.WordLength];
+            Array.Copy(
+                sourceArray: this._foundLetters,
                 destinationArray: copy,
                 length: this.WordLength);
             return copy;
@@ -240,6 +256,8 @@ public class WordMasterMindGame
         return length + 1;
     }
 
+    public static int HumanizeIndex(int index) => index + 1;
+
     public AttemptDetails Attempt(string wordAttempt)
     {
         if (this.GameOver) throw new GameOverException(solved: this.Solved);
@@ -256,7 +274,7 @@ public class WordMasterMindGame
         var currentAttemptLetterIndex = 0;
         // the attempt hasn't been registered in the count yet
         this._attempts[this.CurrentAttempt] = new AttemptDetails(
-            attemptNumber: this.CurrentAttempt + 1,
+            attemptNumber: HumanizeIndex(index: this.CurrentAttempt),
             details: wordAttempt
                 .Select(
                     selector: c => new AttemptLetterDetail(
@@ -273,16 +291,37 @@ public class WordMasterMindGame
             this._solvedLetters[i] |=
                 this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).Evaluation is LetterEvaluation.Correct;
 
+        // update found letters array
+        for (var i = 0; i < this.WordLength; i++)
+            this._foundLetters[i] |=
+                this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).Evaluation is LetterEvaluation.Present;
+
         // the attempt hasn't been registered in the count yet, checking for being at least second turn
         if (this.HardMode && this.CurrentAttempt >= 1)
-            // if a previous attempt had a letter in the correct position, future attempts must have the same letter in the correct position
-            foreach (var attemptDetail in this._attempts[this.CurrentAttempt])
+            for (var letterPosition = 0; letterPosition < this.WordLength; letterPosition++)
+            {
+                var originalLetter = this._secretWord[index: letterPosition];
+                
+                // if a previous attempt has guessed a letter, the current attempt must contain it
+                if (this._foundLetters[letterPosition] && 
+                    !wordAttempt.Contains(value: originalLetter))
+                    throw new HardModeException(
+                        letterPosition: letterPosition,
+                        letter: originalLetter,
+                        solved: false);
+
+                // if a previous attempt had a letter in the correct position, future attempts must have the same letter in the correct position
                 /* if the letter has been previously solved and the letter has
                  * been changed from the secret word, throw the HardModeException
                  */
-                if (this._solvedLetters[attemptDetail.LetterPosition] &&
-                    attemptDetail.Letter != this._secretWord[index: attemptDetail.LetterPosition])
-                    throw new HardModeException();
+                if (this._solvedLetters[letterPosition] &&
+                    this._attempts[this.CurrentAttempt].Details.ElementAt(index: letterPosition).Letter !=
+                    this._secretWord[index: letterPosition])
+                    throw new HardModeException(
+                        letterPosition: letterPosition,
+                        letter: originalLetter,
+                        solved: true);
+            }
 
         // if we haven't thrown an exception due to hard mode, and the word is the secret word, we've solved it
         if (this._secretWord.Equals(value: wordAttempt)) this.Solved = true;
