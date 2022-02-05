@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using WordMasterMind.Library.Enumerations;
 
 namespace WordMasterMind.Library.Models;
 
@@ -56,10 +57,12 @@ public partial class LiteralDictionary
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    private static async Task<Dictionary<int, IEnumerable<string>>> LoadDictionaryFromWebJsonWordArray()
+    private static async Task<Dictionary<int, IEnumerable<string>>> LoadDictionaryFromWebJsonWordArray(
+        LiteralDictionarySourceType sourceType)
     {
+        var source = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
         var dictionaryWords =
-            await new HttpClient().GetFromJsonAsync<string[]>(requestUri: "/collins-scrabble.json");
+            await new HttpClient().GetFromJsonAsync<string[]>(requestUri: source.FileName);
         if (dictionaryWords is null || !dictionaryWords.Any())
             throw new Exception(message: "Dictionary could not be retrieved");
 

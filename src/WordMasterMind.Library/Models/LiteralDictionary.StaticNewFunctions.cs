@@ -55,22 +55,13 @@ public partial class LiteralDictionary
     ///     Creates a literal dictionary from a source type
     /// </summary>
     /// <param name="sourceType"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
+    /// <param name="basePath"></para>
+    ///     <returns></returns>
+    ///     <exception cref="Exception"></exception>
     public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string basePath)
     {
-        return sourceType switch
-        {
-            LiteralDictionarySourceType.Scrabble =>
-                NewFromSource(
-                    source: LiteralDictionarySource.ScrabbleDictionarySource,
-                    basePath: basePath),
-            LiteralDictionarySourceType.Crossword =>
-                NewFromSource(source: LiteralDictionarySource.CrosswordDictionarySource, basePath: basePath),
-            LiteralDictionarySourceType.English =>
-                NewFromSource(source: LiteralDictionarySource.EnglishDictionarySource, basePath: basePath),
-            //LiteralDictionarySourceType.Other => expr,
-            _ => throw new Exception(message: "Unknown source type"),
-        };
+        return NewFromSource(
+            source: LiteralDictionarySource.FromSourceType(sourceType: sourceType),
+            basePath: basePath);
     }
 }
