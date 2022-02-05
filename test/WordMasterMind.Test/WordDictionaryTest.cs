@@ -31,9 +31,15 @@ public class LiteralDictionaryTest
 
     private static LiteralDictionary GetWordDictionary()
     {
-        return LiteralDictionary.Deserialize(
+        var testRoot = GetTestRoot();
+        var literalDictionary = LiteralDictionary.Deserialize(
             sourceType: LiteralDictionarySourceType.Scrabble,
-            inputFilename: GetTestRoot(fileName: "collins-scrabble.bin"));
+            inputFilename: Path.Combine(
+                path1: testRoot,
+                path2: "collins-scrabble.bin"));
+        // this must be set to use the word generator
+        DailyWordGenerator.BasePath = testRoot;
+        return literalDictionary;
     }
 
     [TestMethod]

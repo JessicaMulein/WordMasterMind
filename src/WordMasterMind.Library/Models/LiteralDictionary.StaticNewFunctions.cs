@@ -26,23 +26,26 @@ public partial class LiteralDictionary
     ///     Creates a literal dictionary from a source
     /// </summary>
     /// <param name="source"></param>
+    /// <param name="basePath"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static LiteralDictionary NewFromSource(LiteralDictionarySource source)
+    public static LiteralDictionary NewFromSource(LiteralDictionarySource source, string basePath)
     {
+        var fileName = Path.Combine(path1: basePath,
+            path2: source.FileName);
         return source.FileType switch
         {
             LiteralDictionaryFileType.TextWithNewLines => new LiteralDictionary(
                 sourceType: source.SourceType,
-                words: File.ReadLines(path: source.FileName),
+                words: File.ReadLines(path: fileName),
                 description: source.Description),
             LiteralDictionaryFileType.JsonStringArray => NewFromJson(
                 sourceType: source.SourceType,
-                pathToDictionaryJson: source.FileName,
+                pathToDictionaryJson: fileName,
                 description: source.Description),
             LiteralDictionaryFileType.Binary => Deserialize(
                 sourceType: source.SourceType,
-                inputFilename: source.FileName,
+                inputFilename: fileName,
                 description: source.Description),
             _ => throw new Exception(message: "Unknown file type"),
         };
@@ -54,16 +57,19 @@ public partial class LiteralDictionary
     /// <param name="sourceType"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType)
+    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string basePath)
     {
         return sourceType switch
         {
             LiteralDictionarySourceType.Scrabble =>
-                NewFromSource(source: LiteralDictionarySource.ScrabbleDictionarySource),
+                NewFromSource(
+                    source: LiteralDictionarySource.ScrabbleDictionarySource,
+                    basePath: basePath),
             LiteralDictionarySourceType.Crossword =>
-                NewFromSource(source: LiteralDictionarySource.CrosswordDictionarySource),
+                NewFromSource(source: LiteralDictionarySource.CrosswordDictionarySource, basePath: basePath),
             LiteralDictionarySourceType.English =>
-                NewFromSource(source: LiteralDictionarySource.EnglishDictionarySource),
+                NewFromSource(source: LiteralDictionarySource.EnglishDictionarySource, basePath: basePath),
+            //LiteralDictionarySourceType.Other => expr,
             _ => throw new Exception(message: "Unknown source type"),
         };
     }

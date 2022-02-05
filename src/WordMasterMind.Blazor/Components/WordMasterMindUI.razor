@@ -37,7 +37,7 @@
     }
     else if (GameStateMachine.State is GameState.LengthSelection)
     {
-        <select>
+        <select @bind="GameStateMachine.WordLength">
             @if (GameStateMachine.LiteralDictionary != null)
             {
                 foreach (var length in GameStateMachine.LiteralDictionary.ValidWordLengths)

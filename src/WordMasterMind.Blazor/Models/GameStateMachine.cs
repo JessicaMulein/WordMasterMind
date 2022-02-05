@@ -77,7 +77,9 @@ public class GameStateMachine : IGameStateMachine
                         throw new Exception(message: "Cannot enter LengthSelection state without a dictionary source");
 
                     this.LiteralDictionary =
-                        LiteralDictionary.NewFromSourceType(sourceType: this._dictionarySourceType.Value);
+                        LiteralDictionary.NewFromSourceType(
+                            sourceType: this._dictionarySourceType.Value,
+                            basePath: Utilities.GetWebRoot());
                     break;
                 case GameState.Playing:
                     if (oldState is not GameState.LengthSelection)

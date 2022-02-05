@@ -13,6 +13,18 @@ namespace WordMasterMind.Library.Models;
 /// </summary>
 public static class DailyWordGenerator
 {
+    private static string? _basePath;
+
+    public static string BasePath
+    {
+        get
+        {
+            if (_basePath is null) throw new Exception(message: "BasePath must be set before use");
+            return _basePath;
+        }
+        set => _basePath = value;
+    }
+ 
     /// <summary>
     ///     The Official WordMasterMind Word of the Day seed*
     ///     *) probably should be changed to a random value
@@ -101,7 +113,9 @@ public static class DailyWordGenerator
         LiteralDictionary? dictionary = null)
     {
         dictionary = dictionary ??
-                     LiteralDictionary.NewFromSourceType(sourceType: LiteralDictionarySourceType.Scrabble);
+                     LiteralDictionary.NewFromSourceType(
+                         sourceType: LiteralDictionarySourceType.Scrabble,
+                         basePath: BasePath);
         return dictionary.WordAtIndex(
             length: length,
             wordIndex: WordIndexForDay(
