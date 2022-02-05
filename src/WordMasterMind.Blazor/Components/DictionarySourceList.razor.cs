@@ -23,7 +23,8 @@ public partial class DictionarySourceList
                 ? LiteralDictionarySourceType.Crossword
                 : (LiteralDictionarySourceType) Enum.Parse(
                     enumType: typeof(LiteralDictionarySourceType),
-                    value: value);
+                    value: value,
+                    ignoreCase: true);
         }
     }
 }

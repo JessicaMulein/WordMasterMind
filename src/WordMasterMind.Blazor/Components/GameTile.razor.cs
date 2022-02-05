@@ -4,13 +4,13 @@ using WordMasterMind.Library.Enumerations;
 namespace WordMasterMind.Blazor.Components;
 
 /// <summary>
-/// GameTile is used by GameRow/GameBoard and the Rules splash, but notably rules does not use GameRow.
+///     GameTile is used by GameRow/GameBoard and the Rules splash, but notably rules does not use GameRow.
 /// </summary>
 public partial class GameTile
 {
-    [CascadingParameter] public char Letter { get; set; }
+    [ParameterAttribute] public string Letter { get; set; }
 
-    [CascadingParameter] public string Evaluation { get; set; } = nameof(LetterEvaluation.Absent).ToLowerInvariant();
+    [ParameterAttribute] public string Evaluation { get; set; } = nameof(LetterEvaluation.Absent).ToLowerInvariant();
 
     public LetterEvaluation LetterEvaluation
     {
@@ -21,5 +21,5 @@ public partial class GameTile
         set => this.Evaluation = value.ToString().ToLowerInvariant();
     }
 
-    [CascadingParameter] public bool Reveal { get; set; }
+    [ParameterAttribute] public string Reveal { get; set; }
 }

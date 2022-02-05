@@ -6,7 +6,7 @@ public partial record LiteralDictionarySource
 {
     public string FileTypeString => FileTypeToString(fileType: this.FileType);
 
-    public string SourceTypeString => SourceTypeToString(fileType: this.FileType);
+    public string SourceTypeString => SourceTypeToString(sourceType: this.SourceType);
 
     private static string FileTypeToString(LiteralDictionaryFileType fileType)
     {
@@ -26,21 +26,22 @@ public partial record LiteralDictionarySource
             ignoreCase: true);
     }
 
-    private static string SourceTypeToString(LiteralDictionaryFileType fileType)
+    private static string SourceTypeToString(LiteralDictionarySourceType sourceType)
     {
-        return fileType switch
+        return sourceType switch
         {
-            LiteralDictionaryFileType.TextWithNewLines => nameof(LiteralDictionaryFileType.TextWithNewLines),
-            LiteralDictionaryFileType.JsonStringArray => nameof(LiteralDictionaryFileType.JsonStringArray),
-            LiteralDictionaryFileType.Binary => nameof(LiteralDictionaryFileType.Binary),
-            _ => throw new Exception(message: "Unknown file type"),
+            LiteralDictionarySourceType.Scrabble => nameof(LiteralDictionarySourceType.Scrabble),
+            LiteralDictionarySourceType.Crossword => nameof(LiteralDictionarySourceType.Crossword),
+            LiteralDictionarySourceType.English => nameof(LiteralDictionarySourceType.English),
+            LiteralDictionarySourceType.Other => nameof(LiteralDictionarySourceType.Other),
+            _ => throw new Exception(message: "Unknown source type"),
         };
     }
 
-    public static LiteralDictionaryFileType StringToSourceType(string fileType)
+    public static LiteralDictionarySourceType StringToSourceType(string sourceType)
     {
-        return Enum.Parse<LiteralDictionaryFileType>(
-            value: fileType,
+        return Enum.Parse<LiteralDictionarySourceType>(
+            value: sourceType,
             ignoreCase: true);
     }
 }
