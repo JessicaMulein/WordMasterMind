@@ -63,4 +63,9 @@ public partial record LiteralDictionarySource
             value: sourceType,
             ignoreCase: true);
     }
+
+    public static IEnumerable<LiteralDictionarySource> Sources
+        => Enum.GetValues<LiteralDictionarySourceType>()
+            .Select(
+                selector: LiteralDictionarySource.FromSourceType);
 }

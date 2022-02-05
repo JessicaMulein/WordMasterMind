@@ -20,11 +20,4 @@ public partial record LiteralDictionarySource
         this.FileType = fileType;
         this.Description = description;
     }
-
-    public static IEnumerable<LiteralDictionarySource> Sources => new[]
-    {
-        ScrabbleDictionarySource,
-        CrosswordDictionarySource,
-        EnglishDictionarySource,
-    };
 }
