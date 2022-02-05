@@ -10,9 +10,11 @@ public partial class LiteralDictionary
     ///     It will get passed through FillDictionary and then the standard constructor
     /// </summary>
     /// <param name="pathToDictionaryJson"></param>
-    public static LiteralDictionary NewFromJson(string pathToDictionaryJson, string? description = null)
+    public static LiteralDictionary NewFromJson(LiteralDictionarySourceType sourceType, string pathToDictionaryJson,
+        string? description = null)
     {
         return new LiteralDictionary(
+            sourceType: sourceType,
             words: JsonSerializer
                 .Deserialize<string[]>(
                     json: File.ReadAllText(path: pathToDictionaryJson),
@@ -31,12 +33,15 @@ public partial class LiteralDictionary
         return source.FileType switch
         {
             LiteralDictionaryFileType.TextWithNewLines => new LiteralDictionary(
+                sourceType: source.SourceType,
                 words: File.ReadLines(path: source.FileName),
                 description: source.Description),
             LiteralDictionaryFileType.JsonStringArray => NewFromJson(
+                sourceType: source.SourceType,
                 pathToDictionaryJson: source.FileName,
                 description: source.Description),
             LiteralDictionaryFileType.Binary => Deserialize(
+                sourceType: source.SourceType,
                 inputFilename: source.FileName,
                 description: source.Description),
             _ => throw new Exception(message: "Unknown file type"),

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Models;
 
 namespace WordMasterMind.Library.Helpers;
@@ -146,6 +147,7 @@ public static class DictionaryConverterUtility
             return result ? 0 : 1;
 
         var dictionary = LiteralDictionary.NewFromJson(
+            sourceType: LiteralDictionarySourceType.Other,
             pathToDictionaryJson: fileIsJson ? arguments[1] : jsonOutputFile);
         var wordsAdded = dictionary.Serialize(
             outputFilename: binaryOutputFile);
@@ -158,6 +160,7 @@ public static class DictionaryConverterUtility
 
         var dictionary2 = LiteralDictionary
             .Deserialize(
+                sourceType: LiteralDictionarySourceType.Other,
                 inputFilename: binaryOutputFile);
         Console.WriteLine(format: "Dictionary contains {0} words.",
             arg0: dictionary2.WordCount);

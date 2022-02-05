@@ -16,4 +16,9 @@ public enum LiteralDictionarySourceType
     ///     English (simplified)
     /// </summary>
     English,
+
+    /// <summary>
+    ///     Other
+    /// </summary>
+    Other,
 }

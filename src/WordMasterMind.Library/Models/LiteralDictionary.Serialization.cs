@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Exceptions;
 
 namespace WordMasterMind.Library.Models;
@@ -13,7 +14,8 @@ public partial class LiteralDictionary
     /// <param name="description"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public static LiteralDictionary Deserialize(string inputFilename, string? description = null)
+    public static LiteralDictionary Deserialize(LiteralDictionarySourceType sourceType, string inputFilename,
+        string? description = null)
     {
         if (!File.Exists(path: inputFilename))
             throw new FileNotFoundException(message: "File not found",
@@ -43,6 +45,7 @@ public partial class LiteralDictionary
         stream.Close();
 
         return new LiteralDictionary(
+            sourceType: sourceType,
             dictionary: dictionary,
             description: description);
     }

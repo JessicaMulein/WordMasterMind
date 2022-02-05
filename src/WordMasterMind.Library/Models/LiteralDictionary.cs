@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
+using WordMasterMind.Library.Enumerations;
 
 namespace WordMasterMind.Library.Models;
 
@@ -35,6 +36,11 @@ public partial class LiteralDictionary
     public readonly int ShortestWordLength;
 
     /// <summary>
+    ///     Source of the dictionary words
+    /// </summary>
+    public readonly LiteralDictionarySourceType SourceType;
+
+    /// <summary>
     ///     Word lengths known to have at least one word
     /// </summary>
     // ReSharper disable once MemberCanBePrivate.Global
@@ -48,27 +54,16 @@ public partial class LiteralDictionary
     /// <summary>
     ///     Standard constructor takes a dictionary of strings, organized by length
     /// </summary>
+    /// <param name="sourceType"></param>
     /// <param name="dictionary"></param>
     /// <param name="description"></param>
     /// <exception cref="Exception"></exception>
-    public LiteralDictionary(Dictionary<int, IEnumerable<string>>? dictionary = null, string? description = null)
+    public LiteralDictionary(LiteralDictionarySourceType sourceType, Dictionary<int, IEnumerable<string>> dictionary,
+        string? description = null)
     {
-        ImmutableDictionary<int, IEnumerable<string>> wordsByLength;
-        if (dictionary is not null)
-        {
-            // set this as the instance dictionary, made immutable
-            wordsByLength = AlphabetizeDictionary(dictionary: dictionary).ToImmutableDictionary();
-        }
-        else
-        {
-            // this is a Blazor WebAssembly app, essentially self-hosted.
-            // LoadDirectlyFromJsonFile() is a helper method that grabs it using HTTP to localhost
-            var result = Task.Run(function: async () => await LoadDictionaryFromWebJsonWordArray());
-            // wait for the task to complete
-            result.Wait();
-            // set up the instance dictionary with the result, made immutable
-            wordsByLength = AlphabetizeDictionary(dictionary: result.Result).ToImmutableDictionary();
-        }
+        this.SourceType = sourceType;
+        // set this as the instance dictionary, made immutable
+        var wordsByLength = AlphabetizeDictionary(dictionary: dictionary).ToImmutableDictionary();
 
         if (wordsByLength.Count == 0) throw new Exception(message: "Dictionary could not be loaded");
         this._wordsByLength = wordsByLength;
@@ -131,8 +126,10 @@ public partial class LiteralDictionary
     /// <param name="words"></param>
     /// <param name="description"></param>
     // ReSharper disable once MemberCanBePrivate.Global
-    public LiteralDictionary(IEnumerable<string> words, string? description = null)
+    public LiteralDictionary(LiteralDictionarySourceType sourceType, IEnumerable<string> words,
+        string? description = null)
         : this(
+            sourceType: sourceType,
             dictionary: FillDictionary(words: words),
             description: description)
     {

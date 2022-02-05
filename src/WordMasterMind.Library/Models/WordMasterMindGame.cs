@@ -35,6 +35,11 @@ public class WordMasterMindGame
     public readonly LiteralDictionary LiteralDictionary;
 
     /// <summary>
+    ///     Source being used to generate the secret word.
+    /// </summary>
+    public readonly LiteralDictionarySourceType LiteralDictionarySourceType;
+
+    /// <summary>
     ///     How many attempts are allowed before the game is over
     /// </summary>
     public readonly int MaxAttempts;
@@ -50,8 +55,9 @@ public class WordMasterMindGame
         this.Solved = false;
         this.CurrentAttempt = 0;
         this.HardMode = hardMode;
+        // use the provided dictionary, or use the default one which is stored locally
         this.LiteralDictionary = literalDictionary ??
-                                 new LiteralDictionary(); // use the provided dictionary, or use the default one which is stored locally
+                                 LiteralDictionary.NewFromSourceType(sourceType: LiteralDictionarySourceType.Scrabble);
         this._secretWord = (secretWord ?? this.LiteralDictionary.GetRandomWord(minLength: minLength,
             maxLength: maxLength)).ToUpperInvariant();
 
@@ -150,7 +156,8 @@ public class WordMasterMindGame
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.Append(value: $"Word MasterMind W{this.WordLength}:");
-            var puzzleNumber = DailyWordGenerator.PuzzleNumberForWordOfTheDay(word: this.SecretWord,
+            var puzzleNumber = DailyWordGenerator.PuzzleNumberForWordOfTheDay(
+                word: this.SecretWord,
                 dictionary: this.LiteralDictionary);
             if (puzzleNumber >= 0)
             {
@@ -256,7 +263,10 @@ public class WordMasterMindGame
         return length + 1;
     }
 
-    public static int HumanizeIndex(int index) => index + 1;
+    public static int HumanizeIndex(int index)
+    {
+        return index + 1;
+    }
 
     public AttemptDetails Attempt(string wordAttempt)
     {
@@ -301,9 +311,9 @@ public class WordMasterMindGame
             for (var letterPosition = 0; letterPosition < this.WordLength; letterPosition++)
             {
                 var originalLetter = this._secretWord[index: letterPosition];
-                
+
                 // if a previous attempt has guessed a letter, the current attempt must contain it
-                if (this._foundLetters[letterPosition] && 
+                if (this._foundLetters[letterPosition] &&
                     !wordAttempt.Contains(value: originalLetter))
                     throw new HardModeException(
                         letterPosition: letterPosition,

@@ -59,10 +59,7 @@ public partial class LiteralDictionary
 
     public int IndexForWord(string word)
     {
-        if (!this._wordsByLength.ContainsKey(key: word.Length))
-        {
-            return -1;
-        }
+        if (!this._wordsByLength.ContainsKey(key: word.Length)) return -1;
         var wordArray = this._wordsByLength[key: word.Length].ToArray();
         return Array.IndexOf(
             array: wordArray,

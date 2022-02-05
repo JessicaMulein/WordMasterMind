@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WordMasterMind.Library.Helpers;
+using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Models;
 
 namespace WordMasterMind.Test;
@@ -32,6 +32,7 @@ public class LiteralDictionaryTest
     private static LiteralDictionary GetWordDictionary()
     {
         return LiteralDictionary.Deserialize(
+            sourceType: LiteralDictionarySourceType.Scrabble,
             inputFilename: GetTestRoot(fileName: "collins-scrabble.bin"));
     }
 
@@ -109,7 +110,8 @@ public class LiteralDictionaryTest
             dictionary: literalDictionary);
         Assert.AreEqual(
             // ReSharper disable once StringLiteralTypo
-            expected: "AAHED",
+            expected:
+            "AAHED", // this is the 3rd word in the scrabble dictionary, given the seed system, this is unlikely to be correct
             actual: dayOneWord);
 
         var oneYearWord = DailyWordGenerator.WordOfTheDay(
@@ -118,7 +120,7 @@ public class LiteralDictionaryTest
             dictionary: literalDictionary);
         Assert.AreEqual(
             // ReSharper disable once StringLiteralTypo
-            expected: "PAKKA",
+            expected: "ABOVE",
             actual: oneYearWord);
     }
 
@@ -137,6 +139,7 @@ public class LiteralDictionaryTest
         Assert.IsTrue(condition: File.Exists(path: binaryOutputFile));
 
         var dictionary2 = LiteralDictionary.Deserialize(
+            sourceType: dictionary.SourceType,
             inputFilename: binaryOutputFile);
         Assert.AreEqual(
             expected: dictionary2.WordCount,

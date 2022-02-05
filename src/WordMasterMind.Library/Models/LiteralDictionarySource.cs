@@ -10,12 +10,12 @@ public partial record LiteralDictionarySource
     public readonly string Description;
     public readonly string FileName;
     public readonly LiteralDictionaryFileType FileType;
-    public readonly LiteralDictionarySourceType SourceTypeType;
+    public readonly LiteralDictionarySourceType SourceType;
 
-    private LiteralDictionarySource(LiteralDictionarySourceType sourceTypeType, string fileName,
+    private LiteralDictionarySource(LiteralDictionarySourceType sourceType, string fileName,
         LiteralDictionaryFileType fileType, string description)
     {
-        this.SourceTypeType = sourceTypeType;
+        this.SourceType = sourceType;
         this.FileName = fileName;
         this.FileType = fileType;
         this.Description = description;
