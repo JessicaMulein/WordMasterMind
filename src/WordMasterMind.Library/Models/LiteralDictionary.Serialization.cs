@@ -64,8 +64,9 @@ public partial class LiteralDictionary
     ///     Save the dictionary to a binary encoded file
     /// </summary>
     /// <param name="outputFilename"></param>
+    /// <param name="forLength"></param>
     /// <exception cref="FileAlreadyExistsException"></exception>
-    public int Serialize(string outputFilename)
+    public int Serialize(string outputFilename, int forLength = -1)
     {
         if (File.Exists(path: outputFilename))
             throw new FileAlreadyExistsException(message: $"File already exists: {outputFilename}");
@@ -76,6 +77,8 @@ public partial class LiteralDictionary
         writer.Write(value: this._wordsByLength.Count);
         foreach (var (key, value) in this._wordsByLength)
         {
+            if (forLength > 0 && key != forLength)
+                continue;
             writer.Write(value: key);
             var words = value.ToArray();
             writer.Write(value: words.Length);
@@ -89,6 +92,19 @@ public partial class LiteralDictionary
         writer.Flush();
 
         return wordCount;
+    }
+
+    public int SplitSerialize(string outputFilename)
+    {
+        var totalWordCount = 0;
+        foreach (var (key, value) in this._wordsByLength)
+        {
+            var lengthFilename = $"{key}-{outputFilename}";
+            totalWordCount += this.Serialize(outputFilename: lengthFilename,
+                forLength: key);
+        }
+
+        return totalWordCount;
     }
 
     public JsonObject ToJson()

@@ -90,7 +90,8 @@ public static class DictionaryConverterUtility
 
     public static int Main(string[] arguments)
     {
-        const string usage = "Usage: DictionaryConverterUtility.exe (json|binary) <inputFilename> [<outputFilename>]";
+        const string usage = "Usage: DictionaryConverterUtility.exe (to-json|to-binary|split-binary) <inputFilename> [<outputFilename>]\n" +
+                             "split-binary mode assumes binary input filename";
         if (arguments.Length is > 3 or < 2)
         {
             Console.WriteLine(value: usage);
@@ -98,9 +99,10 @@ public static class DictionaryConverterUtility
         }
 
         var result = false;
-        var makeJsonOutput = arguments[0].ToLowerInvariant().Equals(value: "json");
-        var makeBinaryOutput = arguments[0].ToLowerInvariant().Equals(value: "binary");
-        if (!makeJsonOutput && !makeBinaryOutput)
+        var makeJsonOutput = arguments[0].ToLowerInvariant().Equals(value: "to-json");
+        var makeSplitBinaryOutput = arguments[0].ToLowerInvariant().Equals(value: "split-binary");
+        var makeBinaryOutput = arguments[0].ToLowerInvariant().Equals(value: "to-binary");
+        if (!makeJsonOutput && !makeBinaryOutput && !makeSplitBinaryOutput)
         {
             Console.WriteLine(value: "Invalid mode. Must be json or binary.");
             Console.WriteLine(value: usage);
@@ -108,21 +110,13 @@ public static class DictionaryConverterUtility
         }
 
         var outputFile = arguments.Length > 2 ? arguments[2] : null;
-
-        var jsonOutputFile = makeBinaryOutput
-            ? Path.GetTempFileName()
-            : outputFile ?? Path.ChangeExtension(path: arguments[1],
-                extension: ".json");
-        var binaryOutputFile = outputFile ?? Path.ChangeExtension(path: arguments[1],
-            extension: ".bin");
-
-        var fileIsJson = FileIsJson(filename: arguments[1],
+        var inputFileIsJson = FileIsJson(filename: arguments[1],
             decodedJson: out _);
 
-        if (fileIsJson)
+        if (inputFileIsJson)
             Console.WriteLine(value: "JSON input file detected.");
 
-        if (fileIsJson && makeJsonOutput)
+        if (inputFileIsJson && makeJsonOutput)
             return 1;
 
         var fileIsAlphabeticOnly = FileIsAlphabeticOnly(filename: arguments[1]);
@@ -135,7 +129,14 @@ public static class DictionaryConverterUtility
             return 1;
         }
 
-        if (makeJsonOutput && !fileIsJson && fileIsAlphabeticOnly)
+        var jsonOutputFile = makeBinaryOutput
+            ? Path.GetTempFileName()
+            : outputFile ?? Path.ChangeExtension(path: arguments[1],
+                extension: ".json");
+        var binaryOutputFile = outputFile ?? Path.ChangeExtension(path: arguments[1],
+            extension: ".bin");
+        
+        if (makeJsonOutput && !inputFileIsJson && fileIsAlphabeticOnly)
             result = ConvertFile(
                 inputTextFilename: arguments[1],
                 outputTextFilename: jsonOutputFile,
@@ -146,27 +147,56 @@ public static class DictionaryConverterUtility
         if (makeJsonOutput)
             return result ? 0 : 1;
 
-        var dictionary = LiteralDictionary.NewFromJson(
-            sourceType: LiteralDictionarySourceType.Other,
-            jsonText: fileIsJson ? arguments[1] : jsonOutputFile);
-        var wordsAdded = dictionary.Serialize(
-            outputFilename: binaryOutputFile);
+        var dictionary = makeBinaryOutput
+            ? LiteralDictionary.NewFromJson(
+                sourceType: LiteralDictionarySourceType.Other,
+                jsonText: inputFileIsJson ? arguments[1] : jsonOutputFile)
+            : LiteralDictionary.Deserialize(
+                sourceType: LiteralDictionarySourceType.Other,
+                inputStream: LiteralDictionary.OpenFileForRead(fileName: arguments[1]));
 
-        Console.WriteLine(format: "Serialized {0} words to file",
+        var wordsAdded = makeSplitBinaryOutput
+            ? dictionary.SplitSerialize(outputFilename: binaryOutputFile) 
+            : dictionary.Serialize(outputFilename: binaryOutputFile);
+
+        Console.WriteLine(format: makeSplitBinaryOutput
+                ? "Serialized {0} words to separate files"
+                : "Serialized {0} words to file",
             arg0: wordsAdded);
         Console.WriteLine(format: "Dictionary contains {0} words.",
             arg0: dictionary.WordCount);
-        Console.WriteLine(value: "Verifying dictionary file...");
+        Console.WriteLine(value: makeSplitBinaryOutput
+        ? "Verifying dictionary files..."
+        : "Verifying dictionary file...");
 
-        var dictionary2 = LiteralDictionary
-            .Deserialize(
-                sourceType: LiteralDictionarySourceType.Other,
-                inputStream: LiteralDictionary.OpenFileForRead(
-                    fileName: binaryOutputFile));
-        Console.WriteLine(format: "Dictionary contains {0} words.",
-            arg0: dictionary2.WordCount);
+        if (!makeSplitBinaryOutput)
+        {
+            var dictionary2 = LiteralDictionary
+                .Deserialize(
+                    sourceType: LiteralDictionarySourceType.Other,
+                    inputStream: LiteralDictionary.OpenFileForRead(
+                        fileName: binaryOutputFile));
+            Console.WriteLine(format: "Dictionary contains {0} words.",
+                arg0: dictionary2.WordCount);
 
-        if (dictionary2.WordCount == dictionary.WordCount)
+            if (dictionary2.WordCount == dictionary.WordCount)
+                return result ? 0 : 1;
+        }
+
+        var totalWords = 0;
+        foreach (var wordLength in dictionary.ValidWordLengths)
+        {
+            var fileName = $"{wordLength}-{binaryOutputFile}"; 
+            var dictionary3 = LiteralDictionary
+                .Deserialize(
+                    sourceType: LiteralDictionarySourceType.Other,
+                    inputStream: LiteralDictionary.OpenFileForRead(
+                        fileName: fileName));
+            Console.WriteLine(format: "Dictionary contains {0} words.",
+                arg0: dictionary3.WordCount);
+            totalWords += dictionary3.WordCount;
+        }
+        if (totalWords == dictionary.WordCount)
             return result ? 0 : 1;
 
         Console.WriteLine(value: "Dictionary verification failed.");

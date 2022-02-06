@@ -9,9 +9,9 @@ public partial class WordMasterMindUI
 {
 #pragma warning disable CS8618
     [Inject] public IGameStateMachine GameStateMachine { get; set; }
-#pragma warning restore CS8618
 
     [Inject] public IHttpClientFactory ClientFactory { get; set; }
+#pragma warning restore CS8618
 
     protected override async Task OnInitializedAsync()
     {
@@ -34,19 +34,18 @@ public partial class WordMasterMindUI
     public async Task OnBackClick()
     {
         var currentState = this.GameStateMachine.State;
-        var newState = currentState switch
+        await this.GameStateMachine.SetStateAsync(newState: currentState switch
         {
             GameState.SourceSelection => GameState.Rules,
             GameState.LengthSelection => GameState.SourceSelection,
-            _ => throw new Exception(message: $"Unexpected state {currentState}")
-        };
-        await this.GameStateMachine.SetStateAsync(newState: newState);
+            _ => throw new Exception(message: $"Unexpected state {currentState}"),
+        });
     }
 
     public async Task OnNextClick()
     {
-        var currentState = this.GameStateMachine.State;
         GameState newState;
+        var currentState = this.GameStateMachine.State;
         switch (currentState)
         {
             case GameState.SourceSelection:
