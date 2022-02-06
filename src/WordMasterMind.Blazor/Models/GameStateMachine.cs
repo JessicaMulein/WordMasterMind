@@ -80,7 +80,7 @@ public class GameStateMachine : IGameStateMachine
 
                 // get valid word lengths
                 var lengths = await (this.HttpClient ?? throw new InvalidOperationException()).GetFromJsonAsync<IEnumerable<int>>(
-                    requestUri: $"{lengthSource.FileName}-lengths.json");
+                    requestUri: $"dictionaries/{lengthSource.FileName}-lengths.json");
                 this.ValidWordLengths = lengths ?? throw new InvalidOperationException();
                 break;
             case GameState.Playing:
@@ -95,7 +95,7 @@ public class GameStateMachine : IGameStateMachine
 
                 var playingSource = LiteralDictionarySource.FromSourceType(sourceType: this._dictionarySourceType.Value);
                 var sourceData =  await (this.HttpClient ?? throw new InvalidOperationException())
-                    .GetByteArrayAsync(requestUri: $"{this._wordLength}-{playingSource.FileName}");
+                    .GetByteArrayAsync(requestUri: $"/dictionaries/{this._wordLength}-{playingSource.FileName}");
 
                 this.LiteralDictionary =
                     LiteralDictionary.NewFromSource(

@@ -105,7 +105,7 @@ public static class DailyWordGenerator
         dictionary = dictionary ??
                      LiteralDictionary.NewFromSourceType(
                          sourceType: LiteralDictionarySourceType.Scrabble,
-                         basePath: BasePath);
+                         basePath: BasePath ?? throw new InvalidOperationException());
         return dictionary.WordAtIndex(
             length: length,
             wordIndex: WordIndexForDay(
