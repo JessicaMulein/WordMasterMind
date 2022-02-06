@@ -33,16 +33,38 @@ public partial class WordMasterMindUI
 
     public async Task OnBackClick()
     {
-        await this.GameStateMachine.SetStateAsync(newState: GameState.Rules);
+        var currentState = this.GameStateMachine.State;
+        var newState = currentState switch
+        {
+            GameState.SourceSelection => GameState.Rules,
+            GameState.LengthSelection => GameState.SourceSelection,
+            _ => throw new Exception(message: $"Unexpected state {currentState}")
+        };
+        await this.GameStateMachine.SetStateAsync(newState: newState);
     }
 
     public async Task OnNextClick()
     {
-        var literalDictionarySourceType = this.GameStateMachine.DictionarySourceType;
-        if (literalDictionarySourceType != null)
+        var currentState = this.GameStateMachine.State;
+        GameState newState;
+        switch (currentState)
         {
-            this.GameStateMachine.DictionarySourceType = literalDictionarySourceType;
-            await this.GameStateMachine.SetStateAsync(newState: GameState.LengthSelection);
+            case GameState.SourceSelection:
+                newState = GameState.LengthSelection;
+                var literalDictionarySourceType = this.GameStateMachine.DictionarySourceType;
+                if (literalDictionarySourceType != null)
+                {
+                    this.GameStateMachine.DictionarySourceType = literalDictionarySourceType;
+                }
+
+                break;
+            case GameState.LengthSelection:
+                newState = GameState.Playing;
+                break;
+            default:
+                throw new Exception(message: $"Unexpected state {currentState}");
         }
+
+        await this.GameStateMachine.SetStateAsync(newState: newState);
     }
 }
