@@ -19,8 +19,6 @@ public static class DailyWordGenerator
     /// </summary>
     public const int Seed = 0xBEEF;
 
-    private static string? _basePath;
-
     /// <summary>
     ///     WordMasterMind's Birthday, Puzzle number 1 is this day
     /// </summary>
@@ -29,15 +27,7 @@ public static class DailyWordGenerator
         month: 1,
         day: 22);
 
-    public static string BasePath
-    {
-        get
-        {
-            if (_basePath is null) throw new Exception(message: "BasePath must be set before use");
-            return _basePath;
-        }
-        set => _basePath = value;
-    }
+    public static string? BasePath { get; set; }
 
     /// <summary>
     ///     Gets the puzzle number for a given date. Day 1 is the WordGeneratorEpoch.

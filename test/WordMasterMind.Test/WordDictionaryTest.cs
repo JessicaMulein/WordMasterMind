@@ -12,7 +12,7 @@ namespace WordMasterMind.Test;
 [TestClass]
 public class LiteralDictionaryTest
 {
-    private static string GetTestRoot(string? fileName = null)
+    private static string? GetTestRoot(string? fileName = null)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var startupPath = Path.GetDirectoryName(path: assembly.Location);

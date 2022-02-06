@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using WordMasterMind.Library.Enumerations;
 
@@ -35,24 +36,25 @@ public partial class LiteralDictionary
     /// <param name="basePath"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static LiteralDictionary NewFromSource(LiteralDictionarySource source, string basePath)
+    public static LiteralDictionary NewFromSource(LiteralDictionarySource source, IEnumerable<byte> sourceData)
     {
-        var fileName = Path.Combine(path1: basePath,
-            path2: source.FileName);
         return source.FileType switch
         {
             LiteralDictionaryFileType.TextWithNewLines => new LiteralDictionary(
                 sourceType: source.SourceType,
-                words: File.ReadLines(path: fileName),
+                words: Encoding.ASCII.GetString(
+                    bytes: sourceData.ToArray()).Split(
+                    separator: Environment.NewLine,
+                    options: StringSplitOptions.RemoveEmptyEntries),
                 description: source.Description),
             LiteralDictionaryFileType.JsonStringArray => NewFromJson(
                 sourceType: source.SourceType,
-                jsonText: File.ReadAllText(path: fileName),
+                jsonText: Encoding.ASCII.GetString(
+                    bytes: sourceData.ToArray()),
                 description: source.Description),
             LiteralDictionaryFileType.Binary => Deserialize(
                 sourceType: source.SourceType,
-                inputStream: OpenFileForRead(
-                    fileName: fileName),
+                inputStream: new MemoryStream(buffer: sourceData.ToArray()),
                 description: source.Description),
             _ => throw new Exception(message: "Unknown file type"),
         };
@@ -62,13 +64,26 @@ public partial class LiteralDictionary
     ///     Creates a literal dictionary from a source type
     /// </summary>
     /// <param name="sourceType"></param>
-    /// <param name="basePath"></para>
-    ///     <returns></returns>
-    ///     <exception cref="Exception"></exception>
-    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string basePath)
+    /// <param name="basePath"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string? basePath = null)
     {
+        var source = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
+        IEnumerable<byte> sourceData;
+        if (basePath is null)
+            sourceData = new HttpClient()
+                .GetByteArrayAsync(requestUri: source.FileName)
+                .ConfigureAwait(continueOnCapturedContext: false)
+                .GetAwaiter()
+                .GetResult();
+        else
+            sourceData = File.ReadAllBytes(path: Path.Combine(
+                path1: basePath,
+                path2: source.FileName));
+
         return NewFromSource(
-            source: LiteralDictionarySource.FromSourceType(sourceType: sourceType),
-            basePath: basePath);
+            source: source,
+            sourceData: sourceData);
     }
 }
