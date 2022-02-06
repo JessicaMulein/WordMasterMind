@@ -4,6 +4,8 @@
 - Self-contained
 
 ![Rules Screenshot](https://raw.githubusercontent.com/FreddieMercurial/WordMasterMind/main/WordMasterMindRules.png)
+![Dictionaries Screenshot](https://raw.githubusercontent.com/FreddieMercurial/WordMasterMind/main/WordMasterMindDictionaries.png)
+![Word Lenghts Screenshot](https://raw.githubusercontent.com/FreddieMercurial/WordMasterMind/main/WordMasterMindWordLengths.png)
 -----
 Welcome to **Word MasterMind**!
 
