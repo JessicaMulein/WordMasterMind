@@ -61,8 +61,8 @@ public partial class LiteralDictionary
         LiteralDictionarySourceType sourceType)
     {
         var source = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
-        var dictionaryWords =
-            await new HttpClient().GetFromJsonAsync<string[]>(requestUri: source.FileName);
+        var jsonText = await new HttpClient().GetStringAsync(requestUri: source.FileName);
+        var dictionaryWords = JsonToWords(jsonText: jsonText).ToArray();
         if (dictionaryWords is null || !dictionaryWords.Any())
             throw new Exception(message: "Dictionary could not be retrieved");
 
