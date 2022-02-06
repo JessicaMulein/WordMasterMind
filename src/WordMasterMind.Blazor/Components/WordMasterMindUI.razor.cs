@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using WordMasterMind.Blazor.Enumerations;
+using WordMasterMind.Blazor.Helpers;
 using WordMasterMind.Blazor.Interfaces;
 
 namespace WordMasterMind.Blazor.Components;
@@ -15,7 +16,7 @@ public partial class WordMasterMindUI
 
     protected override async Task OnInitializedAsync()
     {
-        var client = this.ClientFactory.CreateClient(name: "SPAData");
+        var client = this.ClientFactory.CreateClient(name: Constants.SpaHttpClientName);
         this.GameStateMachine.HttpClient = client;
     }
 

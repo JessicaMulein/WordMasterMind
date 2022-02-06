@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using WordMasterMind.Blazor;
+using WordMasterMind.Blazor.Helpers;
 using WordMasterMind.Blazor.Interfaces;
 using WordMasterMind.Blazor.Models;
 
@@ -10,16 +11,18 @@ builder.RootComponents.Add<HeadOutlet>(selector: "head::after");
 
 var baseAddress = builder.HostEnvironment.BaseAddress;
 builder.Services.AddHttpClient(
-    name: "SPAData",
+    name: Constants.SpaHttpClientName,
     configureClient: services
         => services.BaseAddress = new Uri(
             uriString: baseAddress));
+
 builder.Services.AddScoped(
     implementationFactory: sp
         => sp.GetRequiredService<IHttpClientFactory>()
-            .CreateClient(name: "SPAData"));
+            .CreateClient(name: Constants.SpaHttpClientName));
 
-// Register our own injectables
 builder.Services.AddSingleton<IGameStateMachine, GameStateMachine>();
 
-await builder.Build().RunAsync();
+await builder
+    .Build()
+    .RunAsync();

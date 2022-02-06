@@ -41,12 +41,16 @@
             </select>
         }
         <div class="row">
-            <button class="icon" aria-label="back" onclick=@OnBackClick>
-                <i class="fas fa-step-backward"></i>
-            </button>
-            <button class="icon" aria-label="next" onclick=@OnNextClick>
-                <i class="fas fa-step-forward"></i>
-            </button>
+            <div style="float:  left;">
+                <button class="icon" aria-label="back" onclick=@OnBackClick>
+                    <i class="fas fa-step-backward"></i>
+                </button>
+            </div>
+            <div style="float:  left;">
+                <button class="icon" aria-label="next" onclick=@OnNextClick>
+                    <i class="fas fa-step-forward"></i>
+                </button>
+            </div>
         </div>
     }
     else if (GameStateMachine.State is GameState.Playing or GameState.GameOver)
