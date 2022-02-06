@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Interfaces;
 using WordMasterMind.Library.Enumerations;
@@ -48,6 +49,8 @@ public class GameStateMachine : IGameStateMachine
 
     public int? WordLength { get; set; }
 
+    public IEnumerable<int> ValidWordLengths { get; private set; }
+
     public async Task SetStateAsync(GameState newState)
     {
         // leaving oldState
@@ -73,14 +76,12 @@ public class GameStateMachine : IGameStateMachine
                 if (this._dictionarySourceType is null)
                     throw new Exception(message: "Cannot enter LengthSelection state without a dictionary source");
 
-                var source = LiteralDictionarySource.FromSourceType(sourceType: this._dictionarySourceType.Value);
-                var sourceData = await this.HttpClient
-                    .GetByteArrayAsync(requestUri: source.FileName);
+                var lengthSource = LiteralDictionarySource.FromSourceType(sourceType: this._dictionarySourceType.Value);
 
-                this.LiteralDictionary =
-                    LiteralDictionary.NewFromSource(
-                        source: source,
-                        sourceData: sourceData);
+                // get valid word lengths
+                var lengths = await (this.HttpClient ?? throw new InvalidOperationException()).GetFromJsonAsync<IEnumerable<int>>(
+                    requestUri: $"{lengthSource.FileName}-lengths.json");
+                this.ValidWordLengths = lengths ?? throw new InvalidOperationException();
                 break;
             case GameState.Playing:
                 if (oldState is not GameState.LengthSelection)
@@ -88,6 +89,18 @@ public class GameStateMachine : IGameStateMachine
 
                 if (this._wordLength is null)
                     throw new Exception(message: "Cannot start playing without a word length");
+
+                if (this._dictionarySourceType is null)
+                    throw new Exception(message: "Cannot start playing without a dictionary source");
+
+                var playingSource = LiteralDictionarySource.FromSourceType(sourceType: this._dictionarySourceType.Value);
+                var sourceData =  await (this.HttpClient ?? throw new InvalidOperationException())
+                    .GetByteArrayAsync(requestUri: $"{this._wordLength}-{playingSource.FileName}");
+
+                this.LiteralDictionary =
+                    LiteralDictionary.NewFromSource(
+                        source: playingSource,
+                        sourceData: sourceData);
 
                 this.Game = new WordMasterMindGame(
                     minLength: this._wordLength.Value,

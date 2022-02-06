@@ -10,6 +10,7 @@ public interface IGameStateMachine
     public bool HardMode { get; set; }
     public WordMasterMindGame? Game { get; }
     public LiteralDictionarySourceType? DictionarySourceType { get; set; }
+    public IEnumerable<int> ValidWordLengths { get; }
     public LiteralDictionary? LiteralDictionary { get; }
     public int? WordLength { get; set; }
     public HttpClient? HttpClient { get; set; }
