@@ -1,7 +1,0 @@
-<select class="form-control" @bind="SourceTypeString">
-    <option selected disabled value="">select a dictionary</option>
-    @foreach (var source in Sources)
-    {
-        <option value="@source.SourceTypeString">@source.Description</option>
-    }
-</select>

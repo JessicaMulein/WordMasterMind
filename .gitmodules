@@ -4,6 +4,9 @@
 [submodule "WordMasterMind.wiki"]
 	path = wiki
 	url = https://github.com/WordMasterMind/WordMasterMind.wiki.git
+[submodule "src/WordMasterMind.Blazor"]
+	path = src/WordMasterMind.Blazor
+	url = git@github.com:WordMasterMind/WordMasterMind.Blazor.git
 [submodule "src/WordMasterMind.Library"]
 	path = src/WordMasterMind.Library
 	url = git@github.com:WordMasterMind/WordMasterMind.Library.git
