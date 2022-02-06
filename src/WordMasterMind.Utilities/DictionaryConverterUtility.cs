@@ -120,13 +120,19 @@ public static class DictionaryConverterUtility
         if (inputFileIsJson && makeJsonOutput)
             return 1;
 
-        var fileIsAlphabeticOnly = FileIsAlphabeticOnly(filename: arguments[1]);
-        if (fileIsAlphabeticOnly)
+        var inputFileIsAlphabeticOnly = FileIsAlphabeticOnly(filename: arguments[1]);
+        if (inputFileIsAlphabeticOnly)
             Console.WriteLine(value: "Alphabetic input file detected.");
 
-        if (makeJsonOutput && !fileIsAlphabeticOnly)
+        if (makeJsonOutput && !inputFileIsAlphabeticOnly)
         {
             Console.WriteLine(value: "text input file is not alphabetic only. Aborting.");
+            return 1;
+        }
+        
+        if (makeSplitBinaryOutput && !inputFileIsJson && !inputFileIsAlphabeticOnly) 
+        {
+            Console.WriteLine(value: "binary split requires a binary input file");
             return 1;
         }
 
@@ -137,7 +143,7 @@ public static class DictionaryConverterUtility
         var binaryOutputFile = outputFile ?? Path.ChangeExtension(path: arguments[1],
             extension: ".bin");
 
-        if (makeJsonOutput && !inputFileIsJson && fileIsAlphabeticOnly)
+        if (makeJsonOutput && !inputFileIsJson && inputFileIsAlphabeticOnly)
             result = ConvertFile(
                 inputTextFilename: arguments[1],
                 outputTextFilename: jsonOutputFile,
