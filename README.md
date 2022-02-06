@@ -16,8 +16,6 @@ In Word MasterMind, you can guess and the game will choose a random word length 
 Words available in the Scrabble dictionary range from 2 letters to 15 letters.
 - Detailed information on the other dictionaries is forthcoming
 
-Playing a 2 letter game is probably too easy, but there seemed no reason to limit things.
-
 Unlike Wordle, the number of tries varies with the word length.
 
 *   One (1) Attempt per letter in the secret word
