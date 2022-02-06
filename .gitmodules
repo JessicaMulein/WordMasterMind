@@ -1,0 +1,3 @@
+[submodule "test/WordMasterMind.Tests"]
+	path = test/WordMasterMind.Tests
+	url = git@github.com:FreddieMercurial/WordMasterMind.Tests.git
