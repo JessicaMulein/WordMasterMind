@@ -22,5 +22,7 @@ public partial class GameTile
         set => this.Evaluation = value.ToString().ToLowerInvariant();
     }
 
-    [ParameterAttribute] public string Reveal { get; set; }
+    [ParameterAttribute] public string? Reveal { get; set; }
+
+    public bool RevealBool => this.Reveal?.ToLowerInvariant() is "true" or "reveal" or "";
 }
