@@ -68,7 +68,8 @@ public partial class LiteralDictionary
     /// <param name="httpClient"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string? basePath = null, HttpClient? httpClient = null)
+    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string? basePath = null,
+        HttpClient? httpClient = null)
     {
         var source = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
         IEnumerable<byte> sourceData;

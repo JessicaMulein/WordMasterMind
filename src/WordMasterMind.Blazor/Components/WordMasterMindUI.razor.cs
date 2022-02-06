@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Interfaces;
@@ -12,39 +11,38 @@ public partial class WordMasterMindUI
     [Inject] public IGameStateMachine GameStateMachine { get; set; }
 #pragma warning restore CS8618
 
+    [Inject] public IHttpClientFactory ClientFactory { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = this.ClientFactory.CreateClient(name: "SPAData");
+        this.GameStateMachine.HttpClient = client;
+    }
+
     private async Task OnRulesDialogClose(bool accepted)
     {
-        await Task.Run(action: () =>
-        {
-            // this will fire events within the state machine setter
-            this.GameStateMachine.State = GameState.SourceSelection;
-        });
+        // this will fire events within the state machine setter
+        await this.GameStateMachine.SetStateAsync(newState: GameState.SourceSelection);
     }
 
     private async Task OnGameSettingsDialogClose(bool accepted)
     {
-        await Task.Run(action: () =>
-        {
-            // this will fire events within the state machine setter
-            this.GameStateMachine.State = GameState.Settings;
-        });
+        // this will fire events within the state machine setter
+        await this.GameStateMachine.SetStateAsync(newState: GameState.Settings);
     }
 
     public async Task OnBackClick()
     {
-        await Task.Run(action: () => { this.GameStateMachine.State = GameState.Rules; });
+        await this.GameStateMachine.SetStateAsync(newState: GameState.Rules);
     }
 
     public async Task OnNextClick()
     {
-        await Task.Run(action: () =>
+        var literalDictionarySourceType = this.GameStateMachine.DictionarySourceType;
+        if (literalDictionarySourceType != null)
         {
-            var literalDictionarySourceType = this.GameStateMachine.DictionarySourceType;
-            if (literalDictionarySourceType != null)
-            {
-                this.GameStateMachine.DictionarySourceType = literalDictionarySourceType;
-                this.GameStateMachine.State = GameState.LengthSelection;
-            }
-        });
+            this.GameStateMachine.DictionarySourceType = literalDictionarySourceType;
+            await this.GameStateMachine.SetStateAsync(newState: GameState.LengthSelection);
+        }
     }
 }
