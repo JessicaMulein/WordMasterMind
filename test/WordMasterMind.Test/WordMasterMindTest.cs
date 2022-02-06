@@ -1,8 +1,5 @@
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Exceptions;
@@ -16,9 +13,12 @@ public class WordMasterMindTest
 {
     private static LiteralDictionary GetWordDictionary()
     {
+        using var stream = LiteralDictionary.OpenFileForRead(
+            fileName: Utilities.GetTestRoot(
+                fileName: "collins-scrabble.bin"));
         return LiteralDictionary.Deserialize(
             sourceType: LiteralDictionarySourceType.Scrabble,
-            inputFilename: Utilities.GetTestRoot(fileName: "collins-scrabble.bin"));
+            inputStream: stream);
     }
 
     /// <summary>

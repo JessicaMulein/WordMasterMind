@@ -148,7 +148,7 @@ public static class DictionaryConverterUtility
 
         var dictionary = LiteralDictionary.NewFromJson(
             sourceType: LiteralDictionarySourceType.Other,
-            pathToDictionaryJson: fileIsJson ? arguments[1] : jsonOutputFile);
+            jsonText: fileIsJson ? arguments[1] : jsonOutputFile);
         var wordsAdded = dictionary.Serialize(
             outputFilename: binaryOutputFile);
 
@@ -161,7 +161,8 @@ public static class DictionaryConverterUtility
         var dictionary2 = LiteralDictionary
             .Deserialize(
                 sourceType: LiteralDictionarySourceType.Other,
-                inputFilename: binaryOutputFile);
+                inputStream: LiteralDictionary.OpenFileForRead(
+                    fileName: binaryOutputFile));
         Console.WriteLine(format: "Dictionary contains {0} words.",
             arg0: dictionary2.WordCount);
 

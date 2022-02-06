@@ -5,20 +5,26 @@ namespace WordMasterMind.Library.Models;
 
 public partial class LiteralDictionary
 {
+    public static IEnumerable<string> JsonToWords(string jsonText)
+    {
+        return JsonSerializer
+            .Deserialize<string[]>(
+                json: jsonText,
+                options: JsonSerializerOptions) ?? throw new InvalidOperationException();
+    }
+
     /// <summary>
     ///     This constructor creates a list of words from a JSON file with an array of strings containing the words
     ///     It will get passed through FillDictionary and then the standard constructor
     /// </summary>
-    /// <param name="pathToDictionaryJson"></param>
-    public static LiteralDictionary NewFromJson(LiteralDictionarySourceType sourceType, string pathToDictionaryJson,
+    /// <param name="jsonText"></param>
+    public static LiteralDictionary NewFromJson(LiteralDictionarySourceType sourceType, string jsonText,
         string? description = null)
     {
         return new LiteralDictionary(
             sourceType: sourceType,
-            words: JsonSerializer
-                .Deserialize<string[]>(
-                    json: File.ReadAllText(path: pathToDictionaryJson),
-                    options: JsonSerializerOptions) ?? throw new InvalidOperationException(),
+            words: JsonToWords(
+                jsonText: jsonText),
             description: description);
     }
 
@@ -41,11 +47,12 @@ public partial class LiteralDictionary
                 description: source.Description),
             LiteralDictionaryFileType.JsonStringArray => NewFromJson(
                 sourceType: source.SourceType,
-                pathToDictionaryJson: fileName,
+                jsonText: File.ReadAllText(path: fileName),
                 description: source.Description),
             LiteralDictionaryFileType.Binary => Deserialize(
                 sourceType: source.SourceType,
-                inputFilename: fileName,
+                inputStream: OpenFileForRead(
+                    fileName: fileName),
                 description: source.Description),
             _ => throw new Exception(message: "Unknown file type"),
         };

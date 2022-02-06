@@ -13,7 +13,21 @@ namespace WordMasterMind.Library.Models;
 /// </summary>
 public static class DailyWordGenerator
 {
+    /// <summary>
+    ///     The Official WordMasterMind Word of the Day seed*
+    ///     *) probably should be changed to a random value
+    /// </summary>
+    public const int Seed = 0xBEEF;
+
     private static string? _basePath;
+
+    /// <summary>
+    ///     WordMasterMind's Birthday, Puzzle number 1 is this day
+    /// </summary>
+    public static readonly DateTime WordGeneratorEpoch = new(
+        year: 2022,
+        month: 1,
+        day: 22);
 
     public static string BasePath
     {
@@ -24,20 +38,6 @@ public static class DailyWordGenerator
         }
         set => _basePath = value;
     }
- 
-    /// <summary>
-    ///     The Official WordMasterMind Word of the Day seed*
-    ///     *) probably should be changed to a random value
-    /// </summary>
-    public const int Seed = 0xBEEF;
-
-    /// <summary>
-    ///     WordMasterMind's Birthday, Puzzle number 1 is this day
-    /// </summary>
-    public static readonly DateTime WordGeneratorEpoch = new(
-        year: 2022,
-        month: 1,
-        day: 22);
 
     /// <summary>
     ///     Gets the puzzle number for a given date. Day 1 is the WordGeneratorEpoch.

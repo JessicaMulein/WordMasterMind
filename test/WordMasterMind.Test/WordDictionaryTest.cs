@@ -34,9 +34,10 @@ public class LiteralDictionaryTest
         var testRoot = GetTestRoot();
         var literalDictionary = LiteralDictionary.Deserialize(
             sourceType: LiteralDictionarySourceType.Scrabble,
-            inputFilename: Path.Combine(
-                path1: testRoot,
-                path2: "collins-scrabble.bin"));
+            inputStream: LiteralDictionary.OpenFileForRead(
+                fileName: Path.Combine(
+                    path1: testRoot,
+                    path2: "collins-scrabble.bin")));
         // this must be set to use the word generator
         DailyWordGenerator.BasePath = testRoot;
         return literalDictionary;
@@ -146,7 +147,7 @@ public class LiteralDictionaryTest
 
         var dictionary2 = LiteralDictionary.Deserialize(
             sourceType: dictionary.SourceType,
-            inputFilename: binaryOutputFile);
+            inputStream: LiteralDictionary.OpenFileForRead(fileName: binaryOutputFile));
         Assert.AreEqual(
             expected: dictionary2.WordCount,
             actual: dictionary.WordCount);

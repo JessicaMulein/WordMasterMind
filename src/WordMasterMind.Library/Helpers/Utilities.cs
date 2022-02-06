@@ -28,7 +28,7 @@ public static class Utilities
     public static string GetWebRoot(string? fileName = null)
     {
         return Path.Combine(
-            path1: System.IO.Directory.GetCurrentDirectory(),
+            path1: Directory.GetCurrentDirectory(),
             path2: "wwwroot",
             path3: fileName ?? string.Empty);
     }

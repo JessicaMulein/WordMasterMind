@@ -23,6 +23,11 @@ public partial record LiteralDictionarySource
         fileType: LiteralDictionaryFileType.Binary,
         description: "English (simplified)");
 
+    public static IEnumerable<LiteralDictionarySource> Sources
+        => Enum.GetValues<LiteralDictionarySourceType>()
+            .Select(
+                selector: FromSourceType);
+
     public static LiteralDictionarySource FromSourceType(LiteralDictionarySourceType sourceType)
     {
         return sourceType switch
@@ -63,9 +68,4 @@ public partial record LiteralDictionarySource
             value: sourceType,
             ignoreCase: true);
     }
-
-    public static IEnumerable<LiteralDictionarySource> Sources
-        => Enum.GetValues<LiteralDictionarySourceType>()
-            .Select(
-                selector: LiteralDictionarySource.FromSourceType);
 }

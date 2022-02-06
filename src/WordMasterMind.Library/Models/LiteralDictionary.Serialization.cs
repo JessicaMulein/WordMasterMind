@@ -6,23 +6,33 @@ namespace WordMasterMind.Library.Models;
 
 public partial class LiteralDictionary
 {
+    public static Stream OpenFileForRead(string fileName)
+    {
+        if (!File.Exists(path: fileName))
+            throw new FileNotFoundException(message: "File not found",
+                fileName: fileName);
+
+        return File.Open(
+            path: fileName,
+            mode: FileMode.Open,
+            access: FileAccess.Read);
+    }
+
     /// <summary>
     ///     Read a binary encoded file and re-create a sorted dictionary from it
     ///     TODO: re-serialize dictionaries with Description included, add to deserialize
     /// </summary>
-    /// <param name="inputFilename"></param>
+    /// <param name="sourceType"></param>
+    /// <param name="inputStream"></param>
     /// <param name="description"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public static LiteralDictionary Deserialize(LiteralDictionarySourceType sourceType, string inputFilename,
+    public static LiteralDictionary Deserialize(
+        LiteralDictionarySourceType sourceType,
+        Stream inputStream,
         string? description = null)
     {
-        if (!File.Exists(path: inputFilename))
-            throw new FileNotFoundException(message: "File not found",
-                fileName: inputFilename);
-
-        using var stream = new StreamReader(path: inputFilename);
-        using var reader = new BinaryReader(input: stream.BaseStream);
+        using var reader = new BinaryReader(input: inputStream);
 
         var count = reader.ReadInt32();
         var dictionary = new Dictionary<int, IEnumerable<string>>(capacity: count);
@@ -42,7 +52,7 @@ public partial class LiteralDictionary
         }
 
         reader.Close();
-        stream.Close();
+        inputStream.Close();
 
         return new LiteralDictionary(
             sourceType: sourceType,

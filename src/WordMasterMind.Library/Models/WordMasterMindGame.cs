@@ -50,11 +50,13 @@ public class WordMasterMindGame
     public readonly int WordLength;
 
     /// <summary>
-    /// 
     /// </summary>
     /// <param name="minLength">The minimum word length the computer will use from the dictionary</param>
     /// <param name="maxLength">The maximum word length the computer will use from the dictionary. May equal the minimum.</param>
-    /// <param name="hardMode">When enabled, found letters must be in subsequent guesses, and solved positions must remain solved.</param>
+    /// <param name="hardMode">
+    ///     When enabled, found letters must be in subsequent guesses, and solved positions must remain
+    ///     solved.
+    /// </param>
     /// <param name="literalDictionary">Provide a proper LiteralDictionary object or null</param>
     /// <param name="secretWord">Optionally force the secret word to be this value</param>
     /// <param name="basePath">Must be provided if literalDictionary is not specified</param>
@@ -71,7 +73,8 @@ public class WordMasterMindGame
         this.LiteralDictionary = literalDictionary ??
                                  LiteralDictionary.NewFromSourceType(
                                      sourceType: LiteralDictionarySourceType.Scrabble,
-                                     basePath: basePath ?? throw new ArgumentNullException(nameof(basePath)));
+                                     basePath: basePath ??
+                                               throw new ArgumentNullException(paramName: nameof(basePath)));
         this._secretWord = (secretWord ?? this.LiteralDictionary.GetRandomWord(minLength: minLength,
             maxLength: maxLength)).ToUpperInvariant();
 
