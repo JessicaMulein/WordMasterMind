@@ -1,8 +1,17 @@
 <div id="board" style="width: 350px; height: 420px;">
-    @if (GameStateMachine.Game is not null) {
-        @for (var i = 0; i < GameStateMachine.Game.MaxAttempts; i++)
+    @{
+        if (GameStateMachine.Game is null)
+            throw new Exception(message: "Unexpected game state/null game");
+    }
+    @for (var attemptIndex = 0; attemptIndex < GameStateMachine.Game.MaxAttempts; attemptIndex++)
+    {
+        if (attemptIndex < GameStateMachine.Game.CurrentAttempt)
         {
-            <GameRow letters=""></GameRow>
+            <GameRow AttemptIndex="@attemptIndex"></GameRow>
+        }
+        else
+        {
+            <GameRow AttemptIndex="@attemptIndex"></GameRow>
         }
     }
 </div>

@@ -10,4 +10,6 @@ namespace WordMasterMind.Blazor.Components;
 public partial class GameRow
 {
     [Inject] public IGameStateMachine GameStateMachine { get; set; }
+
+    [ParameterAttribute] public int AttemptIndex { get; set; } = -1;
 }
