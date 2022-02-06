@@ -111,7 +111,7 @@ public static class WordMasterMindPlayer
 
             triedWords.Add(item: computerGuess);
 
-            var attempt = mastermind.Attempt(wordAttempt: computerGuess);
+            var attempt = mastermind.MakeAttempt(wordAttempt: computerGuess);
 
             // add all matched letters to the mustIncludeLetters list
             // future word guesses must include these letters

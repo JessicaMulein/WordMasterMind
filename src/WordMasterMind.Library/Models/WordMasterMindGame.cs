@@ -285,7 +285,15 @@ public class WordMasterMindGame
         return index + 1;
     }
 
-    public AttemptDetails Attempt(string wordAttempt)
+    public AttemptDetails GetAttempt(int attemptIndex)
+    {
+        if (attemptIndex < 0 || attemptIndex >= this.CurrentAttempt)
+            throw new ArgumentOutOfRangeException(paramName: nameof(attemptIndex));
+
+        return this._attempts[attemptIndex];
+    }
+
+    public AttemptDetails MakeAttempt(string wordAttempt)
     {
         if (this.GameOver) throw new GameOverException(solved: this.Solved);
 

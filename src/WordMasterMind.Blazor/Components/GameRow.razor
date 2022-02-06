@@ -1,21 +1,23 @@
 <div class="game-row row">
-    @if (Letters.Length > 0)
-    {
-        var solvedLetters = GameStateMachine.Game.SolvedLettersAsChars();
-        var index = 0;
-        foreach (var letter in Letters)
-        {
-            var solvedLetter = solvedLetters[index++];
-            var letterIsSolved = solvedLetter.Equals(obj: letter);
-            var evaluation = letterIsSolved ? nameof(LetterEvaluation.Correct) : solvedLetters.Contains(value: letter) ? nameof(LetterEvaluation.Present) : nameof(LetterEvaluation.Absent);
-            <GameTile letter="@letter" evaluation="@evaluation.ToLowerInvariant()" reveal="@letterIsSolved.ToString().ToLowerInvariant()"/>
-        }
+    @{
+        if (GameStateMachine.Game is null)
+            throw new Exception(message: "Unexpected game state/null game");
     }
-    else
+    @for (var attemptIndex = 0; attemptIndex < GameStateMachine.Game.MaxAttempts; attemptIndex++)
     {
-        @for (var counter = 0; counter < Length; counter++)
+        @if (attemptIndex < GameStateMachine.Game.CurrentAttempt)
         {
-            <GameTile letter=""></GameTile>
+            foreach (var attemptLetterDetail in GameStateMachine.Game.GetAttempt(attemptIndex: attemptIndex))
+            {
+                <GameTile
+                    letter="@attemptLetterDetail"
+                    evaluation="@attemptLetterDetail.Evaluation.ToString().ToLowerInvariant()"
+                    reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct).ToString().ToLowerInvariant())"/>
+            }
+        }
+        else
+        {
+            <GameTile></GameTile>
         }
     }
 </div>

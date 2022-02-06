@@ -11,6 +11,11 @@ public record AttemptDetails
         this.Details = details;
     }
 
+    public string AttemptString => string.Join(
+        separator: "",
+        values: this.Details
+            .Select(selector: x => x.Letter));
+
     public IEnumerator<AttemptLetterDetail> GetEnumerator()
     {
         return this.Details.GetEnumerator();
