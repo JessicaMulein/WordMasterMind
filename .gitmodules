@@ -7,3 +7,6 @@
 [submodule "src/WordMasterMind.Library"]
 	path = src/WordMasterMind.Library
 	url = git@github.com:WordMasterMind/WordMasterMind.Library.git
+[submodule "src/WordMasterMind.CLI"]
+	path = src/WordMasterMind.CLI
+	url = git@github.com:WordMasterMind/WordMasterMind.CLI.git
