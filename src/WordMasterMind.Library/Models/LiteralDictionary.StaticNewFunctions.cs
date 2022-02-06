@@ -65,14 +65,15 @@ public partial class LiteralDictionary
     /// </summary>
     /// <param name="sourceType"></param>
     /// <param name="basePath"></param>
+    /// <param name="httpClient"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string? basePath = null)
+    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string? basePath = null, HttpClient? httpClient = null)
     {
         var source = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
         IEnumerable<byte> sourceData;
         if (basePath is null)
-            sourceData = new HttpClient()
+            sourceData = (httpClient ?? new HttpClient())
                 .GetByteArrayAsync(requestUri: source.FileName)
                 .ConfigureAwait(continueOnCapturedContext: false)
                 .GetAwaiter()

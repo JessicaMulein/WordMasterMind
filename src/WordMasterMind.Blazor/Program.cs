@@ -18,10 +18,6 @@ builder.Services.AddScoped(implementationFactory: sp
             uriString: builder.HostEnvironment.BaseAddress),
     });
 
-builder.Services.AddTransient(implementationFactory: sp
-    => new HttpClient
-        {BaseAddress = new Uri(uriString: builder.HostEnvironment.BaseAddress)});
-
 // Register our own injectables
 builder.Services.AddSingleton<IGameStateMachine, GameStateMachine>();
 

@@ -1,4 +1,4 @@
-using System;
+using Microsoft.AspNetCore.Components;
 using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Interfaces;
 using WordMasterMind.Library.Enumerations;
@@ -22,6 +22,8 @@ public class GameStateMachine : IGameStateMachine
         this._gameState = GameState.Rules;
         this._wordLength = Constants.StandardLength;
     }
+
+    [Inject] private HttpClient HttpClient { get; set; }
 
     public bool NightMode { get; set; }
 
@@ -80,7 +82,8 @@ public class GameStateMachine : IGameStateMachine
                     this.LiteralDictionary =
                         LiteralDictionary.NewFromSourceType(
                             sourceType: this._dictionarySourceType.Value,
-                            basePath: null);
+                            basePath: null,
+                            httpClient: this.HttpClient);
                     break;
                 case GameState.Playing:
                     if (oldState is not GameState.LengthSelection)
