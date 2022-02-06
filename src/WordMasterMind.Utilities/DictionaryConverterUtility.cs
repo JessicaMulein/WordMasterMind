@@ -90,8 +90,9 @@ public static class DictionaryConverterUtility
 
     public static int Main(string[] arguments)
     {
-        const string usage = "Usage: DictionaryConverterUtility.exe (to-json|to-binary|split-binary) <inputFilename> [<outputFilename>]\n" +
-                             "split-binary mode assumes binary input filename";
+        const string usage =
+            "Usage: DictionaryConverterUtility.exe (to-json|to-binary|split-binary) <inputFilename> [<outputFilename>]\n" +
+            "split-binary mode assumes binary input filename";
         if (arguments.Length is > 3 or < 2)
         {
             Console.WriteLine(value: usage);
@@ -135,7 +136,7 @@ public static class DictionaryConverterUtility
                 extension: ".json");
         var binaryOutputFile = outputFile ?? Path.ChangeExtension(path: arguments[1],
             extension: ".bin");
-        
+
         if (makeJsonOutput && !inputFileIsJson && fileIsAlphabeticOnly)
             result = ConvertFile(
                 inputTextFilename: arguments[1],
@@ -156,7 +157,7 @@ public static class DictionaryConverterUtility
                 inputStream: LiteralDictionary.OpenFileForRead(fileName: arguments[1]));
 
         var wordsAdded = makeSplitBinaryOutput
-            ? dictionary.SplitSerialize(outputFilename: binaryOutputFile) 
+            ? dictionary.SplitSerialize(outputFilename: binaryOutputFile)
             : dictionary.Serialize(outputFilename: binaryOutputFile);
 
         Console.WriteLine(format: makeSplitBinaryOutput
@@ -166,8 +167,8 @@ public static class DictionaryConverterUtility
         Console.WriteLine(format: "Dictionary contains {0} words.",
             arg0: dictionary.WordCount);
         Console.WriteLine(value: makeSplitBinaryOutput
-        ? "Verifying dictionary files..."
-        : "Verifying dictionary file...");
+            ? "Verifying dictionary files..."
+            : "Verifying dictionary file...");
 
         if (!makeSplitBinaryOutput)
         {
@@ -186,16 +187,21 @@ public static class DictionaryConverterUtility
         var totalWords = 0;
         foreach (var wordLength in dictionary.ValidWordLengths)
         {
-            var fileName = $"{wordLength}-{binaryOutputFile}"; 
+            var fileName = $"{wordLength}-{binaryOutputFile}";
             var dictionary3 = LiteralDictionary
                 .Deserialize(
                     sourceType: LiteralDictionarySourceType.Other,
                     inputStream: LiteralDictionary.OpenFileForRead(
                         fileName: fileName));
+            var wordCount = dictionary3.WordCount;
             Console.WriteLine(format: "Dictionary contains {0} words.",
-                arg0: dictionary3.WordCount);
-            totalWords += dictionary3.WordCount;
+                arg0: wordCount);
+            totalWords += wordCount;
         }
+
+        Console.WriteLine(format: "Dictionary files contained {0} words.",
+            arg0: totalWords);
+
         if (totalWords == dictionary.WordCount)
             return result ? 0 : 1;
 
