@@ -25,6 +25,7 @@ public partial record LiteralDictionarySource
 
     public static IEnumerable<LiteralDictionarySource> Sources
         => Enum.GetValues<LiteralDictionarySourceType>()
+            .Where(predicate: type => type is not LiteralDictionarySourceType.Other)
             .Select(
                 selector: FromSourceType);
 

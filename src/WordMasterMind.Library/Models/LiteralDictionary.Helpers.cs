@@ -50,21 +50,4 @@ public partial class LiteralDictionary
 
         return dictionary;
     }
-
-    /// <summary>
-    ///     Attempts to use HTTP to get the json file and then use FillDictionary to format it
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
-    private static async Task<Dictionary<int, IEnumerable<string>>> LoadDictionaryFromWebJsonWordArray(
-        LiteralDictionarySourceType sourceType)
-    {
-        var source = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
-        var jsonText = await new HttpClient().GetStringAsync(requestUri: source.FileName);
-        var dictionaryWords = JsonToWords(jsonText: jsonText).ToArray();
-        if (dictionaryWords is null || !dictionaryWords.Any())
-            throw new Exception(message: "Dictionary could not be retrieved");
-
-        return FillDictionary(words: dictionaryWords);
-    }
 }

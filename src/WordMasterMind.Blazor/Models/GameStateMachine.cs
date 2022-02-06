@@ -80,7 +80,7 @@ public class GameStateMachine : IGameStateMachine
                     this.LiteralDictionary =
                         LiteralDictionary.NewFromSourceType(
                             sourceType: this._dictionarySourceType.Value,
-                            basePath: Utilities.GetWebRoot());
+                            basePath: null);
                     break;
                 case GameState.Playing:
                     if (oldState is not GameState.LengthSelection)
