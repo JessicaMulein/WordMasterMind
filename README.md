@@ -21,7 +21,7 @@ Unlike Wordle, the number of tries varies with the word length.
 *   One (1) Attempt per letter in the secret word
 *   One (1) additional Attempt
 
-Therefore, a 3 letter word will give you 4 attempts, a 5 letter will give you 6 like Wordle, and a bonus try for Hard Mode. A 15 letter word would give you 16 attempts.
+Therefore, a 3 letter word will give you 4 attempts, a 5 letter will give you 6 like Wordle. A 15 letter word would give you 16 attempts.
 
 Guess the word the Mastermind has in mind in within the number of tries.
 
@@ -37,3 +37,15 @@ Scoring (idea):
 *   One (1) more point for a previously guessed letter once it is in the correct position
 
 Scoring subject to change, at least until it is dialed in.
+
+# Collaboration
+Collaboration is welcome. Please contact jessica [at] mulein.com.
+
+
+# Project tracking
+- While not a formal Agile/Scrum/Kanban team, GitHub's built-in (beta) project tracking is fantastic and We (royal we/the team/myself) will try to keep the tickets as up-to-date as possible.
+  - [WordMasterMind - Initial Sprint (Notorious LEX)](https://github.com/orgs/WordMasterMind/projects/1)
+
+# Documentation
+Documentation is located in the toplevel repo's [Wiki](https://github.com/WordMasterMind/WordMasterMind/wiki)
+- Documentation for the utility to add your own dictionaries is covered on the [Dictionary File Formats](https://github.com/WordMasterMind/WordMasterMind/wiki/Dictionary-File-Formats) page.
