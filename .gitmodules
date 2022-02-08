@@ -1,15 +1,15 @@
 [submodule "test/WordMasterMind.Tests"]
 	path = test/WordMasterMind.Test
-	url = git@github.com:WordMasterMind/WordMasterMind.Test.git
+	url = https://github.com/WordMasterMind/WordMasterMind.Test.git
 [submodule "WordMasterMind.wiki"]
 	path = wiki
 	url = https://github.com/WordMasterMind/WordMasterMind.wiki.git
 [submodule "src/WordMasterMind.Blazor"]
 	path = src/WordMasterMind.Blazor
-	url = git@github.com:WordMasterMind/WordMasterMind.Blazor.git
+	url = https://github.com/WordMasterMind/WordMasterMind.Blazor.git
 [submodule "src/WordMasterMind.Library"]
 	path = src/WordMasterMind.Library
-	url = git@github.com:WordMasterMind/WordMasterMind.Library.git
+	url = https://github.com/WordMasterMind/WordMasterMind.Library.git
 [submodule "src/WordMasterMind.CLI"]
 	path = src/WordMasterMind.CLI
-	url = git@github.com:WordMasterMind/WordMasterMind.CLI.git
+	url = httpsw://github.com/WordMasterMind/WordMasterMind.CLI.git
