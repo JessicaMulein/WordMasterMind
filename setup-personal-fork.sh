@@ -22,7 +22,7 @@ setupFork() {
     git remote set-url --push origin git@github.com:${_USERNAME}/${MODULE}
     echo ""
     echo "  - after:"
-    git remove -v
+    git remote -v
   done
   echo "returning to ${_OPWD}"
   cd "${_OPWD}"
