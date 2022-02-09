@@ -3,6 +3,9 @@
 - A C# Blazor WebAssembly quick wordle clone based on the scrabble dictionary
 - Self-contained
 
+# About
+See: the [About](https://github.com/WordMasterMind/WordMasterMind/wiki/About) page in the Wiki.
+
 ![Rules Screenshot](https://raw.githubusercontent.com/FreddieMercurial/WordMasterMind/main/WordMasterMindRules.png)
 ![Dictionaries Screenshot](https://raw.githubusercontent.com/FreddieMercurial/WordMasterMind/main/WordMasterMindDictionaries.png)
 ![Word Lenghts Screenshot](https://raw.githubusercontent.com/FreddieMercurial/WordMasterMind/main/WordMasterMindWordLengths.png)
