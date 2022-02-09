@@ -11,9 +11,18 @@ performUpdates() {
 
   echo ""
   echo "Checking out default branches"
+  _OPWD=$(pwd)
   for MODULE in $_GIT_SUBMODULES; do
     echo "  - Checking out the default branch for ${MODULE}"
-    git submodule set-branch --default -- "${MODULE}"
+    if [[ "${MODULE}" == "wiki" ]]
+    then
+      _BRANCH=master
+    else
+      _BRANCH=main
+    fi
+    cd "${MODULE}" && \
+      git checkout --track origin/${_BRANCH} -B ${_BRANCH} && \
+      cd "${_OPWD}"
   done
 }
 
