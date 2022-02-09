@@ -18,6 +18,7 @@ setupFork() {
     git remote -v
     echo "  - Setting origins for ${MODULE}"
     git remote rename origin upstream
+    git remote set-url --push upstream git@github.com:WordMasterMind/${MODULE}
     git remote add origin https://github.com/${_USERNAME}/${MODULE}
     git remote set-url --push origin git@github.com:${_USERNAME}/${MODULE}
     echo ""
