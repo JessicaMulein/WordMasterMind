@@ -8,7 +8,7 @@ Versions which are currently being supported with security updates:
 | ------- | ------------------ |
 | *       | :x:                |
 
-This project is offered AS IS with no warranties, manufactured or implied. This project is a "for fun" project. Security updates are as time permits.
+This project is offered AS IS with no warranties, expressed or implied. This project is a "for fun" project. Security updates are as time permits.
 
 ## Reporting a Vulnerability
 
