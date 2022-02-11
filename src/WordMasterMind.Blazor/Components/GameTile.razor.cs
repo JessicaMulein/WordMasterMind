@@ -8,9 +8,9 @@ namespace WordMasterMind.Blazor.Components;
 /// </summary>
 public partial class GameTile
 {
-    [ParameterAttribute] public string Letter { get; set; }
+    [ParameterAttribute] public string Letter { get; set; } = string.Empty;
 
-    [ParameterAttribute] public string Evaluation { get; set; } = nameof(LetterEvaluation.Absent).ToLowerInvariant();
+    [ParameterAttribute] public string Evaluation { get; set; } = Enum.GetName(typeof(LetterEvaluation), LetterEvaluation.Absent)!.ToLowerInvariant();
 
     public LetterEvaluation LetterEvaluation
     {
