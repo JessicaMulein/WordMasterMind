@@ -36,7 +36,6 @@ public class GameStateMachine : IGameStateMachine
         this.PreviousState = GameState.Rules;
         this._wordLength = Constants.StandardLength;
         this.OnStateChange = null;
-        this.ValidWordLengths = ImmutableArray<int>.Empty;
     }
 
     public bool NightMode { get; set; }
@@ -112,9 +111,10 @@ public class GameStateMachine : IGameStateMachine
     public async Task<LiteralDictionary> GetLiteralDictionary()
         => await LiteralDictionaryFromSourceViaHttp(DictionarySourceType);
 
+    /// <summary>
+    /// Currently selected word length
+    /// </summary>
     public int? WordLength { get; set; }
-
-    public IEnumerable<int> ValidWordLengths { get; private set; }
 
     public async Task ChangeStateAsync(GameState newState)
     {
@@ -130,8 +130,6 @@ public class GameStateMachine : IGameStateMachine
             case GameState.SourceSelection:
                 break;
             case GameState.LengthSelection:
-                var lengthSource = LiteralDictionarySource.FromSourceType(sourceType: this.DictionarySourceType);
-                this.ValidWordLengths = await this.GetValidLengthsForSource(lengthSource: lengthSource);
                 break;
             case GameState.Playing:
                 await this.ResumeOrRestartGame(leavingState: currentStateBeingLeft);
@@ -202,6 +200,11 @@ public class GameStateMachine : IGameStateMachine
                 source: playingSource,
                 sourceData: sourceData);
     }
+
+    public async Task<IEnumerable<int>> GetDictionaryWordLengths()
+        => await this.GetValidLengthsForSource(
+            lengthSource: LiteralDictionarySource.FromSourceType(
+                sourceType: this.DictionarySourceType));
 
     /// <summary>
     /// 

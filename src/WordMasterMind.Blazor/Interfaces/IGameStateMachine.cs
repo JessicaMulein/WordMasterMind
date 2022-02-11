@@ -38,8 +38,8 @@ public interface IGameStateMachine
     /// <returns></returns>
     public string CurrentAttemptLetter(int letterIndex);
     public LiteralDictionarySourceType DictionarySourceType { get; set; }
-    public IEnumerable<int> ValidWordLengths { get; }
     public Task<LiteralDictionary> GetLiteralDictionary();
+    public Task<IEnumerable<int>> GetDictionaryWordLengths();
     public int? WordLength { get; set; }
     public HttpClient? HttpClient { get; set; }
     public Task ChangeStateAsync(GameState newState);
