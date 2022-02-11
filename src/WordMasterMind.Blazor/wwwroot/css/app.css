@@ -1,5 +1,11 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+* {
+    --color-absent: #787c7e;
+    --color-correct: #6aaa64;
+    --color-present: #c9b458;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -188,6 +194,11 @@ body {
 }
 .game-tile[data-state='present'] {
     background-color: var(--color-present);
+}
+.game-tile[data-state='tbd'] {
+    background-color: var(--color-tone-7);
+    border: 2px solid var(--color-tone-3);
+    color: var(--color-tone-1);
 }
 
 .title {

@@ -8,22 +8,26 @@ namespace WordMasterMind.Blazor.Components;
 /// </summary>
 public partial class GameTile
 {
-    [ParameterAttribute] public string Letter { get; set; } = string.Empty;
+    [ParameterAttribute] public char Letter { get; set; } = WordMasterMind.Library.Helpers.Constants.EmptyChar;
+
+    [ParameterAttribute] public string LetterString
+    {
+        get => this.Letter.ToString().ToUpperInvariant();
+        set => this.Letter = value.ToUpperInvariant()[index: 0];
+    }
+    [ParameterAttribute] public LetterEvaluation LetterEvaluation { get; set; } = LetterEvaluation.Tbd;
 
     [ParameterAttribute]
-    public string Evaluation { get; set; } = Enum.GetName(enumType: typeof(LetterEvaluation),
-        value: LetterEvaluation.Absent)!.ToLowerInvariant();
-
-    public LetterEvaluation LetterEvaluation
+    public string EvaluationString
     {
-        get => (LetterEvaluation) Enum.Parse(
+        get => Enum.GetName(
             enumType: typeof(LetterEvaluation),
-            value: this.Evaluation,
+            value: this.LetterEvaluation)!.ToLowerInvariant();
+        set => this.LetterEvaluation = (LetterEvaluation)Enum.Parse(
+            enumType: typeof(LetterEvaluation),
+            value: value.ToLowerInvariant(),
             ignoreCase: true);
-        set => this.Evaluation = value.ToString().ToLowerInvariant();
     }
 
-    [ParameterAttribute] public string? Reveal { get; set; }
-
-    public bool RevealBool => this.Reveal?.ToLowerInvariant() is "true" or "reveal" or "";
+    [ParameterAttribute] public bool Reveal { get; set; }
 }

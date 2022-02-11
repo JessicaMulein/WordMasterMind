@@ -82,13 +82,13 @@ public class GameStateMachine : IGameStateMachine
     /// </summary>
     public string CurrentAttemptString { get; set; } = string.Empty;
 
-    public string CurrentAttemptLetter(int letterIndex)
+    public char CurrentAttemptLetter(int letterIndex)
     {
         return (letterIndex >= this.CurrentAttemptString.Length || letterIndex < 0
                 ? Constants.EmptyChar
                 : this.CurrentAttemptString[index: letterIndex])
             .ToString()
-            .ToLowerInvariant();
+            .ToLowerInvariant()[index: 0];
     }
 
     public WordMasterMindGame? Game { get; private set; }
@@ -222,7 +222,7 @@ public class GameStateMachine : IGameStateMachine
             leavingState: leavingState);
     }
 
-    public async Task<LiteralDictionary> LiteralDictionaryFromSourceViaHttp(LiteralDictionarySourceType sourceType)
+    private async Task<LiteralDictionary> LiteralDictionaryFromSourceViaHttp(LiteralDictionarySourceType sourceType)
     {
         var playingSource = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
         var sourceData = await (this.HttpClient ?? throw new InvalidOperationException())

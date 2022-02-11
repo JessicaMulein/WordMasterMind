@@ -62,7 +62,7 @@ public interface IGameStateMachine
     /// </summary>
     /// <param name="letterIndex"></param>
     /// <returns></returns>
-    public string CurrentAttemptLetter(int letterIndex);
+    public char CurrentAttemptLetter(int letterIndex);
 
     /// <summary>
     ///     Dictionary object for the currently selected dictionary source
