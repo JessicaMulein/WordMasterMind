@@ -18,6 +18,7 @@ public static class WordMasterMindPlayer
         "CRANE",
         "IDEAL",
         "LINTY",
+        "PAUSE",
         "RAISE",
         // ReSharper disable once StringLiteralTypo
         "SOARE",
