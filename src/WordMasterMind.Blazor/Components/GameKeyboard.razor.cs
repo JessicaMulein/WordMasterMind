@@ -1,5 +1,11 @@
 using System.Text;
+using Microsoft.AspNetCore.Components;
+using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Helpers;
+using WordMasterMind.Blazor.Interfaces;
+using WordMasterMind.Blazor.Models;
+using WordMasterMind.Library.Exceptions;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace WordMasterMind.Blazor.Components;
@@ -13,6 +19,10 @@ public partial class GameKeyboard
     private static readonly StringBuilder KeyboardBuffer;
 
     public static readonly char[,] Keys;
+    
+#pragma warning disable CS8618
+    [Inject] public IGameStateMachine GameStateMachine { get; set; }
+#pragma warning restore CS8618
 
     static GameKeyboard()
     {
@@ -27,6 +37,34 @@ public partial class GameKeyboard
 
     private void OnClick(char keyValue)
     {
-        Console.WriteLine(value: keyValue);
+        switch (keyValue)
+        {
+            case BackspaceKey:
+                KeyboardBuffer.Remove(startIndex: KeyboardBuffer.Length - 1, length: 1);
+                break;
+            case EnterKey:
+                var attemptWord = KeyboardBuffer.ToString();
+                var wordMasterMindGame = this.GameStateMachine.Game;
+                if (wordMasterMindGame is not null)
+                {
+                    try
+                    {
+                        wordMasterMindGame.MakeAttempt(wordAttempt: attemptWord);
+                        KeyboardBuffer.Clear();
+                    }
+                    catch (HardModeException _)
+                    {
+                        // ignored
+                    }
+                    catch (Exception _)
+                    {
+                        // ignored
+                    }
+                }
+                break;
+            default:
+                KeyboardBuffer.Append(value: keyValue);
+                break;
+        }
     }
 }
