@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Exceptions;
 using WordMasterMind.Library.Helpers;
@@ -43,7 +42,8 @@ public partial class WordMasterMindGame
     /// <exception cref="InvalidLengthException"></exception>
     /// <exception cref="NotInDictionaryException"></exception>
     public WordMasterMindGame(int minLength, int maxLength, bool hardMode = false,
-        LiteralDictionary? literalDictionary = null, string? secretWord = Constants.ComputerSelectedWord, string? basePath = null, bool dailyWordWhenComputer = true)
+        LiteralDictionary? literalDictionary = null, string? secretWord = Constants.ComputerSelectedWord,
+        string? basePath = null, bool dailyWordWhenComputer = true)
     {
         this.Solved = false;
         this.CurrentAttempt = 0;
@@ -58,17 +58,18 @@ public partial class WordMasterMindGame
             (secretWord.Length < minLength ||
              secretWord.Length > maxLength) ||
             minLength <= 0)
-        {
-            throw new InvalidLengthException(minLength: minLength, maxLength: maxLength);
-        }
+            throw new InvalidLengthException(minLength: minLength,
+                maxLength: maxLength);
 
         this._secretWord = secretWord switch
         {
             null when dailyWordWhenComputer => DailyWordGenerator.WordOfTheDay(date: null,
-                    length: this.LiteralDictionary.RandomLength(minLength: minLength, maxLength: maxLength))
+                    length: this.LiteralDictionary.RandomLength(minLength: minLength,
+                        maxLength: maxLength))
                 .ToUpperInvariant(),
-            null => this.LiteralDictionary.GetRandomWord(minLength: minLength, maxLength: maxLength).ToUpperInvariant(),
-            _ => secretWord
+            null => this.LiteralDictionary.GetRandomWord(minLength: minLength,
+                maxLength: maxLength).ToUpperInvariant(),
+            _ => secretWord,
         };
 
         this.WordLength = this._secretWord.Length;

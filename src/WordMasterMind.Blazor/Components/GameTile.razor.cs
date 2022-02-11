@@ -10,7 +10,9 @@ public partial class GameTile
 {
     [ParameterAttribute] public string Letter { get; set; } = string.Empty;
 
-    [ParameterAttribute] public string Evaluation { get; set; } = Enum.GetName(typeof(LetterEvaluation), LetterEvaluation.Absent)!.ToLowerInvariant();
+    [ParameterAttribute]
+    public string Evaluation { get; set; } = Enum.GetName(enumType: typeof(LetterEvaluation),
+        value: LetterEvaluation.Absent)!.ToLowerInvariant();
 
     public LetterEvaluation LetterEvaluation
     {

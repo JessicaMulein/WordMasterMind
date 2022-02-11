@@ -1,4 +1,5 @@
 ﻿@page "/"
-<BodyElement CssClass="nightmode" />
+@using WordMasterMind.Blazor.Helpers
+<BodyElement CssClass="@Constants.NightModeClass" />
 <PageTitle>Word MasterMind</PageTitle>
 <WordMasterMindUI></WordMasterMindUI>

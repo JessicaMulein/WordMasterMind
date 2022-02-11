@@ -86,7 +86,10 @@ public static class WordMasterMindPlayer
     /// <param name="turns"></param>
     /// <param name="maximumDictionaryLookupAttemptsPerTry"></param>
     /// <param name="noStrategy"></param>
-    /// <param name="avoidSecretWord">Avoid the secret word (to do too many attempts). The computer will NEVER guess the correct word.</param>
+    /// <param name="avoidSecretWord">
+    ///     Avoid the secret word (to do too many attempts). The computer will NEVER guess the
+    ///     correct word.
+    /// </param>
     /// <returns></returns>
     /// <exception cref="GameOverException"></exception>
     public static bool AttemptComputerSolve(WordMasterMindGame mastermind, int turns = -1,

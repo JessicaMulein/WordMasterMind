@@ -10,6 +10,19 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
+                        <div class="form-label">Night Mode</div>
+                        <div class="form-control" @onclick="ToggleNightMode">
+                            @if (GameStateMachine.NightMode)
+                            {
+                                <i class="fas fa-toggle-on"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-toggle-off"></i>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="form-label">Hard Mode</div>
                         <div class="form-control" @onclick="ToggleHardMode">
                             @if (GameStateMachine.HardMode)

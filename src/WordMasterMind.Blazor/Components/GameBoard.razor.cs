@@ -4,7 +4,7 @@ using WordMasterMind.Blazor.Interfaces;
 namespace WordMasterMind.Blazor.Components;
 
 /// <summary>
-/// GameBoard is only used/visible while GameStateMachine.Game is defined
+///     GameBoard is only used/visible while GameStateMachine.Game is defined
 /// </summary>
 public partial class GameBoard
 {

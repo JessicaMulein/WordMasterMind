@@ -1,6 +1,4 @@
-using System.Collections.Immutable;
 using System.Net.Http.Json;
-using WordMasterMind.Blazor.Components;
 using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Interfaces;
 using WordMasterMind.Library.Enumerations;
@@ -11,7 +9,8 @@ using WordMasterMind.Library.Models;
 namespace WordMasterMind.Blazor.Models;
 
 /// <summary>
-/// Singleton (service dependency injection enforced) that keeps the current UI state and a running instance of the game in the appropriate state(s).
+///     Singleton (service dependency injection enforced) that keeps the current UI state and a running instance of the
+///     game in the appropriate state(s).
 /// </summary>
 public class GameStateMachine : IGameStateMachine
 {
@@ -19,15 +18,15 @@ public class GameStateMachine : IGameStateMachine
     private readonly int? _wordLength;
 
     /// <summary>
-    /// Whether hard mode is enabled (or will be enabled when the game is started).
-    /// Reflects live state when there is a game playing.
+    ///     Whether hard mode is enabled (or will be enabled when the game is started).
+    ///     Reflects live state when there is a game playing.
     /// </summary>
     private bool _hardMode;
 
     /// <summary>
-    /// OnStateChange callback event
+    ///     OnStateChange callback event
     /// </summary>
-    private Action<GameStateMachine, StateChangedEventArgs>? OnStateChange;
+    private readonly Action<GameStateMachine, StateChangedEventArgs>? OnStateChange;
 
     public GameStateMachine()
     {
@@ -39,15 +38,13 @@ public class GameStateMachine : IGameStateMachine
         this.OnStateChange = null;
     }
 
-    public bool NightMode { get; set; }
-
     /// <summary>
-    /// Whether hard mode is enabled (or will be enabled when the game is started).
-    /// Reflects live state when there is a game playing.
+    ///     Whether hard mode is enabled (or will be enabled when the game is started).
+    ///     Reflects live state when there is a game playing.
     /// </summary>
     public bool HardMode
     {
-        get => (this.Game is not null && this.Game.HardMode) || this._hardMode;
+        get => this.Game is not null && this.Game.HardMode || this._hardMode;
         set
         {
             // try to update game state.
@@ -68,8 +65,9 @@ public class GameStateMachine : IGameStateMachine
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Unexpected exception ({e.GetType()}): {e.Message}");
+                    Console.WriteLine(value: $"Unexpected exception ({e.GetType()}): {e.Message}");
                 }
+
                 return;
             }
 
@@ -79,46 +77,57 @@ public class GameStateMachine : IGameStateMachine
     }
 
     /// <summary>
-    /// The engine doesn't have a sense of a partially submitted attempt.
-    /// This keeps the state until an attempt is made
+    ///     The engine doesn't have a sense of a partially submitted attempt.
+    ///     This keeps the state until an attempt is made
     /// </summary>
     public string CurrentAttemptString { get; set; } = string.Empty;
 
     public string CurrentAttemptLetter(int letterIndex)
-        => (letterIndex >= CurrentAttemptString.Length || letterIndex < 0 ? Constants.EmptyChar : CurrentAttemptString[letterIndex])
+    {
+        return (letterIndex >= this.CurrentAttemptString.Length || letterIndex < 0
+                ? Constants.EmptyChar
+                : this.CurrentAttemptString[index: letterIndex])
             .ToString()
             .ToLowerInvariant();
+    }
 
     public WordMasterMindGame? Game { get; private set; }
 
     /// <summary>
-    /// Whether to use the daily word generator or a random word
+    ///     Whether to use the daily word generator or a random word
     /// </summary>
     public bool DailyWord { get; set; } = true;
 
     /// <summary>
-    /// Provides an http client with the appropriate host/port for SPA
+    ///     Provides an http client with the appropriate host/port for SPA
     /// </summary>
     public HttpClient? HttpClient { get; set; }
 
     /// <summary>
-    /// The currently selected dictionary source. Defaults to Collins Scrabble.
+    ///     Whether night mode is turned on in the UI
+    /// </summary>
+    public bool NightMode { get; set; } = true;
+
+    /// <summary>
+    ///     The currently selected dictionary source. Defaults to Collins Scrabble.
     /// </summary>
     public LiteralDictionarySourceType DictionarySourceType { get; set; }
 
     /// <summary>
-    /// Dictionary object for the currently selected dictionary source
+    ///     Dictionary object for the currently selected dictionary source
     /// </summary>
     public async Task<LiteralDictionary> GetLiteralDictionary()
-        => await LiteralDictionaryFromSourceViaHttp(DictionarySourceType);
+    {
+        return await this.LiteralDictionaryFromSourceViaHttp(sourceType: this.DictionarySourceType);
+    }
 
     /// <summary>
-    /// Currently selected word length
+    ///     Currently selected word length
     /// </summary>
     public int? WordLength { get; set; }
 
     /// <summary>
-    /// Attempts to change to the requested state and fires events when successful
+    ///     Attempts to change to the requested state and fires events when successful
     /// </summary>
     /// <param name="newState"></param>
     /// <returns></returns>
@@ -162,14 +171,25 @@ public class GameStateMachine : IGameStateMachine
     }
 
     /// <summary>
-    /// Most recent state
+    ///     Most recent state
     /// </summary>
     public GameState PreviousState { get; private set; }
 
     /// <summary>
-    /// Current state
+    ///     Current state
     /// </summary>
     public GameState State { get; private set; }
+
+    /// <summary>
+    ///     Gets valid word lengths for the currently selected dictionary source
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IEnumerable<int>> GetDictionaryWordLengths()
+    {
+        return await this.GetValidLengthsForSource(
+            lengthSource: LiteralDictionarySource.FromSourceType(
+                sourceType: this.DictionarySourceType));
+    }
 
     private async Task ResumeOrRestartGame(GameState leavingState)
     {
@@ -205,7 +225,7 @@ public class GameStateMachine : IGameStateMachine
     public async Task<LiteralDictionary> LiteralDictionaryFromSourceViaHttp(LiteralDictionarySourceType sourceType)
     {
         var playingSource = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
-        var sourceData = await(this.HttpClient ?? throw new InvalidOperationException())
+        var sourceData = await (this.HttpClient ?? throw new InvalidOperationException())
             .GetByteArrayAsync(requestUri: $"/dictionaries/{this._wordLength}-{playingSource.FileName}");
 
         return
@@ -215,16 +235,6 @@ public class GameStateMachine : IGameStateMachine
     }
 
     /// <summary>
-    /// Gets valid word lengths for the currently selected dictionary source
-    /// </summary>
-    /// <returns></returns>
-    public async Task<IEnumerable<int>> GetDictionaryWordLengths()
-        => await this.GetValidLengthsForSource(
-            lengthSource: LiteralDictionarySource.FromSourceType(
-                sourceType: this.DictionarySourceType));
-
-    /// <summary>
-    /// 
     /// </summary>
     /// <param name="leavingState"></param>
     /// <param name="secretWord">Null = ComputerSelectedWord, otherwise provide word</param>
@@ -251,7 +261,7 @@ public class GameStateMachine : IGameStateMachine
     }
 
     /// <summary>
-    /// Internally sets the state and fires the state changed event. Do not use directly.
+    ///     Internally sets the state and fires the state changed event. Do not use directly.
     /// </summary>
     /// <param name="leavingState"></param>
     /// <param name="newState"></param>
