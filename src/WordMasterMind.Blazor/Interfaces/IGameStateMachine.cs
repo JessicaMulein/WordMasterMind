@@ -37,10 +37,31 @@ public interface IGameStateMachine
     /// <param name="letterIndex"></param>
     /// <returns></returns>
     public string CurrentAttemptLetter(int letterIndex);
+    /// <summary>
+    /// The currently selected dictionary source. Defaults to Collins Scrabble.
+    /// </summary>
     public LiteralDictionarySourceType DictionarySourceType { get; set; }
+    /// <summary>
+    /// Dictionary object for the currently selected dictionary source
+    /// </summary>
     public Task<LiteralDictionary> GetLiteralDictionary();
+    /// <summary>
+    /// Gets valid word lengths for the currently selected dictionary source
+    /// </summary>
+    /// <returns></returns>
     public Task<IEnumerable<int>> GetDictionaryWordLengths();
+    /// <summary>
+    /// Currently selected word length
+    /// </summary>
     public int? WordLength { get; set; }
+    /// <summary>
+    /// Provides an http client with the appropriate host/port for SPA
+    /// </summary>
     public HttpClient? HttpClient { get; set; }
+    /// <summary>
+    /// Attempts to change to the requested state and fires events when successful
+    /// </summary>
+    /// <param name="newState"></param>
+    /// <returns></returns>
     public Task ChangeStateAsync(GameState newState);
 }

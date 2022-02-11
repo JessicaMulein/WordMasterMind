@@ -117,6 +117,11 @@ public class GameStateMachine : IGameStateMachine
     /// </summary>
     public int? WordLength { get; set; }
 
+    /// <summary>
+    /// Attempts to change to the requested state and fires events when successful
+    /// </summary>
+    /// <param name="newState"></param>
+    /// <returns></returns>
     public async Task ChangeStateAsync(GameState newState)
     {
         var currentStateBeingLeft = this.State;
@@ -156,7 +161,14 @@ public class GameStateMachine : IGameStateMachine
             newState: newState);
     }
 
+    /// <summary>
+    /// Most recent state
+    /// </summary>
     public GameState PreviousState { get; private set; }
+
+    /// <summary>
+    /// Current state
+    /// </summary>
     public GameState State { get; private set; }
 
     private async Task ResumeOrRestartGame(GameState leavingState)
@@ -202,6 +214,10 @@ public class GameStateMachine : IGameStateMachine
                 sourceData: sourceData);
     }
 
+    /// <summary>
+    /// Gets valid word lengths for the currently selected dictionary source
+    /// </summary>
+    /// <returns></returns>
     public async Task<IEnumerable<int>> GetDictionaryWordLengths()
         => await this.GetValidLengthsForSource(
             lengthSource: LiteralDictionarySource.FromSourceType(
@@ -232,6 +248,11 @@ public class GameStateMachine : IGameStateMachine
             newState: GameState.Playing);
     }
 
+    /// <summary>
+    /// Internally sets the state and fires the state changed event. Do not use directly.
+    /// </summary>
+    /// <param name="leavingState"></param>
+    /// <param name="newState"></param>
     private void SetState(GameState leavingState, GameState newState)
     {
         this.PreviousState = leavingState;
