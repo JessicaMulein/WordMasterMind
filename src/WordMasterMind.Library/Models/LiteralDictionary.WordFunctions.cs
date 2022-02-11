@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using WordMasterMind.Library.Exceptions;
 using WordMasterMind.Library.Helpers;
 
 namespace WordMasterMind.Library.Models;
@@ -112,6 +113,14 @@ public partial class LiteralDictionary
     /// <exception cref="Exception"></exception>
     public string GetRandomWord(int minLength, int maxLength)
     {
+        if (minLength < maxLength ||
+            minLength <= 0 ||
+            minLength < this.ShortestWordLength ||
+            maxLength > this.LongestWordLength)
+            throw new InvalidLengthException(
+                minLength: minLength,
+                maxLength: maxLength);
+
         var random = new Random();
         /* maxTries is the number of tries to find a word of length between minLength and maxLength
          * that is of a length included in the dictionary. Although the dictionary is known to have
