@@ -1,3 +1,4 @@
+@using WordMasterMind.Library.Helpers
 <div class="game-row row">
     @{
         if (GameStateMachine.Game is null)
@@ -8,13 +9,20 @@
         foreach (var attemptLetterDetail in GameStateMachine.Game.GetAttempt(attemptIndex: AttemptIndex))
         {
             <GameTile
-                letter="@attemptLetterDetail"
-                evaluation="@attemptLetterDetail.Evaluation.ToString().ToLowerInvariant()"
-                reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct).ToString().ToLowerInvariant())"/>
+                Letter="@attemptLetterDetail.Letter.ToString()"
+                Evaluation="@attemptLetterDetail.Evaluation.ToString().ToLowerInvariant()"
+                Reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct).ToString().ToLowerInvariant())"/>
         }
     }
     else
     {
-        <GameTile></GameTile>
+        for (int letterIndex = 0; letterIndex < GameStateMachine.WordLength; letterIndex++)
+        {
+            var currentLetter = letterIndex > GameStateMachine.CurrentAttemptString.Length ? Constants.EmptyChar : GameStateMachine.CurrentAttemptString[letterIndex];
+            <GameTile
+                Letter="@currentLetter.ToString()"
+                Evaluation="@Enum.GetName(typeof(LetterEvaluation), LetterEvaluation.Absent)"
+                Reveal="false"></GameTile>
+        }
     }
 </div>

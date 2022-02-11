@@ -43,6 +43,12 @@ public class GameStateMachine : IGameStateMachine
         }
     }
 
+    /// <summary>
+    /// The engine doesn't have a sense of a partially submitted attempt.
+    /// This keeps the state until an attempt is made
+    /// </summary>
+    public string CurrentAttemptString { get; set; } = string.Empty;
+
     public WordMasterMindGame? Game { get; private set; }
 
     public HttpClient? HttpClient { get; set; }

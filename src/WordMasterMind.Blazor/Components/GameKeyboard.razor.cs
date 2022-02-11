@@ -66,5 +66,6 @@ public partial class GameKeyboard
                 KeyboardBuffer.Append(value: keyValue);
                 break;
         }
+        GameStateMachine.CurrentAttemptString = KeyboardBuffer.ToString();
     }
 }

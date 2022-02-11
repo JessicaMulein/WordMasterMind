@@ -1,11 +1,12 @@
 @using WordMasterMind.Blazor.Models
 @using Microsoft.AspNetCore.Components
+@using WordMasterMind.Library.Helpers
 @inject IGameStateMachine _gameStateMachine
 <div class="row">
     <select @bind="_gameStateMachine.WordLength">
         @foreach (var length in _gameStateMachine.ValidWordLengths)
         {
-            @if(_gameStateMachine.WordLength is not null && _gameStateMachine.WordLength == length)
+            @if(_gameStateMachine.WordLength is not null ? _gameStateMachine.WordLength == length : Constants.StandardLength == length)
             {
                 <option selected="selected" value="@length">@length</option>
             }
