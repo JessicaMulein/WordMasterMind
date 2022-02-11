@@ -1,18 +1,18 @@
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime _jsRuntime
 @code {
-    protected async override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if (CssClass is { })
-            await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.addCssClassToBody", CssClass);
+            await _jsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.addCssClassToBody", CssClass);
 
         if (Language is { })
-            await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setLanguageOfBody", Language);
+            await _jsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setLanguageOfBody", Language);
 
         if (TextDirection is { })
-            await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setTextDirectionOfBody", TextDirection);
+            await _jsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setTextDirectionOfBody", TextDirection);
 
         if (Title is { })
-            await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setDocumentTitle", Title);
+            await _jsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setDocumentTitle", Title);
     }
 
     [Parameter]
