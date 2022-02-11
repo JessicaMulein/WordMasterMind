@@ -1,0 +1,13 @@
+<select class="form-control" @bind="SourceTypeString">
+    @foreach (var source in Sources)
+    {
+        @if (GameStateMachine.DictionarySourceType == source.SourceType)
+        {
+            <option selected="selected" value="@source.SourceType">@source.Description</option>
+        }
+        else
+        {
+            <option value="@source.SourceType">@source.Description</option>
+        }
+    }
+</select>

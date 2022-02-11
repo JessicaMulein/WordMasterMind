@@ -1,0 +1,20 @@
+<div class="game-row row">
+    @{
+        if (GameStateMachine.Game is null)
+            throw new Exception(message: "Unexpected game state/null game");
+    }
+    @if (AttemptIndex < GameStateMachine.Game.CurrentAttempt)
+    {
+        foreach (var attemptLetterDetail in GameStateMachine.Game.GetAttempt(attemptIndex: AttemptIndex))
+        {
+            <GameTile
+                letter="@attemptLetterDetail"
+                evaluation="@attemptLetterDetail.Evaluation.ToString().ToLowerInvariant()"
+                reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct).ToString().ToLowerInvariant())"/>
+        }
+    }
+    else
+    {
+        <GameTile></GameTile>
+    }
+</div>
