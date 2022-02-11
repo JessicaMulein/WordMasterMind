@@ -55,11 +55,9 @@ public partial class WordMasterMindGame
                                      basePath: basePath ??
                                                throw new ArgumentNullException(paramName: nameof(basePath)));
         if (secretWord is not null &&
-            (
-                secretWord.Length < minLength ||
-                secretWord.Length > maxLength ||
-                minLength < 0
-            ))
+            (secretWord.Length < minLength ||
+             secretWord.Length > maxLength) ||
+            minLength <= 0)
         {
             throw new InvalidLengthException(minLength: minLength, maxLength: maxLength);
         }
@@ -67,9 +65,6 @@ public partial class WordMasterMindGame
         this._secretWord = (secretWord ?? this.LiteralDictionary.GetRandomWord(
             minLength: minLength,
             maxLength: maxLength)).ToUpperInvariant();
-
-        Debug.Assert(condition: this._secretWord != null,
-            message: nameof(this._secretWord) + " is null");
 
         this.WordLength = this._secretWord.Length;
 
