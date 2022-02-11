@@ -106,9 +106,9 @@ public partial class WordMasterMindGame
     {
         var emojiColor = attemptLetterDetail.Evaluation switch
         {
-            LetterEvaluation.Correct => Constants.GreenEmoji,
-            LetterEvaluation.Present => Constants.YellowEmoji,
-            _ => Constants.BlackEmoji,
+            LetterEvaluation.Correct => Constants.GreenSquareEmoji,
+            LetterEvaluation.Present => Constants.YellowSquareEmoji,
+            _ => Constants.BlackSquareEmoji,
         };
 
         return GetEmojiFromConst(constValue: emojiColor);

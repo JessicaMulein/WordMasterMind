@@ -9,18 +9,29 @@ using WordMasterMind.Library.Models;
 
 namespace WordMasterMind.Blazor.Models;
 
+/// <summary>
+/// Singleton (service dependency injection enforced) that keeps the current UI state and a running instance of the game in the appropriate state(s).
+/// </summary>
 public class GameStateMachine : IGameStateMachine
 {
     private static readonly Dictionary<LiteralDictionarySource, IEnumerable<int>> ValidWordLengthsBySource = new();
     private readonly int? _wordLength;
+
+    /// <summary>
+    /// Whether hard mode is enabled (or will be enabled when the game is started).
+    /// Reflects live state when there is a game playing.
+    /// </summary>
     private bool _hardMode;
+
+    /// <summary>
+    /// OnStateChange callback event
+    /// </summary>
     private Action<GameStateMachine, StateChangedEventArgs>? OnStateChange;
 
     public GameStateMachine()
     {
         this.DictionarySourceType = LiteralDictionarySourceType.Scrabble;
         this.Game = null;
-        this.LiteralDictionary = null;
         this.State = GameState.Rules;
         this.PreviousState = GameState.Rules;
         this._wordLength = Constants.StandardLength;
@@ -30,15 +41,39 @@ public class GameStateMachine : IGameStateMachine
 
     public bool NightMode { get; set; }
 
+    /// <summary>
+    /// Whether hard mode is enabled (or will be enabled when the game is started).
+    /// Reflects live state when there is a game playing.
+    /// </summary>
     public bool HardMode
     {
         get => (this.Game is not null && this.Game.HardMode) || this._hardMode;
         set
         {
+            // try to update game state.
+            // if playing- this will fail
+
             if (this.State is GameState.Playing)
                 throw new HardModeLockedException();
+
             if (this.Game is not null)
-                this.Game.HardMode = value;
+            {
+                try
+                {
+                    this.Game.HardMode = value;
+                }
+                catch (HardModeLockedException _)
+                {
+                    // ignore
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Unexpected exception ({e.GetType()}): {e.Message}");
+                }
+                return;
+            }
+
+            // update offline/between-game copy
             this._hardMode = value;
         }
     }
@@ -56,11 +91,21 @@ public class GameStateMachine : IGameStateMachine
 
     public WordMasterMindGame? Game { get; private set; }
 
+    /// <summary>
+    /// Provides an http client with the appropriate host/port for SPA
+    /// </summary>
     public HttpClient? HttpClient { get; set; }
 
+    /// <summary>
+    /// The currently selected dictionary source. Defaults to Collins Scrabble.
+    /// </summary>
     public LiteralDictionarySourceType DictionarySourceType { get; set; }
 
-    public LiteralDictionary? LiteralDictionary { get; private set; }
+    /// <summary>
+    /// Dictionary object for the currently selected dictionary source
+    /// </summary>
+    public async Task<LiteralDictionary> GetLiteralDictionary()
+        => await LiteralDictionaryFromSourceViaHttp(DictionarySourceType);
 
     public int? WordLength { get; set; }
 
@@ -141,26 +186,29 @@ public class GameStateMachine : IGameStateMachine
             leavingState: leavingState);
     }
 
-    private async Task StartNewGame(GameState leavingState)
+    public async Task<LiteralDictionary> LiteralDictionaryFromSourceViaHttp(LiteralDictionarySourceType sourceType)
     {
-        if (this._wordLength is null)
-            throw new Exception(message: "Cannot start playing without a word length");
-
-        var playingSource = LiteralDictionarySource.FromSourceType(sourceType: this.DictionarySourceType);
-        var sourceData = await (this.HttpClient ?? throw new InvalidOperationException())
+        var playingSource = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
+        var sourceData = await(this.HttpClient ?? throw new InvalidOperationException())
             .GetByteArrayAsync(requestUri: $"/dictionaries/{this._wordLength}-{playingSource.FileName}");
 
-        this.LiteralDictionary =
+        return
             LiteralDictionary.NewFromSource(
                 source: playingSource,
                 sourceData: sourceData);
+    }
+
+    private async Task StartNewGame(GameState leavingState, string? secretWord = Constants.ComputerSelectedWord)
+    {
+        if (this._wordLength is null)
+            throw new Exception(message: "Cannot start playing without a word length");
 
         this.Game = new WordMasterMindGame(
             minLength: this._wordLength.Value,
             maxLength: this._wordLength.Value,
             hardMode: this._hardMode,
-            literalDictionary: this.LiteralDictionary,
-            secretWord: null);
+            literalDictionary: await this.GetLiteralDictionary(),
+            secretWord: secretWord);
 
         this.SetState(
             leavingState: leavingState,

@@ -54,7 +54,18 @@ public partial class WordMasterMindGame
                                      sourceType: LiteralDictionarySourceType.Scrabble,
                                      basePath: basePath ??
                                                throw new ArgumentNullException(paramName: nameof(basePath)));
-        this._secretWord = (secretWord ?? this.LiteralDictionary.GetRandomWord(minLength: minLength,
+        if (secretWord is not null &&
+            (
+                secretWord.Length < minLength ||
+                secretWord.Length > maxLength ||
+                minLength < 0
+            ))
+        {
+            throw new InvalidLengthException(minLength: minLength, maxLength: maxLength);
+        }
+
+        this._secretWord = (secretWord ?? this.LiteralDictionary.GetRandomWord(
+            minLength: minLength,
             maxLength: maxLength)).ToUpperInvariant();
 
         Debug.Assert(condition: this._secretWord != null,

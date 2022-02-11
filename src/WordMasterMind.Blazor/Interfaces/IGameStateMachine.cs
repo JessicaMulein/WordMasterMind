@@ -35,7 +35,7 @@ public interface IGameStateMachine
     public string CurrentAttemptLetter(int letterIndex);
     public LiteralDictionarySourceType DictionarySourceType { get; set; }
     public IEnumerable<int> ValidWordLengths { get; }
-    public LiteralDictionary? LiteralDictionary { get; }
+    public Task<LiteralDictionary> GetLiteralDictionary();
     public int? WordLength { get; set; }
     public HttpClient? HttpClient { get; set; }
     public Task ChangeStateAsync(GameState newState);
