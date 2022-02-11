@@ -168,11 +168,12 @@ public partial class LiteralDictionary
     /// <param name="maxIterations"></param>
     /// <param name="skipWords"></param>
     /// <param name="mustIncludeLetters"></param>
+    /// <param name="fillerChar"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="Exception"></exception>
     public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null,
-        IEnumerable<char>? mustIncludeLetters = null, char fillerChar = ' ')
+        IEnumerable<char>? mustIncludeLetters = null, char fillerChar = Constants.EmptyChar)
     {
         if (knownCharacters.Length < this.ShortestWordLength)
             throw new ArgumentException(

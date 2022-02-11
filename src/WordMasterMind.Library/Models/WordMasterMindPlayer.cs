@@ -69,8 +69,8 @@ public static class WordMasterMindPlayer
         }
 
         return mastermind.LiteralDictionary.FindWord(
-            knownCharacters: mastermind.SolvedLettersAsChars(),
-            maxIterations: maximumDictionaryLookupAttemptsPerTry,
+            regex: new string(value: mastermind.SolvedLettersAsChars(filler: '.')),
+            puzzleLength: mastermind.WordLength,
             skipWords: excludeWords,
             mustIncludeLetters: mustIncludeLetters);
     }

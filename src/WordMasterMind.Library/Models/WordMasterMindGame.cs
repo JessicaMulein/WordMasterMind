@@ -124,7 +124,7 @@ public partial class WordMasterMindGame
         return copy;
     }
 
-    public char[] SolvedLettersAsChars(char filler = ' ')
+    public char[] SolvedLettersAsChars(char filler = Constants.EmptyChar)
     {
         var solvedLetters = new char[this.WordLength];
         for (var i = 0; i < this.WordLength; i++)
