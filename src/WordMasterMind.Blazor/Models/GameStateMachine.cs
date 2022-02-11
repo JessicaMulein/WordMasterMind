@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Net.Http.Json;
 using WordMasterMind.Blazor.Enumerations;
 using WordMasterMind.Blazor.Interfaces;
@@ -13,7 +14,7 @@ public class GameStateMachine : IGameStateMachine
     private static readonly Dictionary<LiteralDictionarySource, IEnumerable<int>> ValidWordLengthsBySource = new();
     private readonly int? _wordLength;
     private bool _hardMode;
-    private Action<GameStateMachine, StateChangedEventArgs> OnStateChange;
+    private Action<GameStateMachine, StateChangedEventArgs>? OnStateChange;
 
     public GameStateMachine()
     {
@@ -23,6 +24,8 @@ public class GameStateMachine : IGameStateMachine
         this.State = GameState.Rules;
         this.PreviousState = GameState.Rules;
         this._wordLength = Constants.StandardLength;
+        this.OnStateChange = null;
+        this.ValidWordLengths = ImmutableArray<int>.Empty;
     }
 
     public bool NightMode { get; set; }
