@@ -1,27 +1,4 @@
 @using WordMasterMind.Library.Exceptions
-@code {
-    private void ToggleHardMode()
-    {
-        try
-        {
-            var gameActive = GameStateMachine.Game is not null;
-            // get the current state of the toggle
-            var newMode = !(gameActive && GameStateMachine.HardMode);
-            // try to set the new state in the game
-            if (gameActive)
-            {
-                GameStateMachine.Game.HardMode = newMode;
-            }
-            // if that was successful, or no game is active, update the UI
-            GameStateMachine.HardMode = newMode;
-        }
-        // ReSharper disable once RedundantNameQualifier
-        catch (WordMasterMind.Library.Exceptions.HardModeLockedException e)
-        {
-            Console.WriteLine(value: $"Error: {e.Message}");
-        }
-    }
-}
 <section>
     <div class="modal fade show instructions" id="instructions"
          style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
@@ -36,6 +13,19 @@
                         <div class="form-label">Hard Mode</div>
                         <div class="form-control" @onclick="ToggleHardMode">
                             @if (GameStateMachine.HardMode)
+                            {
+                                <i class="fas fa-toggle-on"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-toggle-off"></i>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-label">@(GameStateMachine.DailyWord ? "Daily Word" : "Random Word")</div>
+                        <div class="form-control" @onclick="@ToggleDailyWord">
+                            @if (GameStateMachine.DailyWord)
                             {
                                 <i class="fas fa-toggle-on"></i>
                             }

@@ -15,6 +15,10 @@ public interface IGameStateMachine
     /// </summary>
     public GameState State { get; }
     /// <summary>
+    /// Whether to use the daily word generator or a random word
+    /// </summary>
+    public bool DailyWord { get; set; }
+    /// <summary>
     /// Whether hard mode is enabled
     /// </summary>
     public bool HardMode { get; set; }

@@ -92,6 +92,11 @@ public class GameStateMachine : IGameStateMachine
     public WordMasterMindGame? Game { get; private set; }
 
     /// <summary>
+    /// Whether to use the daily word generator or a random word
+    /// </summary>
+    public bool DailyWord { get; set; }
+
+    /// <summary>
     /// Provides an http client with the appropriate host/port for SPA
     /// </summary>
     public HttpClient? HttpClient { get; set; }
@@ -198,16 +203,24 @@ public class GameStateMachine : IGameStateMachine
                 sourceData: sourceData);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="leavingState"></param>
+    /// <param name="secretWord">Null = ComputerSelectedWord, otherwise provide word</param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     private async Task StartNewGame(GameState leavingState, string? secretWord = Constants.ComputerSelectedWord)
     {
         if (this._wordLength is null)
             throw new Exception(message: "Cannot start playing without a word length");
 
+        var dictionary = await this.GetLiteralDictionary();
         this.Game = new WordMasterMindGame(
             minLength: this._wordLength.Value,
             maxLength: this._wordLength.Value,
             hardMode: this._hardMode,
-            literalDictionary: await this.GetLiteralDictionary(),
+            literalDictionary: dictionary,
             secretWord: secretWord);
 
         this.SetState(
