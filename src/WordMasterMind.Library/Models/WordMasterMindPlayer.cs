@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Exceptions;
 
@@ -69,7 +70,9 @@ public static class WordMasterMindPlayer
         }
 
         return mastermind.LiteralDictionary.FindWord(
-            regex: new string(value: mastermind.SolvedLettersAsChars(filler: '.')),
+            regex: new Regex(
+                pattern: new string(value: mastermind.SolvedLettersAsChars(filler: '.')),
+                options: RegexOptions.IgnoreCase),
             puzzleLength: mastermind.WordLength,
             skipWords: excludeWords,
             mustIncludeLetters: mustIncludeLetters);

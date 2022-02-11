@@ -228,7 +228,7 @@ public partial class LiteralDictionary
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="Exception"></exception>
-    public string FindWord(string regex, int puzzleLength, IEnumerable<string>? skipWords = null,
+    public string FindWord(Regex regex, int puzzleLength, IEnumerable<string>? skipWords = null,
         IEnumerable<char>? mustIncludeLetters = null)
     {
         var skipWordsArray = skipWords is null ? Array.Empty<string>() : skipWords.ToArray();
@@ -239,9 +239,7 @@ public partial class LiteralDictionary
             maxLength: puzzleLength);
         var words = this._wordsByLength[key: length]
             .Where(
-                predicate: w => Regex.IsMatch(
-                    input: w,
-                    pattern: regex))
+                predicate: w => regex.IsMatch(input: w))
             // check the skip words list
             .Where(
                 predicate: w => !skipWordsArray.Contains(value: w))

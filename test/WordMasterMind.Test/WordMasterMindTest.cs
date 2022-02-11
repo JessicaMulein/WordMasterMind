@@ -295,7 +295,7 @@ public class WordMasterMindTest
             expected: false,
             actual: mastermind.HardMode);
         WordMasterMindPlayer.AttemptComputerSolve(mastermind: mastermind,
-            turns: 1);
+            turns: mastermind.MaxAttempts - 1);
         Assert.AreEqual(
             expected: mastermind.CurrentAttempt,
             actual: mastermind.Attempts.Count());
