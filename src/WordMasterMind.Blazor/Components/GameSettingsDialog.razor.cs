@@ -17,16 +17,30 @@ public partial class GameSettingsDialog
 
     private async Task ModalCancel()
     {
-        await this.GameStateMachine.ChangeStateAsync(newState: this.GameStateMachine.PreviousState);
-        if (this.OnSettingsClosed.HasDelegate)
-            await this.OnSettingsClosed.InvokeAsync(arg: false);
+        try
+        {
+            await this.GameStateMachine.ChangeStateAsync(newState: this.GameStateMachine.PreviousState);
+            if (this.OnSettingsClosed.HasDelegate)
+                await this.OnSettingsClosed.InvokeAsync(arg: false);
+        }
+        catch (Exception _)
+        {
+            // ignore
+        }
     }
 
     private async Task ModalOk()
     {
-        await this.GameStateMachine.ChangeStateAsync(newState: this.GameStateMachine.PreviousState);
-        if (this.OnSettingsClosed.HasDelegate)
-            await this.OnSettingsClosed.InvokeAsync(arg: true);
+        try
+        {
+            await this.GameStateMachine.ChangeStateAsync(newState: this.GameStateMachine.PreviousState);
+            if (this.OnSettingsClosed.HasDelegate)
+                await this.OnSettingsClosed.InvokeAsync(arg: true);
+        }
+        catch (Exception _)
+        {
+            // ignore
+        }
     }
 
     private void ToggleHardMode()

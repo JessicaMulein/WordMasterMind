@@ -7,13 +7,15 @@ public partial class RulesDialog
 {
     [Parameter] public EventCallback<bool> OnClose { get; set; }
 
-    private Task ModalCancel()
+    private async Task ModalCancel()
     {
-        return this.OnClose.InvokeAsync(arg: false);
+        if (this.OnClose.HasDelegate)
+            await this.OnClose.InvokeAsync(arg: false);
     }
 
-    private Task ModalOk()
+    private async Task ModalOk()
     {
-        return this.OnClose.InvokeAsync(arg: true);
+        if (this.OnClose.HasDelegate)
+            await this.OnClose.InvokeAsync(arg: true);
     }
 }
