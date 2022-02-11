@@ -1,11 +1,12 @@
 @using WordMasterMind.Library.Exceptions
+@using WordMasterMind.Blazor.Helpers
 <section>
     <div class="modal fade show instructions" id="instructions"
          style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Settings</h4>
+                    <h4 class="modal-title">@Constants.SettingsTitle</h4>
                     <button type="button" class="close" @onclick="@ModalCancel">&times;</button>
                 </div>
                 <div class="modal-body">

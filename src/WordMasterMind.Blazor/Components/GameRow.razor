@@ -8,7 +8,7 @@
         {
             <GameTile
                 Letter="@attemptLetterDetail.Letter.ToString()"
-                Evaluation="@Enum.GetName(typeof(LetterEvaluation), attemptLetterDetail.Evaluation)!.ToLowerInvariant()"
+                Evaluation="@Enum.GetName(enumType: typeof(LetterEvaluation), value: attemptLetterDetail.Evaluation)!.ToLowerInvariant()"
                 Reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct) ? "true" : "false")"/>
         }
     }
@@ -16,10 +16,20 @@
     {
         for (var letterIndex = 0; letterIndex < GameStateMachine.WordLength; letterIndex++)
         {
-            <GameTile
-                Letter="@GameStateMachine.CurrentAttemptLetter(letterIndex: letterIndex)"
-                Evaluation="@Enum.GetName(typeof(LetterEvaluation), LetterEvaluation.Absent)!.ToLowerInvariant()"
-                Reveal="false"></GameTile>
+            if (AttemptIndex == GameStateMachine.Game.CurrentAttempt)
+            {
+                <GameTile
+                    Letter="@GameStateMachine.CurrentAttemptLetter(letterIndex: letterIndex)"
+                    Evaluation="@Enum.GetName(enumType: typeof(LetterEvaluation), value: LetterEvaluation.Absent)!.ToLowerInvariant()"
+                    Reveal="false"></GameTile>
+            }
+            else
+            {
+                <GameTile
+                    Letter="@WordMasterMind.Library.Helpers.Constants.EmptyChar"
+                    Evaluation="@Enum.GetName(enumType: typeof(LetterEvaluation), value: LetterEvaluation.Absent)!.ToLowerInvariant()"
+                    Reveal="false"></GameTile>
+            }
         }
     }
     </div>

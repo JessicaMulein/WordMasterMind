@@ -10,7 +10,7 @@ public partial class GameSettingsDialog
 {
 #pragma warning disable CS8618
     [Inject] public IGameStateMachine GameStateMachine { get; set; }
-    [Inject] public IJSRuntime JSRuntime { get; set; }
+    [Inject] public IJSRuntime JsRuntime { get; set; }
 #pragma warning restore CS8618
 
     [Parameter] public EventCallback<bool> OnSettingsClosed { get; set; }
@@ -56,6 +56,6 @@ public partial class GameSettingsDialog
     private async Task ToggleNightMode()
     {
         this.GameStateMachine.NightMode = !this.GameStateMachine.NightMode;
-        await this.JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setNightMode", this.GameStateMachine.NightMode);
+        await this.JsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setNightMode", this.GameStateMachine.NightMode);
     }
 }

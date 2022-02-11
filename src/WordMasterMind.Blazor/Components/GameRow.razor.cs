@@ -8,7 +8,9 @@ namespace WordMasterMind.Blazor.Components;
 /// </summary>
 public partial class GameRow
 {
+#pragma warning disable CS8618
     [Inject] public IGameStateMachine GameStateMachine { get; set; }
+#pragma warning restore CS8618
 
     [ParameterAttribute] public int AttemptIndex { get; set; } = -1;
 }
