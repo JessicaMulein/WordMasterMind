@@ -1,9 +1,7 @@
 @using WordMasterMind.Library.Helpers
-<div class="game-row row">
-    @{
-        if (GameStateMachine.Game is null)
-            throw new Exception(message: "Unexpected game state/null game");
-    }
+@if (GameStateMachine.Game is not null)
+{
+    <div class="game-row row">
     @if (AttemptIndex < GameStateMachine.Game.CurrentAttempt)
     {
         foreach (var attemptLetterDetail in GameStateMachine.Game.GetAttempt(attemptIndex: AttemptIndex))
@@ -16,7 +14,7 @@
     }
     else
     {
-        for (int letterIndex = 0; letterIndex < GameStateMachine.WordLength; letterIndex++)
+        for (var letterIndex = 0; letterIndex < GameStateMachine.WordLength; letterIndex++)
         {
             var currentLetter = letterIndex > GameStateMachine.CurrentAttemptString.Length ? Constants.EmptyChar : GameStateMachine.CurrentAttemptString[letterIndex];
             <GameTile
@@ -25,4 +23,5 @@
                 Reveal="false"></GameTile>
         }
     }
-</div>
+    </div>
+}
