@@ -9,10 +9,10 @@ namespace WordMasterMind.Blazor.Components
         [Inject] public IGameStateMachine GameStateMachine { get; set; }
 #pragma warning restore CS8618
 
-        private IEnumerable<int> ValidWordLengths = new int[] {};
+        public static IEnumerable<int> ValidWordLengths = new int[] {};
         protected override async Task OnInitializedAsync()
         {
-            this.ValidWordLengths = await GameStateMachine.GetDictionaryWordLengths();
+            ValidWordLengths = await GameStateMachine.GetDictionaryWordLengths();
         }
     }
 }
