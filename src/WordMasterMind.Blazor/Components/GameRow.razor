@@ -8,7 +8,7 @@
         {
             <GameTile
                 Letter="@attemptLetterDetail.Letter.ToString()"
-                Evaluation="@attemptLetterDetail.Evaluation.ToString().ToLowerInvariant()"
+                Evaluation="@Enum.GetName(typeof(LetterEvaluation), attemptLetterDetail.Evaluation)!.ToLowerInvariant()"
                 Reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct).ToString().ToLowerInvariant())"/>
         }
     }
