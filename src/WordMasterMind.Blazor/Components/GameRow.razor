@@ -9,7 +9,7 @@
             <GameTile
                 Letter="@attemptLetterDetail.Letter.ToString()"
                 Evaluation="@Enum.GetName(typeof(LetterEvaluation), attemptLetterDetail.Evaluation)!.ToLowerInvariant()"
-                Reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct).ToString().ToLowerInvariant())"/>
+                Reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct) ? "true" : "false")"/>
         }
     }
     else
@@ -19,7 +19,7 @@
             var currentLetter = letterIndex >= GameStateMachine.CurrentAttemptString.Length ? Constants.EmptyChar : GameStateMachine.CurrentAttemptString[letterIndex];
             <GameTile
                 Letter="@currentLetter.ToString()"
-                Evaluation="@Enum.GetName(typeof(LetterEvaluation), LetterEvaluation.Absent)"
+                Evaluation="@Enum.GetName(typeof(LetterEvaluation), LetterEvaluation.Absent)!.ToLowerInvariant()"
                 Reveal="false"></GameTile>
         }
     }
