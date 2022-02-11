@@ -63,12 +63,19 @@ public partial class WordMasterMindGame
 
         this._secretWord = secretWord switch
         {
-            null when dailyWordWhenComputer => DailyWordGenerator.WordOfTheDay(date: null,
-                    length: this.LiteralDictionary.RandomLength(minLength: minLength,
-                        maxLength: maxLength))
+            null when dailyWordWhenComputer => DailyWordGenerator.WordOfTheDay(
+                    date: null,
+                    length: this.LiteralDictionary.RandomLength(
+                        minLength: minLength,
+                        maxLength: maxLength),
+                    dictionary: this.LiteralDictionary,
+                    basePath: basePath)
                 .ToUpperInvariant(),
-            null => this.LiteralDictionary.GetRandomWord(minLength: minLength,
-                maxLength: maxLength).ToUpperInvariant(),
+            null => this.LiteralDictionary
+                .GetRandomWord(
+                    minLength: minLength,
+                    maxLength: maxLength)
+                .ToUpperInvariant(),
             _ => secretWord,
         };
 

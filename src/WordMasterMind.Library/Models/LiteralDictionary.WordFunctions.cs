@@ -113,8 +113,9 @@ public partial class LiteralDictionary
     /// <exception cref="Exception"></exception>
     public string GetRandomWord(int minLength, int maxLength)
     {
-        if (minLength < maxLength ||
+        if (
             minLength <= 0 ||
+            minLength > maxLength ||
             minLength < this.ShortestWordLength ||
             maxLength > this.LongestWordLength)
             throw new InvalidLengthException(

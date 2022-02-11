@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using System.Text;
 using WordMasterMind.Library.Enumerations;
 using WordMasterMind.Library.Helpers;
@@ -27,7 +26,7 @@ public static class DailyWordGenerator
         month: 1,
         day: 22);
 
-    public static string? BasePath { get; set; }
+    public static string? BasePath { get; set; } = null;
 
     /// <summary>
     ///     Gets the puzzle number for a given date. Day 1 is the WordGeneratorEpoch.
@@ -43,8 +42,9 @@ public static class DailyWordGenerator
 
     public static int SourceTypeToSeed(string description)
     {
-        var md5 = MD5.Create();
-        var hash = md5.ComputeHash(buffer: Encoding.ASCII.GetBytes(s: description.ToLowerInvariant()));
+        var hash = Crc32.ComputeChecksumBytes(
+            bytes: Encoding.ASCII.GetBytes(
+                s: description.ToLowerInvariant()));
         var seed = Seed;
         for (var offset = 0; offset < hash.Length; offset += 4)
             seed ^= BitConverter.ToInt32(value: hash,
@@ -100,12 +100,12 @@ public static class DailyWordGenerator
     public static string WordOfTheDay(
         DateTime? date = null,
         int length = Constants.StandardLength,
-        LiteralDictionary? dictionary = null)
+        LiteralDictionary? dictionary = null, string? basePath = null)
     {
         dictionary = dictionary ??
                      LiteralDictionary.NewFromSourceType(
                          sourceType: LiteralDictionarySourceType.Scrabble,
-                         basePath: BasePath ?? throw new InvalidOperationException());
+                         basePath: basePath ?? throw new InvalidOperationException());
         return dictionary.WordAtIndex(
             length: length,
             wordIndex: WordIndexForDay(

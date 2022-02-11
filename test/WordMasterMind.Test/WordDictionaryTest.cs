@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordMasterMind.Library.Enumerations;
+using WordMasterMind.Library.Exceptions;
 using WordMasterMind.Library.Models;
 
 namespace WordMasterMind.Test;
@@ -70,7 +71,8 @@ public class LiteralDictionaryTest
         var testWordCount = 10;
         for (var i = 0; i < testWordCount; i++)
         {
-            var word = literalDictionary.GetRandomWord(minLength: minLength,
+            var word = literalDictionary.GetRandomWord(
+                minLength: minLength,
                 maxLength: maxLength);
             Assert.IsTrue(condition: word.Length >= minLength && word.Length <= maxLength);
             Assert.IsTrue(condition: literalDictionary.IsWord(word: word));
@@ -87,10 +89,10 @@ public class LiteralDictionaryTest
     public void TestRandomWordLengthUpperLimit()
     {
         var literalDictionary = GetWordDictionary();
-        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+        var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             literalDictionary.GetRandomWord(minLength: literalDictionary.LongestWordLength + 1,
                 maxLength: literalDictionary.LongestWordLength + 1));
-        Assert.AreEqual(expected: "maxLength must be less than or equal to the longest word length",
+        Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
     }
 
@@ -98,11 +100,11 @@ public class LiteralDictionaryTest
     public void TestRandomWordLengthLowerLimit()
     {
         var literalDictionary = GetWordDictionary();
-        var thrownException = Assert.ThrowsException<ArgumentException>(action: () =>
+        var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             literalDictionary.GetRandomWord(
                 minLength: literalDictionary.ShortestWordLength - 1,
                 maxLength: literalDictionary.ShortestWordLength - 1));
-        Assert.AreEqual(expected: "minLength must be greater than or equal to the shortest word length",
+        Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
     }
 
@@ -127,7 +129,7 @@ public class LiteralDictionaryTest
             dictionary: literalDictionary);
         Assert.AreEqual(
             // ReSharper disable once StringLiteralTypo
-            expected: "CODON",
+            expected: "MENGS",
             actual: oneYearWord);
     }
 
