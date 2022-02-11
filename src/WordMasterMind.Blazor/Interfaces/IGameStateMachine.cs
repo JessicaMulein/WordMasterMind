@@ -27,6 +27,12 @@ public interface IGameStateMachine
     /// This keeps the state until an attempt is made
     /// </summary>
     public string CurrentAttemptString { get; set; }
+    /// <summary>
+    /// Gets the letter at the (0-indexed) specified position.
+    /// </summary>
+    /// <param name="letterIndex"></param>
+    /// <returns></returns>
+    public string CurrentAttemptLetter(int letterIndex);
     public LiteralDictionarySourceType DictionarySourceType { get; set; }
     public IEnumerable<int> ValidWordLengths { get; }
     public LiteralDictionary? LiteralDictionary { get; }

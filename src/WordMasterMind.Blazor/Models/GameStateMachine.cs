@@ -49,6 +49,11 @@ public class GameStateMachine : IGameStateMachine
     /// </summary>
     public string CurrentAttemptString { get; set; } = string.Empty;
 
+    public string CurrentAttemptLetter(int letterIndex)
+        => (letterIndex >= CurrentAttemptString.Length || letterIndex < 0 ? Constants.EmptyChar : CurrentAttemptString[letterIndex])
+            .ToString()
+            .ToLowerInvariant();
+
     public WordMasterMindGame? Game { get; private set; }
 
     public HttpClient? HttpClient { get; set; }

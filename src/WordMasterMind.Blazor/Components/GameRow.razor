@@ -16,9 +16,8 @@
     {
         for (var letterIndex = 0; letterIndex < GameStateMachine.WordLength; letterIndex++)
         {
-            var currentLetter = letterIndex >= GameStateMachine.CurrentAttemptString.Length ? Constants.EmptyChar : GameStateMachine.CurrentAttemptString[letterIndex];
             <GameTile
-                Letter="@currentLetter.ToString()"
+                Letter="@GameStateMachine.CurrentAttemptLetter(letterIndex: letterIndex)"
                 Evaluation="@Enum.GetName(typeof(LetterEvaluation), LetterEvaluation.Absent)!.ToLowerInvariant()"
                 Reveal="false"></GameTile>
         }
