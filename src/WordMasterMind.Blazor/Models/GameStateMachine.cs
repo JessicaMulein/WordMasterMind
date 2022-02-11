@@ -243,6 +243,8 @@ public class GameStateMachine : IGameStateMachine
             literalDictionary: dictionary,
             secretWord: secretWord);
 
+        this.CurrentAttemptString = string.Empty;
+
         this.SetState(
             leavingState: leavingState,
             newState: GameState.Playing);
