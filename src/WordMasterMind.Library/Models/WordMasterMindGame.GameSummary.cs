@@ -28,7 +28,7 @@ public partial class WordMasterMindGame
         get
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.Append(value: $"Word MasterMind W{this.WordLength}:");
+            stringBuilder.Append(value: $"{Constants.GameTitle} W{this.WordLength}:");
             var puzzleNumber = DailyWordGenerator.PuzzleNumberForWordOfTheDay(
                 word: this.SecretWord,
                 dictionary: this.LiteralDictionary);

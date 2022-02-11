@@ -10,6 +10,9 @@
 
         if (TextDirection is { })
             await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setTextDirectionOfBody", TextDirection);
+
+        if (Title is { })
+            await JSRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setDocumentTitle", Title);
     }
 
     [Parameter]
@@ -20,4 +23,8 @@
 
     [Parameter]
     public string? TextDirection { get; set; } = null;
+
+    [Parameter]
+    public string? Title { get; set; } = null;
+
 }
