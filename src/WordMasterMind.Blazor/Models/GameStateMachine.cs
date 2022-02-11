@@ -94,7 +94,7 @@ public class GameStateMachine : IGameStateMachine
     /// <summary>
     /// Whether to use the daily word generator or a random word
     /// </summary>
-    public bool DailyWord { get; set; }
+    public bool DailyWord { get; set; } = true;
 
     /// <summary>
     /// Provides an http client with the appropriate host/port for SPA
