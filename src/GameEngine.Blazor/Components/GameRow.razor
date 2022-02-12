@@ -1,0 +1,36 @@
+@using GameEngine.Library.Helpers
+@if (GameStateMachine.Game is not null)
+{
+    <div class="game-row row">
+    @if (AttemptIndex < GameStateMachine.Game.CurrentAttempt)
+    {
+        foreach (var attemptLetterDetail in GameStateMachine.Game.GetAttempt(attemptIndex: AttemptIndex))
+        {
+            <GameTile
+                Letter="@attemptLetterDetail.Letter"
+                LetterEvaluation="attemptLetterDetail.Evaluation"
+                Reveal="@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct) ? true : false)"/>
+        }
+    }
+    else
+    {
+        for (var letterIndex = 0; letterIndex < GameStateMachine.WordLength; letterIndex++)
+        {
+            if (AttemptIndex == GameStateMachine.Game.CurrentAttempt)
+            {
+                <GameTile
+                    Letter="@GameStateMachine.CurrentAttemptLetter(letterIndex: letterIndex)"
+                    LetterEvaluation="LetterEvaluation.Tbd"
+                    Reveal="false"></GameTile>
+            }
+            else
+            {
+                <GameTile
+                    Letter="@GameEngine.Library.Helpers.Constants.EmptyChar"
+                    LetterEvaluation="LetterEvaluation.Tbd"
+                    Reveal="false"></GameTile>
+            }
+        }
+    }
+    </div>
+}

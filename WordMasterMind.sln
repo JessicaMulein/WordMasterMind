@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordMasterMind.Test", "test\WordMasterMind.Test\WordMasterMind.Test.csproj", "{288F5014-54C7-444E-867D-51D5D7E0F073}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameEngine.Test", "test\GameEngine.Test\GameEngine.Test.csproj", "{288F5014-54C7-444E-867D-51D5D7E0F073}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordMasterMind.Library", "src\WordMasterMind.Library\WordMasterMind.Library.csproj", "{22DD2315-7473-414D-ACD3-5E7DB8E74FF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameEngine.Library", "src\GameEngine.Library\GameEngine.Library.csproj", "{22DD2315-7473-414D-ACD3-5E7DB8E74FF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordMasterMind.Blazor", "src\WordMasterMind.Blazor\WordMasterMind.Blazor.csproj", "{456EDF1B-B42C-4F36-BAE3-E93664CB351E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEngine.Blazor", "src\GameEngine.Blazor\GameEngine.Blazor.csproj", "{456EDF1B-B42C-4F36-BAE3-E93664CB351E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordMasterMind.Utilities", "src\WordMasterMind.Utilities\WordMasterMind.Utilities.csproj", "{8298F462-C64C-42F0-8993-98EE0C02E056}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEngine.DictionaryUtilities", "src\GameEngine.DictionaryUtilities\GameEngine.DictionaryUtilities.csproj", "{8298F462-C64C-42F0-8993-98EE0C02E056}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

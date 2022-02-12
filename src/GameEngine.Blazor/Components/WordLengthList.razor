@@ -1,0 +1,18 @@
+@using GameEngine.Blazor.Models
+@using Microsoft.AspNetCore.Components
+@using GameEngine.Library.Helpers
+<div class="row">
+    <select @bind="GameStateMachine.WordLength">
+        @foreach (var length in ValidWordLengths)
+        {
+            @if (GameStateMachine.WordLength is not null ? GameStateMachine.WordLength == length : Constants.StandardLength == length)
+            {
+                <option selected="selected" value="@length">@length</option>
+            }
+            else
+            {
+                <option value="@length">@length</option>
+            }
+        }
+    </select>
+</div>

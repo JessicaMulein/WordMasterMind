@@ -1,0 +1,85 @@
+@using GameEngine.Blazor.Helpers
+<section>
+    <div class="modal fade show instructions" id="instructions"
+        style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Constants.RulesTitle</h4>
+                    <button type="button" class="close" @onclick="ModalCancel">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Welcome to <strong>@GameEngine.Library.Helpers.Constants.GameTitle</strong>!</p>
+                    <p>
+                        @GameEngine.Library.Helpers.Constants.GameTitle is a variation of <a href="https://en.wikipedia.org/wiki/Mastermind_(board_game)">Mastermind</a>,
+                        popularized by the game Wordle, but with a few differences.
+                    </p>
+                    <p>In @GameEngine.Library.Helpers.Constants.GameTitle, you can guess and the game will choose a random word length in either the <a href="https://en.wikipedia.org/wiki/Scrabble">Scrabble</a> <a href="https://scrabble.merriam.com/">Dictionary</a>, one of a couple other provided word lists, or we've given you the tools to use your own.</p>
+                    <p>
+                        Words available in the Scrabble dictionary range from 2 letters to 15 letters.
+                    </p>
+                    <p>Unlike Wordle, the number of tries varies with the word length.</p>
+                    <ul>
+                        <li>One (1) Attempt per letter in the secret word</li>
+                        <li>One (1) additional Attempt</li>
+                    </ul>
+                    <p>
+                        Therefore, a 3 letter word will give you 4 attempts, a 5 letter will give you 6 like Wordle.
+                        A 15 letter word would give you 16 attempts.
+                    </p>
+                    <p>Guess the word the Mastermind has in mind in within the number of tries.</p>
+                    <p>Each guess must be a valid word of the correct length. Hit the enter button to submit.</p>
+                    <p>After each guess, the color of the tiles will change to show how close your guess was to the word.</p>
+                    <div class="examples">
+                        <p>
+                            <strong>Examples</strong>
+                        </p>
+                        <div class="example">
+                            <div class="row">
+                                <GameTile LetterString="w" LetterEvaluation="LetterEvaluation.Correct" Reveal="true"></GameTile>
+                                <GameTile LetterString="e"></GameTile>
+                                <GameTile LetterString="a"></GameTile>
+                                <GameTile LetterString="r"></GameTile>
+                                <GameTile LetterString="y"></GameTile>
+                            </div>
+                            <p>The letter <strong>W</strong> is in the word and in the correct spot.</p>
+                        </div>
+                        <div class="example">
+                            <div class="row">
+                                <GameTile LetterString="p"></GameTile>
+                                <GameTile LetterString="i" LetterEvaluation="LetterEvaluation.Present" Reveal="true"></GameTile>
+                                <GameTile LetterString="l"></GameTile>
+                                <GameTile LetterString="l"></GameTile>
+                                <GameTile LetterString="s"></GameTile>
+                            </div>
+                            <p>The letter <strong>I</strong> is in the word but in the wrong spot.</p>
+                        </div>
+                        <div class="example">
+                            <div class="row">
+                                <GameTile LetterString="v"></GameTile>
+                                <GameTile LetterString="a"></GameTile>
+                                <GameTile LetterString="g"></GameTile>
+                                <GameTile LetterString="u" LetterEvaluation="LetterEvaluation.Absent" Reveal="true"></GameTile>
+                                <GameTile LetterString="e"></GameTile>
+                            </div>
+                            <p>The letter <strong>U</strong> is not in the word in any spot.</p>
+                        </div>
+                        <div class="scoring">
+                            <p>Scoring:</p>
+                            <ul>
+                                <li>Two (2) points per attempt under maximum</li>
+                                <li>Three (3) additional points each first time a letter is used, it is in the correct position</li>
+                                <li>One (1) additional point for each new letter, but out of place</li>
+                                <li>One (1) more point for a previously guessed letter once it is in the correct position</li>
+                            </ul>
+                            <p><small>Scoring subject to change, at least until it is dialed in.</small></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="ModalOk">Let's Play!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
