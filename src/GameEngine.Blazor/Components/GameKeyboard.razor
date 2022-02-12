@@ -1,33 +1,39 @@
 <div id="key-game-keyboard">
     <div class="row">
-        @for (var row = 0; row < 3; row++)
+        @{
+            var rows = Keys.Rank + 1;
+            var columns = Keys.Length / rows;
+        }
+        @for (var row = 0; row < rows; row++)
         {
             <div class="row">
-            @for (var column = 0; column < 10; column++)
-            {
-                var key = Keys[row,column];
-                var label = new MarkupString(value: key.ToString());
-                switch (key)
+                @for (var column = 0; column < columns; column++)
                 {
-                    case SkipBlank:
-                        // blank
-                        <div class="col-xs-1"></div>
-                        continue;
-                    case >= 'A' and <= 'Z':
-                        // leave default
-                        break;
-                    case EnterKey:
-                        label = new MarkupString(value: "<i class=\"fas fa-search\"></i>");
-                        break;
-                    case BackspaceKey:
-                        label = new MarkupString(value: "<i class=\"fas fa-backspace\"></i>");
-                        break;
-                    default:
-                        Console.WriteLine(format: "Invalid key: {0}", arg0: key);
-                        break;
+                    var key = Keys[row,
+                        column];
+                    var label = new MarkupString(value: key.ToString());
+                    switch (key)
+                    {
+                        case SkipBlank:
+                            // blank
+                            <div class="col-xs-1"></div>
+                            continue;
+                        case >= 'A' and <= 'Z':
+                            // leave default
+                            break;
+                        case EnterKey:
+                            label = new MarkupString(value: "<i class=\"fas fa-search\"></i>");
+                            break;
+                        case BackspaceKey:
+                            label = new MarkupString(value: "<i class=\"fas fa-backspace\"></i>");
+                            break;
+                        default:
+                            Console.WriteLine(format: "Invalid key: {0}",
+                                arg0: key);
+                            break;
+                    }
+                    <button @onclick="() => OnClick(keyValue: key)">@label</button>
                 }
-                <button @onclick="() => OnClick(keyValue: key)">@label</button>
-            }
             </div>
         }
     </div>
