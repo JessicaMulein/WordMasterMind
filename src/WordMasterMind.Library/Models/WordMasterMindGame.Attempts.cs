@@ -92,14 +92,6 @@ public partial class WordMasterMindGame
             {
                 var originalLetter = this._secretWord[index: letterPosition];
 
-                // if a previous attempt has guessed a letter correctly, the current attempt must contain it
-                if (this._foundLetters.Contains(item: originalLetter) &&
-                    !wordAttempt.Contains(value: originalLetter))
-                    throw new HardModeException(
-                        letterPosition: letterPosition,
-                        letter: originalLetter,
-                        solved: false);
-
                 // if a previous attempt had a letter in the correct position, future attempts must have the same letter in the correct position
                 /* if the letter has been previously solved and the letter has
                  * been changed from the secret word, throw the HardModeException
@@ -111,6 +103,14 @@ public partial class WordMasterMindGame
                         letterPosition: letterPosition,
                         letter: originalLetter,
                         solved: true);
+
+                // if a previous attempt has guessed a letter correctly, the current attempt must contain it
+                if (this._foundLetters.Contains(item: originalLetter) &&
+                    !wordAttempt.Contains(value: originalLetter))
+                    throw new HardModeException(
+                        letterPosition: letterPosition,
+                        letter: originalLetter,
+                        solved: false);
             }
 
         // if we haven't thrown an exception due to hard mode, and the word is the secret word, we've solved it
