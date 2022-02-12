@@ -260,3 +260,64 @@ button {
     text-transform: uppercase;
     -webkit-tap-highlight-color: rgba(0,0,0,0.3);
 }
+
+ :host {
+     display: block;
+ }
+:host([invalid]){
+    animation-name: Shake;
+    animation-duration: 600ms;
+}
+.row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 5px;
+}
+.win {
+    animation-name: Bounce;
+    animation-duration: 1000ms;
+}
+
+@keyframes Bounce {
+    0%, 20% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-30px);
+    }
+    50% {
+        transform: translateY(5px);
+    }
+    60% {
+        transform: translateY(-15px);
+    }
+    80% {
+        transform: translateY(2px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes Shake {
+    10%,
+    90% {
+        transform: translateX(-1px);
+    }
+
+    20%,
+    80% {
+        transform: translateX(2px);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translateX(-4px);
+    }
+
+    40%,
+    60% {
+        transform: translateX(4px);
+    }
+}

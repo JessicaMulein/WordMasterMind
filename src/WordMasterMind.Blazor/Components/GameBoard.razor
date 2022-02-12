@@ -1,9 +1,9 @@
 @if (GameStateMachine.Game is not null)
 {
-    <div id="board">
+    <div id="board" style="width: 350px; height: 420px;">
         @for (var attemptIndex = 0; attemptIndex < GameStateMachine.Game.MaxAttempts; attemptIndex++)
         {
-            <GameRow AttemptIndex="@attemptIndex"></GameRow>
+            <GameRow AttemptIndex="attemptIndex"></GameRow>
         }
     </div>
 }
