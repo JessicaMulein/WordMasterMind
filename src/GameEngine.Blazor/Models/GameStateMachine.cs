@@ -85,7 +85,7 @@ public class GameStateMachine : IGameStateMachine
     public char CurrentAttemptLetter(int letterIndex)
     {
         return (letterIndex >= this.CurrentAttemptString.Length || letterIndex < 0
-                ? Constants.EmptyChar
+                ? Constants.BlankChar
                 : this.CurrentAttemptString[index: letterIndex])
             .ToString()
             .ToLowerInvariant()[index: 0];

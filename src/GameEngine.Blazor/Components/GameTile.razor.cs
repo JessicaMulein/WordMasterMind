@@ -8,7 +8,7 @@ namespace GameEngine.Blazor.Components;
 /// </summary>
 public partial class GameTile
 {
-    [ParameterAttribute] public char Letter { get; set; } = GameEngine.Library.Helpers.Constants.EmptyChar;
+    [ParameterAttribute] public char Letter { get; set; } = GameEngine.Library.Helpers.Constants.BlankChar;
 
     [ParameterAttribute] public string LetterString
     {

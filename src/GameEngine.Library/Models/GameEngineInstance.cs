@@ -109,8 +109,14 @@ public partial class GameEngineInstance
         }
     }
 
+    /// <summary>
+    /// An array of boolean values corresponding to each letter in the secret word and whether it has been solved
+    /// </summary>
     public IEnumerable<bool> SolvedLetters => DuplicateArray(array: this._solvedLetters);
 
+    /// <summary>
+    /// A sorted array of all of the letters that have been found in the secret word
+    /// </summary>
     public IEnumerable<char> FoundLetters => this._foundLetters.ToArray();
 
     /// <summary>
@@ -141,7 +147,7 @@ public partial class GameEngineInstance
         return copy;
     }
 
-    public char[] SolvedLettersAsChars(char filler = Constants.EmptyChar)
+    public char[] SolvedLettersAsChars(char filler = Constants.BlankChar)
     {
         var solvedLetters = new char[this.WordLength];
         for (var i = 0; i < this.WordLength; i++)

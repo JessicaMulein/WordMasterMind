@@ -237,7 +237,9 @@ public class GameEngineTest
         Assert.AreEqual(
             expected: Constants.StandardLength,
             actual: secretWord.Length);
-        var invalidSecretWord = "".PadLeft(totalWidth: Constants.StandardLength,
+        // a word of all z's is extremely unlikely to be a valid word in any dictionary
+        var invalidSecretWord = string.Empty.PadLeft(
+            totalWidth: Constants.StandardLength,
             paddingChar: 'z');
         var thrownAssertion = Assert.ThrowsException<NotInDictionaryException>(action: () =>
             mastermind.MakeAttempt(wordAttempt: invalidSecretWord));
@@ -304,7 +306,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestSolvedLetters()
     {
-        var expectedWord = "HELLO";
+        const string expectedWord = "HELLO";
         var literalDictionary = GetWordDictionary();
         var mastermind = new GameEngineInstance(
             minLength: expectedWord.Length,

@@ -183,7 +183,7 @@ public partial class LiteralDictionary
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="Exception"></exception>
     public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable<string>? skipWords = null,
-        IEnumerable<char>? mustIncludeLetters = null, char fillerChar = Constants.EmptyChar)
+        IEnumerable<char>? mustIncludeLetters = null, char fillerChar = Constants.BlankChar)
     {
         if (knownCharacters.Length < this.ShortestWordLength)
             throw new ArgumentException(
