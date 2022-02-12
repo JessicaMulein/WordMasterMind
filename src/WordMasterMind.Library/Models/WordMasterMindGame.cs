@@ -6,7 +6,7 @@ namespace WordMasterMind.Library.Models;
 
 public partial class WordMasterMindGame
 {
-    private readonly bool[] _foundLetters;
+    private readonly List<char> _foundLetters;
 
     /// <summary>
     ///     Current word being guessed. Randomly selected from the Scrabble dictionary.
@@ -61,7 +61,7 @@ public partial class WordMasterMindGame
             throw new InvalidLengthException(minLength: minLength,
                 maxLength: maxLength);
 
-        this._secretWord = secretWord switch
+        this._secretWord = (secretWord switch
         {
             null when dailyWordWhenComputer => DailyWordGenerator.WordOfTheDay(
                     date: null,
@@ -69,15 +69,13 @@ public partial class WordMasterMindGame
                         minLength: minLength,
                         maxLength: maxLength),
                     dictionary: this.LiteralDictionary,
-                    basePath: basePath)
-                .ToUpperInvariant(),
+                    basePath: basePath),
             null => this.LiteralDictionary
                 .GetRandomWord(
                     minLength: minLength,
-                    maxLength: maxLength)
-                .ToUpperInvariant(),
+                    maxLength: maxLength),
             _ => secretWord,
-        };
+        }).ToUpperInvariant();
 
         this.WordLength = this._secretWord.Length;
 
@@ -92,7 +90,7 @@ public partial class WordMasterMindGame
             length: this.WordLength);
         this._attempts = new AttemptDetails[this.MaxAttempts];
         this._solvedLetters = new bool[this.WordLength];
-        this._foundLetters = new bool[this.WordLength];
+        this._foundLetters = new List<char>();
     }
 
     /// <summary>
@@ -113,7 +111,7 @@ public partial class WordMasterMindGame
 
     public IEnumerable<bool> SolvedLetters => DuplicateArray(array: this._solvedLetters);
 
-    public IEnumerable<bool> FoundLetters => DuplicateArray(array: this._foundLetters);
+    public IEnumerable<char> FoundLetters => this._foundLetters.ToArray();
 
     /// <summary>
     ///     Debug flag allows revealing the secret word

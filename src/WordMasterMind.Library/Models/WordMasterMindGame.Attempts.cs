@@ -68,19 +68,23 @@ public partial class WordMasterMindGame
                         letter: c,
                         evaluation: this._secretWord[index: currentAttemptLetterIndex++] == c
                             ? LetterEvaluation.Correct
-                            : this._secretWord.Contains(value: c)
+                            : (this._secretWord.Contains(value: c)
                                 ? LetterEvaluation.Present
-                                : LetterEvaluation.Absent)).ToArray());
+                                : LetterEvaluation.Absent)))
+                .ToArray());
 
-        // update solved letters array
+        // update solved and found letters arrays
         for (var i = 0; i < this.WordLength; i++)
-            this._solvedLetters[i] |=
-                this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).Evaluation is LetterEvaluation.Correct;
+        {
+            var detail = this._attempts[this.CurrentAttempt].Details.ElementAt(index: i);
+            this._solvedLetters[i] |= detail.Evaluation is LetterEvaluation.Correct;
 
-        // update found letters array
-        for (var i = 0; i < this.WordLength; i++)
-            this._foundLetters[i] |=
-                this._attempts[this.CurrentAttempt].Details.ElementAt(index: i).Evaluation is LetterEvaluation.Present;
+            if (detail.Evaluation is LetterEvaluation.Present or LetterEvaluation.Correct && !this._foundLetters.Contains(detail.Letter))
+            {
+                this._foundLetters.Add(item: detail.Letter);
+                this._foundLetters.Sort();
+            }
+        }
 
         // the attempt hasn't been registered in the count yet, checking for being at least second turn
         if (this._hardMode && this.CurrentAttempt >= 1)
@@ -88,8 +92,8 @@ public partial class WordMasterMindGame
             {
                 var originalLetter = this._secretWord[index: letterPosition];
 
-                // if a previous attempt has guessed a letter, the current attempt must contain it
-                if (this._foundLetters[letterPosition] &&
+                // if a previous attempt has guessed a letter correctly, the current attempt must contain it
+                if (this._foundLetters.Contains(item: originalLetter) &&
                     !wordAttempt.Contains(value: originalLetter))
                     throw new HardModeException(
                         letterPosition: letterPosition,

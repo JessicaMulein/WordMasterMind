@@ -304,7 +304,7 @@ public class WordMasterMindTest
     [TestMethod]
     public void TestSolvedLetters()
     {
-        var expectedWord = "hello";
+        var expectedWord = "HELLO";
         var literalDictionary = GetWordDictionary();
         var mastermind = new WordMasterMindGame(
             minLength: expectedWord.Length,
@@ -318,8 +318,8 @@ public class WordMasterMindTest
         Assert.AreEqual(
             expected: false,
             actual: mastermind.HardMode);
-        // a guess of "weight" should register "e" as a solved letter, regardless of hardmode
-        var attempt = mastermind.MakeAttempt(wordAttempt: "weigh");
+        // a first guess of "weigh" should register "e" as a solved letter, regardless of hardmode, and "h" as a solved letter
+        var attempt = mastermind.MakeAttempt(wordAttempt: "WEIGH");
         TestAttempt(
             knownSecretWord: mastermind.SecretWord,
             attemptDetails: attempt);
@@ -328,6 +328,8 @@ public class WordMasterMindTest
             actual: mastermind.Attempts.Count());
         Assert.IsTrue(
             condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {false, true, false, false, false}));
+        Assert.IsTrue(
+            condition: mastermind.FoundLetters.SequenceEqual(second: new[] {'E', 'H'}));
         // now let's solve it
         attempt = mastermind.MakeAttempt(wordAttempt: expectedWord);
         TestAttempt(
