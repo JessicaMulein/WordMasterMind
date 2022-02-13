@@ -554,31 +554,4 @@ public class GameEngineTest
             expected: HardModeLockedException.MessageText,
             actual: thrownException.Message);
     }
-
-
-    [TestMethod]
-    public void TestMaximumFlaggedLetters()
-    {
-        var expectedWord = "elegy";
-        var dictionary = GetWordDictionary();
-        var mastermind = new GameEngineInstance(
-            literalDictionary: dictionary,
-            minLength: -1,
-            maxLength: -1,
-            hardMode: false,
-            dailyWordWhenComputer: true,
-            secretWord: expectedWord);
-        var attempt = mastermind.MakeAttempt(wordAttempt: "eerie");
-        // we should only end up with one solved and one present letter
-        Assert.AreEqual(
-            expected: LetterEvaluation.Correct,
-            actual: attempt.Details.ElementAt(index: 0).Evaluation);
-        Assert.AreEqual(
-            expected: LetterEvaluation.Present,
-            actual: attempt.Details.ElementAt(index: 1).Evaluation);
-        for (var i = 2; i < mastermind.WordLength; i++)
-            Assert.AreEqual(
-                expected: LetterEvaluation.Absent,
-                actual: attempt.Details.ElementAt(index: i).Evaluation);
-    }
 }
