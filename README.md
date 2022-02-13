@@ -26,6 +26,8 @@ Unlike Wordle, the number of tries varies with the word length.
 *   One (1) Attempt per letter in the secret word
 *   One (1) additional Attempt
 
+[This will probably change](https://github.com/WordMasterMind/WordMasterMind/discussions/2#discussioncomment-2144488)
+
 Therefore, a 3 letter word will give you 4 attempts, a 5 letter will give you 6 like Wordle. A 15 letter word would give you 16 attempts.
 
 Guess the word the Mastermind has in mind in within the number of tries.
