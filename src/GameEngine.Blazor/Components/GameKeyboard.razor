@@ -5,7 +5,7 @@
     }
     @for (var row = 0; row < rows; row++)
     {
-        <div class="flex-row">
+        <div class="flex">
                 @for (var column = 0; column < columns; column++)
                 {
                     var key = Keys[row,column];
@@ -29,9 +29,7 @@
                                 arg0: key);
                             break;
                     }
-                    <div class="flex-column">
                     <button @onclick="() => OnClick(keyValue: key)">@label</button>
-                    </div>
                 }
         </div>
     }

@@ -326,6 +326,4 @@ button {
 {
     height: var(--keyboard-height);
     display: flex;
-    justify-content: center;
-    align-items: center;
 }
