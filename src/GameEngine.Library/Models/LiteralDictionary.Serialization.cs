@@ -28,10 +28,8 @@ public partial class LiteralDictionary
     /// <param name="description"></param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException"></exception>
-    public static LiteralDictionary Deserialize(
-        LiteralDictionarySourceType sourceType,
-        Stream inputStream,
-        string? description = null)
+    public static Dictionary<int, IEnumerable<string>>
+        DeserializeToDictionary(Stream inputStream)
     {
         using var reader = new BinaryReader(input: inputStream);
 
@@ -53,11 +51,28 @@ public partial class LiteralDictionary
         }
 
         reader.Close();
-        inputStream.Close();
 
-        return new LiteralDictionary(
+        return dictionary;
+    }
+
+    /// <summary>
+    ///     Read a binary encoded file and re-create a sorted dictionary from it
+    ///     TODO: re-serialize dictionaries with Description included, add to deserialize
+    /// </summary>
+    /// <param name="sourceType"></param>
+    /// <param name="inputStream"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    public static LiteralDictionary Deserialize(
+        LiteralDictionarySourceType sourceType,
+        Stream inputStream,
+        string? description = null)
+    {
+        return new(
+            dictionary: DeserializeToDictionary(
+                inputStream: inputStream),
             sourceType: sourceType,
-            dictionary: dictionary,
             description: description);
     }
 

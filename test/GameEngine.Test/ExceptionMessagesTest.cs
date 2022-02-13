@@ -1,8 +1,8 @@
 using System;
 using Bogus;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GameEngine.Library.Exceptions;
 using GameEngine.Library.Helpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GameEngine.Test;
 

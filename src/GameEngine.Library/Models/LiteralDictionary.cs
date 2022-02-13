@@ -58,7 +58,8 @@ public partial class LiteralDictionary
     /// <param name="dictionary"></param>
     /// <param name="description"></param>
     /// <exception cref="Exception"></exception>
-    public LiteralDictionary(LiteralDictionarySourceType sourceType, Dictionary<int, IEnumerable<string>> dictionary,
+    public LiteralDictionary(Dictionary<int, IEnumerable<string>> dictionary,
+        LiteralDictionarySourceType sourceType,
         string? description = null)
     {
         this.SourceType = sourceType;
@@ -123,14 +124,15 @@ public partial class LiteralDictionary
     ///     This constructor builds a dictionary organized by lengths from a simple array of words
     ///     and passes it to the standard constructor
     /// </summary>
+    /// <param name="sourceType"></param>
     /// <param name="words"></param>
     /// <param name="description"></param>
     // ReSharper disable once MemberCanBePrivate.Global
     public LiteralDictionary(LiteralDictionarySourceType sourceType, IEnumerable<string> words,
         string? description = null)
         : this(
-            sourceType: sourceType,
             dictionary: FillDictionary(words: words),
+            sourceType: sourceType,
             description: description)
     {
     }

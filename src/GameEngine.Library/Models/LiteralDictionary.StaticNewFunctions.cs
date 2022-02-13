@@ -32,8 +32,8 @@ public partial class LiteralDictionary
     /// <summary>
     ///     Creates a literal dictionary from a source
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="basePath"></param>
+    /// <param name="source">format of source bytes</param>
+    /// <param name="sourceData">array of bytes with source's raw data</param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
     public static LiteralDictionary NewFromSource(LiteralDictionarySource source, IEnumerable<byte> sourceData)
@@ -52,10 +52,13 @@ public partial class LiteralDictionary
                 jsonText: Encoding.ASCII.GetString(
                     bytes: sourceData.ToArray()),
                 description: source.Description),
-            LiteralDictionaryFileType.Binary => Deserialize(
-                sourceType: source.SourceType,
-                inputStream: new MemoryStream(buffer: sourceData.ToArray()),
-                description: source.Description),
+            LiteralDictionaryFileType.Binary =>
+                new LiteralDictionary(
+                    dictionary: DeserializeToDictionary(
+                        inputStream: new MemoryStream(
+                            buffer: sourceData.ToArray())),
+                    sourceType: source.SourceType,
+                    description: source.Description),
             _ => throw new Exception(message: "Unknown file type"),
         };
     }

@@ -39,12 +39,13 @@ public partial class LiteralDictionary
 
     /// <summary>
     ///     Returns the word at the given array index for a given word length
+    ///     Virtual method to allow for overriding in test mocks
     /// </summary>
     /// <param name="length"></param>
     /// <param name="wordIndex"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public string WordAtIndex(int length, int wordIndex)
+    public virtual string WordAtIndex(int length, int wordIndex)
     {
         if (!this._wordsByLength.ContainsKey(key: length))
             throw new ArgumentOutOfRangeException(
@@ -80,6 +81,13 @@ public partial class LiteralDictionary
                this._wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
     }
 
+    /// <summary>
+    ///     Returns a random length between (including) the shortest word and longest word
+    /// </summary>
+    /// <param name="minLength"></param>
+    /// <param name="maxLength"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public int RandomLength(int minLength = -1, int maxLength = -1)
     {
         if (minLength == -1) minLength = this.ShortestWordLength;
@@ -95,23 +103,23 @@ public partial class LiteralDictionary
         if (maxLength > this.LongestWordLength)
             throw new ArgumentException(message: "maxLength must be less than or equal to the longest word length");
 
-        var random = new Random();
         var nonRandomLength = minLength == maxLength;
         return nonRandomLength
             ? maxLength
-            : random.Next(minValue: minLength,
+            : new Random().Next(minValue: minLength,
                 maxValue: maxLength);
     }
 
     /// <summary>
     ///     Gets a random word from the dictionary from a random length between minLength and maxLength
+    ///     Virtual is for moq.
     /// </summary>
     /// <param name="minLength"></param>
     /// <param name="maxLength"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="Exception"></exception>
-    public string GetRandomWord(int minLength, int maxLength)
+    public virtual string GetRandomWord(int minLength, int maxLength)
     {
         if (
             minLength <= 0 ||

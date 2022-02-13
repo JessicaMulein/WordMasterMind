@@ -126,6 +126,8 @@ public class GameStateMachine : IGameStateMachine
     /// </summary>
     public int? WordLength { get; set; }
 
+    public bool UseDailyWord { get; set; } = true;
+
     /// <summary>
     ///     Attempts to change to the requested state and fires events when successful
     /// </summary>
@@ -247,10 +249,11 @@ public class GameStateMachine : IGameStateMachine
 
         var dictionary = await this.GetLiteralDictionary();
         this.Game = new GameEngineInstance(
+            literalDictionary: dictionary,
             minLength: this._wordLength.Value,
             maxLength: this._wordLength.Value,
             hardMode: this._hardMode,
-            literalDictionary: dictionary,
+            dailyWordWhenComputer: this.DailyWord,
             secretWord: secretWord);
 
         this.CurrentAttemptString = string.Empty;

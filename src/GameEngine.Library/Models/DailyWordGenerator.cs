@@ -1,5 +1,4 @@
 using System.Text;
-using GameEngine.Library.Enumerations;
 using GameEngine.Library.Helpers;
 
 namespace GameEngine.Library.Models;
@@ -98,14 +97,10 @@ public static class DailyWordGenerator
     }
 
     public static string WordOfTheDay(
+        LiteralDictionary dictionary,
         DateTime? date = null,
-        int length = Constants.StandardLength,
-        LiteralDictionary? dictionary = null, string? basePath = null)
+        int length = Constants.StandardLength)
     {
-        dictionary = dictionary ??
-                     LiteralDictionary.NewFromSourceType(
-                         sourceType: LiteralDictionarySourceType.Scrabble,
-                         basePath: basePath ?? throw new InvalidOperationException());
         return dictionary.WordAtIndex(
             length: length,
             wordIndex: WordIndexForDay(

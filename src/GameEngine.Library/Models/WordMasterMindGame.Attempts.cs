@@ -68,9 +68,9 @@ public partial class GameEngineInstance
                         letter: c,
                         evaluation: this._secretWord[index: currentAttemptLetterIndex++] == c
                             ? LetterEvaluation.Correct
-                            : (this._secretWord.Contains(value: c)
+                            : this._secretWord.Contains(value: c)
                                 ? LetterEvaluation.Present
-                                : LetterEvaluation.Absent)))
+                                : LetterEvaluation.Absent))
                 .ToArray());
 
         // update solved and found letters arrays
@@ -79,7 +79,8 @@ public partial class GameEngineInstance
             var detail = this._attempts[this.CurrentAttempt].Details.ElementAt(index: i);
             this._solvedLetters[i] |= detail.Evaluation is LetterEvaluation.Correct;
 
-            if (detail.Evaluation is LetterEvaluation.Present or LetterEvaluation.Correct && !this._foundLetters.Contains(detail.Letter))
+            if (detail.Evaluation is LetterEvaluation.Present or LetterEvaluation.Correct &&
+                !this._foundLetters.Contains(item: detail.Letter))
             {
                 this._foundLetters.Add(item: detail.Letter);
                 this._foundLetters.Sort();

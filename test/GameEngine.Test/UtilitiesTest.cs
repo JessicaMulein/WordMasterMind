@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GameEngine.Library.Helpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GameEngine.Test;
 

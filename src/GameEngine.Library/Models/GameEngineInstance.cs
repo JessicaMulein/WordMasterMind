@@ -37,23 +37,18 @@ public partial class GameEngineInstance
     /// </param>
     /// <param name="literalDictionary">Provide a proper LiteralDictionary object or null</param>
     /// <param name="secretWord">Optionally force the secret word to be this value</param>
-    /// <param name="basePath">Must be provided if literalDictionary is not specified</param>
+    /// <param name="dailyWordWhenComputer">When generating a word, use the daily word</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidLengthException"></exception>
     /// <exception cref="NotInDictionaryException"></exception>
-    public GameEngineInstance(int minLength, int maxLength, bool hardMode = false,
-        LiteralDictionary? literalDictionary = null, string? secretWord = Constants.ComputerSelectedWord,
-        string? basePath = null, bool dailyWordWhenComputer = true)
+    public GameEngineInstance(LiteralDictionary literalDictionary, int minLength, int maxLength, bool hardMode = false,
+        bool dailyWordWhenComputer = true, string? secretWord = Constants.ComputerSelectedWord)
     {
         this.Solved = false;
         this.CurrentAttempt = 0;
         this._hardMode = hardMode;
         // use the provided dictionary, or use the default one which is stored locally
-        this.LiteralDictionary = literalDictionary ??
-                                 LiteralDictionary.NewFromSourceType(
-                                     sourceType: LiteralDictionarySourceType.Scrabble,
-                                     basePath: basePath ??
-                                               throw new ArgumentNullException(paramName: nameof(basePath)));
+        this.LiteralDictionary = literalDictionary;
         if (secretWord is not null &&
             (secretWord.Length < minLength ||
              secretWord.Length > maxLength) ||
@@ -64,12 +59,11 @@ public partial class GameEngineInstance
         this._secretWord = (secretWord switch
         {
             null when dailyWordWhenComputer => DailyWordGenerator.WordOfTheDay(
-                    date: null,
-                    length: this.LiteralDictionary.RandomLength(
-                        minLength: minLength,
-                        maxLength: maxLength),
-                    dictionary: this.LiteralDictionary,
-                    basePath: basePath),
+                dictionary: this.LiteralDictionary,
+                date: null,
+                length: this.LiteralDictionary.RandomLength(
+                    minLength: minLength,
+                    maxLength: maxLength)),
             null => this.LiteralDictionary
                 .GetRandomWord(
                     minLength: minLength,
@@ -110,12 +104,12 @@ public partial class GameEngineInstance
     }
 
     /// <summary>
-    /// An array of boolean values corresponding to each letter in the secret word and whether it has been solved
+    ///     An array of boolean values corresponding to each letter in the secret word and whether it has been solved
     /// </summary>
     public IEnumerable<bool> SolvedLetters => DuplicateArray(array: this._solvedLetters);
 
     /// <summary>
-    /// A sorted array of all of the letters that have been found in the secret word
+    ///     A sorted array of all of the letters that have been found in the secret word
     /// </summary>
     public IEnumerable<char> FoundLetters => this._foundLetters.ToArray();
 
