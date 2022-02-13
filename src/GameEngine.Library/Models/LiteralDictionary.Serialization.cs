@@ -69,7 +69,7 @@ public partial class LiteralDictionary
         Stream inputStream,
         string? description = null)
     {
-        return new(
+        return new LiteralDictionary(
             dictionary: DeserializeToDictionary(
                 inputStream: inputStream),
             sourceType: sourceType,

@@ -321,3 +321,11 @@ button {
         transform: translateX(4px);
     }
 }
+
+#game-keyboard
+{
+    height: var(--keyboard-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

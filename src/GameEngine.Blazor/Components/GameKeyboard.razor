@@ -1,22 +1,19 @@
-<div id="key-game-keyboard">
-    <div class="row">
-        @{
-            var rows = Keys.Rank + 1;
-            var columns = Keys.Length / rows;
-        }
-        @for (var row = 0; row < rows; row++)
-        {
-            <div class="row">
+<div id="game-keyboard">
+    @{
+        var rows = Keys.Rank + 1;
+        var columns = Keys.Length / rows;
+    }
+    @for (var row = 0; row < rows; row++)
+    {
+        <div class="flex-row">
                 @for (var column = 0; column < columns; column++)
                 {
-                    var key = Keys[row,
-                        column];
+                    var key = Keys[row,column];
                     var label = new MarkupString(value: key.ToString());
                     switch (key)
                     {
                         case SkipBlank:
-                            // blank
-                            <div class="col-xs-1"></div>
+                            // blank, don't emit anything
                             continue;
                         case >= 'A' and <= 'Z':
                             // leave default
@@ -32,9 +29,10 @@
                                 arg0: key);
                             break;
                     }
+                    <div class="flex-column">
                     <button @onclick="() => OnClick(keyValue: key)">@label</button>
+                    </div>
                 }
-            </div>
-        }
-    </div>
+        </div>
+    }
 </div>
