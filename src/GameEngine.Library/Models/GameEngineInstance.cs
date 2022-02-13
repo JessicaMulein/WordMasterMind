@@ -49,8 +49,8 @@ public partial class GameEngineInstance
         this._hardMode = hardMode;
         // use the provided dictionary, or use the default one which is stored locally
         this.LiteralDictionary = literalDictionary;
-        if (minLength == -1) minLength = Constants.StandardLength;
-        if (maxLength == -1) maxLength = Constants.StandardLength;
+        if (minLength == -1) minLength = secretWord?.Length ?? Constants.StandardLength;
+        if (maxLength == -1) maxLength = secretWord?.Length ?? Constants.StandardLength;
         if (secretWord is not null &&
             (secretWord.Length < minLength ||
              secretWord.Length > maxLength) ||
