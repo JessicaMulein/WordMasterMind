@@ -44,65 +44,6 @@ public partial class GameEngineInstance
         return this._attempts[attemptIndex];
     }
 
-    /// <summary>
-    /// Maximum number of times we will reveal finding a particular letter for a given secret word
-    /// </summary>
-    /// <param name="secretWord"></param>
-    /// <param name="attemptLetter"></param>
-    /// <returns></returns>
-    private static int MaxFlagsForAttempt(string secretWord, char attemptLetter)
-        => secretWord.Count(predicate: t => t.Equals(obj: attemptLetter));
-
-    /// <summary>
-    ///     Produce a letter evaluation for a given guess, following the rules of Wordle
-    ///     Wordle will return as many matches as there are times that letter showed up,
-    ///     but no moe. For example:
-    ///     suppose the word is “elegy”, and user guesses “eerie”.
-    ///     Wordle/Wordmaster should correctly only flag two ‘e’s
-    /// </summary>
-    /// <param name="secretWord"></param>
-    /// <param name="wordAttempt"></param>
-    /// <param name="letterIndex"></param>
-    /// <returns></returns>
-    public static LetterEvaluation EvaluateLetter(string secretWord, string wordAttempt, int letterIndex)
-    {
-        var attemptLetter = wordAttempt[index: letterIndex];
-
-        // solved positions are solved, period.
-        if (secretWord[index: letterIndex] == attemptLetter)
-            return LetterEvaluation.Correct;
-
-        var maxFlagsAvailable = MaxFlagsForAttempt(
-            secretWord: secretWord,
-            attemptLetter: attemptLetter);
-        var solvedLettersBeforeCurrentIndex = secretWord
-            .Where(predicate: (t, index) => index < letterIndex &&
-                                            secretWord[index: index].Equals(obj: attemptLetter) &&
-                                            t.Equals(obj: attemptLetter))
-            .Count();
-        var occurrencesBeforeCurrentIndex = secretWord
-            .Where(predicate: (t, index) => index < letterIndex &&
-                                            !secretWord[index: index].Equals(obj: attemptLetter) &&
-                                            t.Equals(obj: attemptLetter))
-            .Count();
-        var remainingFlags = maxFlagsAvailable - solvedLettersBeforeCurrentIndex - occurrencesBeforeCurrentIndex;
-
-        if (remainingFlags > 0 && secretWord.Contains(value: attemptLetter))
-            return LetterEvaluation.Present;
-
-        return LetterEvaluation.Absent;
-    }
-
-    /// <summary>
-    /// Attempt a guess at the secret word.
-    /// The engine will return an AttemptDetails with a list of letter evaluations, one for each letter in the secret word.
-    /// </summary>
-    /// <param name="wordAttempt"></param>
-    /// <returns></returns>
-    /// <exception cref="GameOverException"></exception>
-    /// <exception cref="InvalidAttemptLengthException"></exception>
-    /// <exception cref="NotInDictionaryException"></exception>
-    /// <exception cref="HardModeException"></exception>
     public AttemptDetails MakeAttempt(string wordAttempt)
     {
         if (this.GameOver) throw new GameOverException(solved: this.Solved);
@@ -116,20 +57,21 @@ public partial class GameEngineInstance
             throw new NotInDictionaryException();
 
         // countAttemptLetterIndex is incremented each time the selector is fired, eg each letter
+        var currentAttemptLetterIndex = 0;
         // the attempt hasn't been registered in the count yet
-        var details = new AttemptLetterDetail[this.WordLength];
-        for (var currentLetterIndex = 0; currentLetterIndex < this.WordLength; currentLetterIndex++)
-            details[currentLetterIndex] =
-                new AttemptLetterDetail(
-                    letterPosition: currentLetterIndex,
-                    letter: wordAttempt[index: currentLetterIndex],
-                    evaluation: EvaluateLetter(
-                        letterIndex: currentLetterIndex,
-                        secretWord: this._secretWord,
-                        wordAttempt: wordAttempt));
         this._attempts[this.CurrentAttempt] = new AttemptDetails(
             attemptNumber: Utilities.HumanizeIndex(index: this.CurrentAttempt),
-            details: details);
+            details: wordAttempt
+                .Select(
+                    selector: c => new AttemptLetterDetail(
+                        letterPosition: currentAttemptLetterIndex,
+                        letter: c,
+                        evaluation: this._secretWord[index: currentAttemptLetterIndex++] == c
+                            ? LetterEvaluation.Correct
+                            : this._secretWord.Contains(value: c)
+                                ? LetterEvaluation.Present
+                                : LetterEvaluation.Absent))
+                .ToArray());
 
         // update solved and found letters arrays
         for (var i = 0; i < this.WordLength; i++)
