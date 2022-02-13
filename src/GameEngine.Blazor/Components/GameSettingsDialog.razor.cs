@@ -1,3 +1,5 @@
+using GameEngine.Blazor.Enumerations;
+using GameEngine.Blazor.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using GameEngine.Blazor.Interfaces;
@@ -19,7 +21,7 @@ public partial class GameSettingsDialog
     {
         try
         {
-            await this.GameStateMachine.ChangeStateAsync(newState: this.GameStateMachine.PreviousState);
+            await UIHelpers.TryPreviousStateAndAlertOnGameEngineException(stateMachine: this.GameStateMachine);
             if (this.OnSettingsClosed.HasDelegate)
                 await this.OnSettingsClosed.InvokeAsync(arg: false);
         }
@@ -33,7 +35,7 @@ public partial class GameSettingsDialog
     {
         try
         {
-            await this.GameStateMachine.ChangeStateAsync(newState: this.GameStateMachine.PreviousState);
+            await UIHelpers.TryPreviousStateAndAlertOnGameEngineException(stateMachine: this.GameStateMachine);
             if (this.OnSettingsClosed.HasDelegate)
                 await this.OnSettingsClosed.InvokeAsync(arg: true);
         }

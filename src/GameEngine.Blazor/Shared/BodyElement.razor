@@ -1,18 +1,19 @@
-@inject IJSRuntime _jsRuntime
 @code {
+    [Inject] public static IJSRuntime? _jsRuntime { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
         if (CssClass is { })
-            await _jsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.addCssClassToBody", CssClass);
+            await _jsRuntime!.InvokeVoidAsync(identifier: "window.JsFunctions.addCssClassToBody", CssClass);
 
         if (Language is { })
-            await _jsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setLanguageOfBody", Language);
+            await _jsRuntime!.InvokeVoidAsync(identifier: "window.JsFunctions.setLanguageOfBody", Language);
 
         if (TextDirection is { })
-            await _jsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setTextDirectionOfBody", TextDirection);
+            await _jsRuntime!.InvokeVoidAsync(identifier: "window.JsFunctions.setTextDirectionOfBody", TextDirection);
 
         if (Title is { })
-            await _jsRuntime.InvokeVoidAsync(identifier: "window.JsFunctions.setDocumentTitle", Title);
+            await _jsRuntime!.InvokeVoidAsync(identifier: "window.JsFunctions.setDocumentTitle", Title);
     }
 
     [Parameter]
@@ -27,4 +28,8 @@
     [Parameter]
     public string? Title { get; set; } = null;
 
+    public static async Task ShowAlert(string message, int duration = 1000)
+    {
+        await _jsRuntime!.InvokeVoidAsync(identifier: "window.JsFunctions.showAlert", message, duration);
+    }
 }

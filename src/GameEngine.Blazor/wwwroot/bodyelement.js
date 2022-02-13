@@ -37,5 +37,20 @@ JsFunctions = {
     setTextDirectionOfBody: function (direction) {
         let body = window.JsFunctions.getBodyElement();
         body.dir = direction;
+    },
+    showAlert(message, duration = 1000) {
+        const alertContainer = document.querySelector("#alert-container")
+        const alert = document.createElement("div")
+        alert.textContent = message
+        alert.classList.add("alert")
+        alertContainer.prepend(alert)
+        if (duration == null) return
+
+        setTimeout(() => {
+            alert.classList.add("hide")
+            alert.addEventListener("transitionend", () => {
+                alert.remove()
+            })
+        }, duration)
     }
 };

@@ -1,6 +1,6 @@
 namespace GameEngine.Library.Exceptions;
 
-public class InvalidLengthException : Exception
+public class InvalidLengthException : GameEngineException
 {
     public const string MessageText = "word must be between minLength and maxLength.";
     public readonly int MaxLength;

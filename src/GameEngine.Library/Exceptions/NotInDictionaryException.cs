@@ -1,8 +1,8 @@
 namespace GameEngine.Library.Exceptions;
 
-public class NotInDictionaryException : Exception
+public class NotInDictionaryException : GameEngineException
 {
-    public const string MessageText = "not a valid word in the Scrabble dictionary.";
+    public const string MessageText = "Not a valid word in the selected dictionary.";
 
     public NotInDictionaryException() : base(message: MessageText)
     {

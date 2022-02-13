@@ -1,6 +1,6 @@
 namespace GameEngine.Library.Exceptions;
 
-public class FileAlreadyExistsException : Exception
+public class FileAlreadyExistsException : GameEngineException
 {
     public FileAlreadyExistsException(string message) : base(message: message)
     {

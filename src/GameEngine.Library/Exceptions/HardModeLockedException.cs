@@ -1,6 +1,6 @@
 namespace GameEngine.Library.Exceptions;
 
-public class HardModeLockedException : Exception
+public class HardModeLockedException : GameEngineException
 {
     public const string MessageText = "Hard Mode cannot be changed after the first attempt.";
 

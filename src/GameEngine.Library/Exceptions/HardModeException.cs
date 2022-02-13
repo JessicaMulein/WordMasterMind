@@ -2,7 +2,7 @@ using GameEngine.Library.Helpers;
 
 namespace GameEngine.Library.Exceptions;
 
-public class HardModeException : Exception
+public class HardModeException : GameEngineException
 {
     public readonly char Letter;
 

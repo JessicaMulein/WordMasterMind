@@ -1,6 +1,6 @@
 namespace GameEngine.Library.Exceptions;
 
-public class GameOverException : Exception
+public class GameOverException : GameEngineException
 {
     public const string SolvedText = "You have already solved this word!";
     public const string GameOverText = "Game Over: You have reached the maximum number of attempts.";
