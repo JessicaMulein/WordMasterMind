@@ -1,5 +1,7 @@
 # WordMasterMind
-[![.NET](https://github.com/FreddieMercurial/WordMasterMind/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/FreddieMercurial/WordMasterMind/actions/workflows/dotnet.yml)
+[![.NET](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/dotnet.yml/badge.svg)](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/dotnet.yml)
+[![CodeQL](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/codeql-analysis.yml)
+
 - A C# Blazor WebAssembly quick wordle clone based on the scrabble dictionary
 - Self-contained
 
