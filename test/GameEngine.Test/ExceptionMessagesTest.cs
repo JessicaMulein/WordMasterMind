@@ -121,7 +121,7 @@ public class ExceptionMessagesTest
         var thrownException =
             Assert.ThrowsException<NotInDictionaryException>(action: () => throw new NotInDictionaryException());
         Assert.AreEqual(
-            expected: "not a valid word in the Scrabble dictionary.",
+            expected: NotInDictionaryException.MessageText,
             actual: thrownException.Message);
     }
 }
