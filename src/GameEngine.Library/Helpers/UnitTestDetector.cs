@@ -4,6 +4,9 @@ namespace GameEngine.Library.Helpers;
 
 public static class UnitTestDetector
 {
+    /// <summary>
+    ///     memoized value of whether we're running in unit test mode
+    /// </summary>
     private static bool? _isInUnitTest;
 
     private static readonly HashSet<string> UnitTestAttributes = new()
@@ -18,25 +21,23 @@ public static class UnitTestDetector
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
     public static bool IsRunningInUnitTest
-    {
-        get
-        {
-            _isInUnitTest ??= new StackTrace()
-                .GetFrames()
-                .Any(predicate: f =>
-                {
-                    var method = f.GetMethod();
-                    if (method == null) return false;
-                    var declaringType = method.DeclaringType;
-                    return declaringType != null &&
-                           declaringType
-                               .GetCustomAttributes(inherit: false)
-                               .Any(predicate: x =>
-                                   UnitTestAttributes.Contains(item: x.GetType().FullName ??
-                                                                     throw new InvalidOperationException()));
-                });
+        => _isInUnitTest ??= new StackTrace()
+            .GetFrames()
+            .Any(predicate: f =>
+            {
+                var method = f.GetMethod();
+                if (method == null) return false;
+                var declaringType = method.DeclaringType;
+                return declaringType != null &&
+                       declaringType
+                           .GetCustomAttributes(inherit: false)
+                           .Any(predicate: x =>
+                               UnitTestAttributes.Contains(item: x.GetType().FullName ??
+                                                                 throw new InvalidOperationException()));
+            });
 
-            return _isInUnitTest.Value;
-        }
+    public static void ForceTestMode(bool? value)
+    {
+        _isInUnitTest = value;
     }
 }

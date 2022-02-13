@@ -363,6 +363,24 @@ public class GameEngineTest
             }
     }
 
-    /* TODO: I'd like to have a test that verifies the SecretWord is only accessible when the game is complete,
-     * but the Test framework by default makes it impossible to test all of the paths without introducing more */
+    [TestMethod]
+    public void TestSecretWordWithoutIsDebug()
+    {
+        UnitTestDetector.ForceTestMode(value: false);
+        const string expectedWord = "HELLO";
+        var literalDictionary = GetWordDictionary();
+        var mastermind = new GameEngineInstance(
+            minLength: expectedWord.Length,
+            maxLength: expectedWord.Length,
+            hardMode: false,
+            literalDictionary: literalDictionary,
+            secretWord: expectedWord);
+        Assert.AreEqual(
+            expected: string.Empty,
+            actual: mastermind.SecretWord);
+        mastermind.MakeAttempt(wordAttempt: expectedWord);
+        Assert.AreEqual(
+            expected: expectedWord,
+            actual: mastermind.SecretWord);
+    }
 }
