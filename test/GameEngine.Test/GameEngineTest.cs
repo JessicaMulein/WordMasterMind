@@ -13,6 +13,12 @@ namespace GameEngine.Test;
 [TestClass]
 public class GameEngineTest
 {
+    [TestInitialize]
+    public void TestSetup()
+    {
+        UnitTestDetector.ForceTestMode(value: true);
+    }
+
     private static Dictionary<int, IEnumerable<string>> GetWordDictionaryDict(LiteralDictionarySource source)
     {
         using var stream = LiteralDictionary.OpenFileForRead(
@@ -268,7 +274,7 @@ public class GameEngineTest
     }
 
     [TestMethod]
-    public void TestGameEngineHardMode()
+    public void TestGameEngineHardModeCorrect()
     {
         var literalDictionary = GetWordDictionary();
         const string expectedWord = "while";
@@ -298,6 +304,41 @@ public class GameEngineTest
         Assert.AreEqual(
             expected:
             $"{Utilities.NumberToOrdinal(number: Utilities.HumanizeIndex(index: thrownException.LetterPosition))} letter must be {thrownException.Letter}",
+            actual: thrownException.Message);
+    }
+
+    [TestMethod]
+    public void TestGameEngineHardModePresent()
+    {
+        var literalDictionary = GetWordDictionary();
+        const string expectedWord = "while";
+        var mastermind = new GameEngineInstance(
+            literalDictionary: literalDictionary,
+            minLength: expectedWord.Length,
+            maxLength: expectedWord.Length,
+            hardMode: true,
+            dailyWordWhenComputer: true,
+            secretWord: expectedWord);
+        Assert.AreEqual(
+            expected: expectedWord.Length,
+            actual: mastermind.WordLength);
+        Assert.AreEqual(
+            expected: true,
+            actual: mastermind.HardMode);
+        // a first attempt of 'liars' should mark the 'i' and 'l' as present
+        var attempt = mastermind.MakeAttempt(wordAttempt: "liars");
+        VerifyTestAttempt(knownSecretWord: mastermind.SecretWord,
+            attemptDetails: attempt);
+        Assert.AreEqual(
+            expected: mastermind.CurrentAttempt,
+            actual: mastermind.Attempts.Count());
+        // this should throw an exception because we've not guessed the 'i' and 'l' this attempt
+        // will throw on the I as I comes before L in the alphabet and the internal list is sorted
+        var thrownException =
+            Assert.ThrowsException<HardModeException>(action: () => mastermind.MakeAttempt(wordAttempt: "doors"));
+        Assert.AreEqual(
+            expected:
+            "Guess must contain I",
             actual: thrownException.Message);
     }
 
@@ -483,5 +524,34 @@ public class GameEngineTest
             secretWord: null);
         dictionaryMock.VerifyAll();
         dictionaryMock.VerifyNoOtherCalls();
+    }
+
+    [TestMethod]
+    public void TestGameEngineHardModeChangeException()
+    {
+        var literalDictionary = GetWordDictionary();
+        var mastermind = new GameEngineInstance(
+            literalDictionary: literalDictionary,
+            minLength: -1,
+            maxLength: -1,
+            hardMode: false);
+        Assert.AreEqual(
+            expected: false,
+            actual: mastermind.HardMode);
+
+        // set hard mode before first attempt
+        mastermind.HardMode = true;
+
+        // make the first attempt
+        var attempt = mastermind.MakeAttempt(wordAttempt: "where");
+        VerifyTestAttempt(knownSecretWord: mastermind.SecretWord,
+            attemptDetails: attempt);
+
+        // this should throw an exception because we tried to change hard mode after making an attempt
+        var thrownException =
+            Assert.ThrowsException<HardModeLockedException>(action: () => mastermind.HardMode = false);
+        Assert.AreEqual(
+            expected: HardModeLockedException.MessageText,
+            actual: thrownException.Message);
     }
 }
