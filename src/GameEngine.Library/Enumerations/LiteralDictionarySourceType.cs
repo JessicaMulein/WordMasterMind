@@ -3,9 +3,9 @@ namespace GameEngine.Library.Enumerations;
 public enum LiteralDictionarySourceType
 {
     /// <summary>
-    ///     Standard Scrabble Dictionary
+    ///     Standard Collins Scrabble Dictionary
     /// </summary>
-    Scrabble,
+    CollinsScrabble,
 
     /// <summary>
     ///     List of common crossword words

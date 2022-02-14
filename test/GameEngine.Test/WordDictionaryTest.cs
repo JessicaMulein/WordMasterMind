@@ -1,7 +1,4 @@
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using GameEngine.Library.Enumerations;
 using GameEngine.Library.Exceptions;
 using GameEngine.Library.Models;
@@ -12,41 +9,10 @@ namespace GameEngine.Test;
 [TestClass]
 public class LiteralDictionaryTest
 {
-    private static string GetTestRoot(string? fileName = null)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        var startupPath = Path.GetDirectoryName(path: assembly.Location);
-        Debug.Assert(condition: startupPath != null,
-            message: nameof(startupPath) + " != null");
-        var pathItems = startupPath.Split(separator: Path.DirectorySeparatorChar);
-        var pos = pathItems.Reverse().ToList().FindIndex(match: x => string.Equals(a: "bin",
-            b: x));
-        var basePath = string.Join(separator: Path.DirectorySeparatorChar.ToString(),
-            values: pathItems.Take(count: pathItems.Length - pos - 1));
-        return fileName is null
-            ? basePath
-            : Path.Combine(path1: basePath,
-                path2: fileName);
-    }
-
-    private static LiteralDictionary GetWordDictionary()
-    {
-        var testRoot = GetTestRoot();
-        var literalDictionary = LiteralDictionary.Deserialize(
-            sourceType: LiteralDictionarySourceType.Scrabble,
-            inputStream: LiteralDictionary.OpenFileForRead(
-                fileName: Path.Combine(
-                    path1: testRoot,
-                    path2: "collins-scrabble.bin")));
-        // this must be set to use the word generator
-        DailyWordGenerator.BasePath = testRoot;
-        return literalDictionary;
-    }
-
     [TestMethod]
     public void TestLiteralDictionary()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         Assert.AreEqual(
             expected: 279496, // known size of collins scrabble dictionary
             actual: literalDictionary.WordCount);
@@ -87,7 +53,7 @@ public class LiteralDictionaryTest
     [TestMethod]
     public void TestRandomWordLengthUpperLimit()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             literalDictionary.GetRandomWord(minLength: literalDictionary.LongestWordLength + 1,
                 maxLength: literalDictionary.LongestWordLength + 1));
@@ -98,7 +64,7 @@ public class LiteralDictionaryTest
     [TestMethod]
     public void TestRandomWordLengthLowerLimit()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             literalDictionary.GetRandomWord(
                 minLength: literalDictionary.ShortestWordLength - 1,
@@ -110,7 +76,8 @@ public class LiteralDictionaryTest
     [TestMethod]
     public void TestDailyWordGenerator()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary =
+            TestHelpers.GetWordDictionaryFromTestRoot(sourceType: LiteralDictionarySourceType.CollinsScrabble);
 
         var dayOneWord = DailyWordGenerator.WordOfTheDay(
             date: DailyWordGenerator.WordGeneratorEpoch,
@@ -128,14 +95,14 @@ public class LiteralDictionaryTest
             dictionary: literalDictionary);
         Assert.AreEqual(
             // ReSharper disable once StringLiteralTypo
-            expected: "MENGS",
+            expected: "JOKED",
             actual: oneYearWord);
     }
 
     [TestMethod]
     public void TestBinarySerializationAndLoading()
     {
-        var dictionary = GetWordDictionary();
+        var dictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var binaryOutputFile = Path.GetTempFileName();
         File.Delete(path: binaryOutputFile);
         Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
@@ -162,5 +129,33 @@ public class LiteralDictionaryTest
         Assert.AreEqual(
             expected: 1,
             actual: DailyWordGenerator.PuzzleNumber(date: DailyWordGenerator.WordGeneratorEpoch));
+    }
+
+    [DataTestMethod]
+    [DataRow(data1: LiteralDictionarySourceType.Crossword,
+        2,
+        22,
+        62799)]
+    [DataRow(data1: LiteralDictionarySourceType.CollinsScrabble,
+        2,
+        15,
+        279496)]
+    [DataRow(data1: LiteralDictionarySourceType.English,
+        1,
+        31,
+        370103)]
+    public void TestDictionarySources(LiteralDictionarySourceType sourceType, int expectedShortestWord,
+        int expectedLongestWord, int expectedTotalWords)
+    {
+        var dictionary = TestHelpers.GetWordDictionaryFromTestRoot(sourceType: sourceType);
+        Assert.AreEqual(
+            expected: expectedShortestWord,
+            actual: dictionary.ShortestWordLength);
+        Assert.AreEqual(
+            expected: expectedLongestWord,
+            actual: dictionary.LongestWordLength);
+        Assert.AreEqual(
+            expected: expectedTotalWords,
+            actual: dictionary.WordCount);
     }
 }

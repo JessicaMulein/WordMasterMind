@@ -30,7 +30,7 @@ public class GameStateMachine : IGameStateMachine
 
     public GameStateMachine()
     {
-        this.DictionarySourceType = LiteralDictionarySourceType.Scrabble;
+        this.DictionarySourceType = LiteralDictionarySourceType.CollinsScrabble;
         this.Game = null;
         this.State = GameState.Rules;
         this.PreviousState = GameState.Rules;

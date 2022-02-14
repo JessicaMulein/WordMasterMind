@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using GameEngine.Library.Enumerations;
 using GameEngine.Library.Exceptions;
@@ -17,24 +16,6 @@ public class GameEngineTest
     public void TestSetup()
     {
         UnitTestDetector.ForceTestMode(value: true);
-    }
-
-    private static Dictionary<int, IEnumerable<string>> GetWordDictionaryDict(LiteralDictionarySource source)
-    {
-        using var stream = LiteralDictionary.OpenFileForRead(
-            fileName: Utilities.GetTestRoot(
-                fileName: source.FileName));
-        return LiteralDictionary.DeserializeToDictionary(inputStream: stream);
-    }
-
-    private static LiteralDictionary GetWordDictionary()
-    {
-        var collinsSource = LiteralDictionarySource.ScrabbleDictionarySource;
-        return new LiteralDictionary(
-            dictionary: GetWordDictionaryDict(
-                source: collinsSource),
-            sourceType: collinsSource.SourceType,
-            description: collinsSource.Description);
     }
 
     /// <summary>
@@ -64,7 +45,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestGameEngineWordTooShort()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             new GameEngineInstance(
                 literalDictionary: literalDictionary,
@@ -83,7 +64,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestGameEngineWordTooLong()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var thrownException = Assert.ThrowsException<InvalidLengthException>(action: () =>
             new GameEngineInstance(
                 literalDictionary: literalDictionary,
@@ -103,7 +84,7 @@ public class GameEngineTest
     {
         // secretWord is made up word not in dictionary
         const string expectedSecretWord = "fizzbuzz";
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var thrownException = Assert.ThrowsException<NotInDictionaryException>(action: () =>
             new GameEngineInstance(
                 literalDictionary: literalDictionary,
@@ -119,7 +100,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestGameEngineAttemptLengthMismatch()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var mastermind = new GameEngineInstance(
             literalDictionary: literalDictionary,
             minLength: Constants.StandardLength,
@@ -148,7 +129,7 @@ public class GameEngineTest
         var rnd = new Random();
         var length = rnd.Next(minValue: 3,
             maxValue: 5);
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var secretWord = literalDictionary.GetRandomWord(minLength: length,
             maxLength: length);
         var mastermind = new GameEngineInstance(
@@ -180,7 +161,7 @@ public class GameEngineTest
         var rnd = new Random();
         var length = rnd.Next(minValue: 3,
             maxValue: 5);
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var secretWord = literalDictionary.GetRandomWord(minLength: length,
             maxLength: length);
         var incorrectWord = secretWord;
@@ -245,7 +226,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestGameEngineWithProvidedRandomWordAndInvalidAttempt()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var mastermind = new GameEngineInstance(
             literalDictionary: literalDictionary,
             minLength: Constants.StandardLength,
@@ -276,7 +257,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestGameEngineHardModeCorrect()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         const string expectedWord = "while";
         var mastermind = new GameEngineInstance(
             literalDictionary: literalDictionary,
@@ -310,7 +291,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestGameEngineHardModePresent()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         const string expectedWord = "while";
         var mastermind = new GameEngineInstance(
             literalDictionary: literalDictionary,
@@ -345,7 +326,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestAttemptsToString()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var mastermind = new GameEngineInstance(
             literalDictionary: literalDictionary,
             minLength: Constants.StandardLength,
@@ -369,7 +350,7 @@ public class GameEngineTest
     public void TestSolvedLetters()
     {
         const string expectedWord = "HELLO";
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var mastermind = new GameEngineInstance(
             literalDictionary: literalDictionary,
             minLength: expectedWord.Length,
@@ -412,7 +393,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestAttemptsFunction()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         foreach (var hardMode in new[] {false, true})
             for (var length = literalDictionary.ShortestWordLength;
                  length <= literalDictionary.LongestWordLength;
@@ -431,7 +412,7 @@ public class GameEngineTest
     {
         UnitTestDetector.ForceTestMode(value: false);
         const string expectedWord = "HELLO";
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var mastermind = new GameEngineInstance(
             literalDictionary: literalDictionary,
             minLength: expectedWord.Length,
@@ -453,7 +434,7 @@ public class GameEngineTest
     {
         var collinsSource = LiteralDictionarySource.ScrabbleDictionarySource;
         var dictionaryMock = new Mock<LiteralDictionary>(
-            GetWordDictionaryDict(
+            TestHelpers.GetWordDictionaryDictFromTestRoot(
                 source: collinsSource),
             collinsSource.SourceType,
             collinsSource.Description
@@ -485,7 +466,7 @@ public class GameEngineTest
     {
         var collinsSource = LiteralDictionarySource.ScrabbleDictionarySource;
         var dictionaryMock = new Mock<LiteralDictionary>(
-            GetWordDictionaryDict(
+            TestHelpers.GetWordDictionaryDictFromTestRoot(
                 source: collinsSource),
             collinsSource.SourceType,
             collinsSource.Description
@@ -529,7 +510,7 @@ public class GameEngineTest
     [TestMethod]
     public void TestGameEngineHardModeChangeException()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var mastermind = new GameEngineInstance(
             literalDictionary: literalDictionary,
             minLength: -1,

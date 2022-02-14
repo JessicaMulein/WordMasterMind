@@ -5,7 +5,7 @@ namespace GameEngine.Library.Models;
 public partial record LiteralDictionarySource
 {
     public static LiteralDictionarySource ScrabbleDictionarySource => new(
-        sourceType: LiteralDictionarySourceType.Scrabble,
+        sourceType: LiteralDictionarySourceType.CollinsScrabble,
         fileName: "collins-scrabble.bin",
         fileType: LiteralDictionaryFileType.Binary,
         description: "Collins Scrabble dictionary");
@@ -33,7 +33,7 @@ public partial record LiteralDictionarySource
     {
         return sourceType switch
         {
-            LiteralDictionarySourceType.Scrabble => ScrabbleDictionarySource,
+            LiteralDictionarySourceType.CollinsScrabble => ScrabbleDictionarySource,
             LiteralDictionarySourceType.Crossword => CrosswordDictionarySource,
             LiteralDictionarySourceType.English => EnglishDictionarySource,
             _ => throw new ArgumentOutOfRangeException(paramName: nameof(sourceType),

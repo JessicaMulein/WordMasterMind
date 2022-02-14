@@ -16,7 +16,7 @@ public partial class GameEngineInstance
     private readonly bool[] _solvedLetters;
 
     /// <summary>
-    ///     Scrabble Dictionary to use
+    ///     Dictionary to use
     /// </summary>
     public readonly LiteralDictionary LiteralDictionary;
 
