@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.DictionaryUtilities\DictionaryConverterUtility.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using GameEngine.Library.Enumerations;
+using GameEngine.Library.Models;
+
+namespace GameEngine.Library.Helpers;
+
+public static class DictionaryConverterUtility
+{
+    private const int DefaultMaximumWordLength = 100;
+
+    public static bool ConvertFile(string inputTextFilename, string? outputTextFilename = null,
+        int wordLengthAbort = DefaultMaximumWordLength, bool permitNonAlpha = false, bool forceCreate = false)
+    {
+        outputTextFilename ??= inputTextFilename + &quot;.json&quot;;
+        if (!forceCreate &amp;&amp; File.Exists(path: outputTextFilename))
+        {
+            Console.WriteLine(value: $&quot;File {outputTextFilename} already exists. Aborting.&quot;);
+            return false;
+        }
+
+        using var streamReader = new StreamReader(path: inputTextFilename);
+        using var streamWriter = new StreamWriter(path: outputTextFilename,
+            append: false);
+        streamWriter.WriteLine(value: &quot;[&quot;);
+        var linesProcessed = 0;
+        while (!streamReader.EndOfStream)
+        {
+            var newWord = streamReader.ReadLine();
+            if (newWord is null)
+                continue;
+            if (newWord.Length &gt;= wordLengthAbort)
+            {
+                Console.WriteLine(value: $&quot;Word {newWord} is too long. Aborting.&quot;);
+                return false;
+            }
+
+            linesProcessed++;
+
+            newWord = newWord.ToUpperInvariant();
+
+            if (!permitNonAlpha &amp;&amp; Regex.IsMatch(input: newWord,
+                    pattern: @&quot;[^A-Z]&quot;))
+            {
+                Console.WriteLine(value: $&quot;Word {newWord} contains non-alpha characters. Aborting.&quot;);
+                return false;
+            }
+
+            streamWriter.WriteLine(value: $&quot;\t\&quot;{newWord}\&quot;,&quot;);
+        }
+
+        streamReader.Close();
+        streamWriter.WriteLine(value: &quot;]&quot;);
+        streamWriter.Flush();
+        streamWriter.Close();
+
+        Console.WriteLine(format: &quot;Processed {0} lines.&quot;,
+            arg0: linesProcessed);
+
+        return true;
+    }
+
+    public static bool FileIsAlphabeticOnly(string filename)
+    {
+        return File.ReadAllLines(path: filename).Any(predicate: line =&gt; Regex.IsMatch(input: line,
+            pattern: @&quot;^[a-zA-Z]+[\s]*$&quot;));
+    }
+
+    public static bool FileIsJson(string filename, out object? decodedJson)
+    {
+        var fileText = File.ReadAllText(path: filename);
+
+        try
+        {
+            decodedJson = JsonSerializer.Deserialize&lt;object&gt;(
+                json: fileText,
+                options: new JsonSerializerOptions
+                {
+                    AllowTrailingCommas = true,
+                }) ?? throw new InvalidOperationException();
+
+            return true;
+        }
+        catch
+        {
+            decodedJson = null;
+            return false;
+        }
+    }
+
+    public static int Main(string[] arguments)
+    {
+        const string usage =
+            &quot;Usage: DictionaryConverterUtility.exe (to-json|to-binary|split-binary) &lt;inputFilename&gt; [&lt;outputFilename&gt;]\n&quot; +
+            &quot;split-binary mode assumes binary input filename&quot;;
+        if (arguments.Length is &gt; 3 or &lt; 2)
+        {
+            Console.WriteLine(value: usage);
+            return 1;
+        }
+
+        var result = false;
+        var makeJsonOutput = arguments[0].ToLowerInvariant().Equals(value: &quot;to-json&quot;);
+        var makeSplitBinaryOutput = arguments[0].ToLowerInvariant().Equals(value: &quot;split-binary&quot;);
+        var makeBinaryOutput = arguments[0].ToLowerInvariant().Equals(value: &quot;to-binary&quot;);
+        if (!makeJsonOutput &amp;&amp; !makeBinaryOutput &amp;&amp; !makeSplitBinaryOutput)
+        {
+            Console.WriteLine(value: &quot;Invalid mode. Must be json or binary.&quot;);
+            Console.WriteLine(value: usage);
+            return 1;
+        }
+
+        var outputFile = arguments.Length &gt; 2 ? arguments[2] : null;
+        var inputFileIsJson = FileIsJson(filename: arguments[1],
+            decodedJson: out _);
+
+        if (inputFileIsJson)
+            Console.WriteLine(value: &quot;JSON input file detected.&quot;);
+
+        if (inputFileIsJson &amp;&amp; makeJsonOutput)
+            return 1;
+
+        var inputFileIsAlphabeticOnly = FileIsAlphabeticOnly(filename: arguments[1]);
+        if (inputFileIsAlphabeticOnly)
+            Console.WriteLine(value: &quot;Alphabetic input file detected.&quot;);
+
+        if (makeJsonOutput &amp;&amp; !inputFileIsAlphabeticOnly)
+        {
+            Console.WriteLine(value: &quot;text input file is not alphabetic only. Aborting.&quot;);
+            return 1;
+        }
+        
+        if (makeSplitBinaryOutput &amp;&amp; !inputFileIsJson &amp;&amp; !inputFileIsAlphabeticOnly) 
+        {
+            Console.WriteLine(value: &quot;binary split requires a binary input file&quot;);
+            return 1;
+        }
+
+        var jsonOutputFile = makeBinaryOutput
+            ? Path.GetTempFileName()
+            : outputFile ?? Path.ChangeExtension(path: arguments[1],
+                extension: &quot;.json&quot;);
+        var binaryOutputFile = outputFile ?? Path.ChangeExtension(path: arguments[1],
+            extension: &quot;.bin&quot;);
+
+        if (makeJsonOutput &amp;&amp; !inputFileIsJson &amp;&amp; inputFileIsAlphabeticOnly)
+            result = ConvertFile(
+                inputTextFilename: arguments[1],
+                outputTextFilename: jsonOutputFile,
+                wordLengthAbort: DefaultMaximumWordLength,
+                permitNonAlpha: true,
+                forceCreate: true);
+
+        if (makeJsonOutput)
+            return result ? 0 : 1;
+
+        var dictionary = makeBinaryOutput
+            ? LiteralDictionary.NewFromJson(
+                sourceType: LiteralDictionarySourceType.Other,
+                jsonText: inputFileIsJson ? arguments[1] : jsonOutputFile)
+            : LiteralDictionary.Deserialize(
+                sourceType: LiteralDictionarySourceType.Other,
+                inputStream: LiteralDictionary.OpenFileForRead(fileName: arguments[1]));
+
+        var wordsAdded = makeSplitBinaryOutput
+            ? dictionary.SplitSerialize(outputFilename: binaryOutputFile)
+            : dictionary.Serialize(outputFilename: binaryOutputFile);
+
+        Console.WriteLine(format: makeSplitBinaryOutput
+                ? &quot;Serialized {0} words to separate files&quot;
+                : &quot;Serialized {0} words to file&quot;,
+            arg0: wordsAdded);
+        Console.WriteLine(format: &quot;Dictionary contains {0} words.&quot;,
+            arg0: dictionary.WordCount);
+        Console.WriteLine(value: makeSplitBinaryOutput
+            ? &quot;Verifying dictionary files...&quot;
+            : &quot;Verifying dictionary file...&quot;);
+
+        if (!makeSplitBinaryOutput)
+        {
+            var dictionary2 = LiteralDictionary
+                .Deserialize(
+                    sourceType: LiteralDictionarySourceType.Other,
+                    inputStream: LiteralDictionary.OpenFileForRead(
+                        fileName: binaryOutputFile));
+            Console.WriteLine(format: &quot;Dictionary contains {0} words.&quot;,
+                arg0: dictionary2.WordCount);
+
+            if (dictionary2.WordCount == dictionary.WordCount)
+                return result ? 0 : 1;
+        }
+
+        var totalWords = 0;
+        foreach (var wordLength in dictionary.ValidWordLengths)
+        {
+            var fileName = $&quot;{wordLength}-{binaryOutputFile}&quot;;
+            var dictionary3 = LiteralDictionary
+                .Deserialize(
+                    sourceType: LiteralDictionarySourceType.Other,
+                    inputStream: LiteralDictionary.OpenFileForRead(
+                        fileName: fileName));
+            var wordCount = dictionary3.WordCount;
+            Console.WriteLine(format: &quot;Dictionary contains {0} words.&quot;,
+                arg0: wordCount);
+            totalWords += wordCount;
+        }
+
+        Console.WriteLine(format: &quot;Dictionary files contained {0} words.&quot;,
+            arg0: totalWords);
+
+        if (totalWords == dictionary.WordCount)
+            return result ? 0 : 1;
+
+        Console.WriteLine(value: &quot;Dictionary verification failed.&quot;);
+        return 1;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[14,5,14,6,0],[15,9,15,60,0],[16,9,16,67,0],[17,9,17,10,0],[18,13,18,94,0],[19,13,19,26,0],[22,9,22,76,0],[23,9,24,28,0],[25,9,25,44,0],[26,9,26,32,0],[27,9,27,42,0],[28,9,28,10,0],[29,13,29,51,0],[30,13,30,33,0],[31,17,31,26,0],[32,13,32,51,0],[33,13,33,14,0],[34,17,34,84,0],[35,17,35,30,0],[38,13,38,30,0],[40,13,40,50,0],[42,13,43,41,0],[44,13,44,14,0],[45,17,45,102,0],[46,17,46,30,0],[49,13,49,64,0],[50,9,50,10,0],[52,9,52,30,0],[53,9,53,44,0],[54,9,54,30,0],[55,9,55,30,0],[57,9,58,35,0],[60,9,60,21,0],[61,5,61,6,0],[64,5,64,6,0],[65,9,65,73,0],[65,73,66,42,0],[66,42,66,44,0],[67,5,67,6,0],[70,5,70,6,0],[71,9,71,57,0],[74,9,74,10,0],[75,13,80,61,0],[82,13,82,25,0],[84,9,84,14,0],[85,9,85,10,0],[86,13,86,32,0],[87,13,87,26,0],[89,5,89,6,0],[92,5,92,6,0],[96,9,96,44,0],[97,9,97,10,0],[98,13,98,45,0],[99,13,99,22,0],[102,9,102,28,0],[103,9,103,87,0],[104,9,104,99,0],[105,9,105,91,0],[106,9,106,76,0],[107,9,107,10,0],[108,13,108,79,0],[109,13,109,45,0],[110,13,110,22,0],[113,9,113,69,0],[114,9,115,33,0],[117,9,117,29,0],[118,13,118,67,0],[120,9,120,47,0],[121,13,121,22,0],[123,9,123,86,0],[124,9,124,39,0],[125,13,125,73,0],[127,9,127,58,0],[128,9,128,10,0],[129,13,129,91,0],[130,13,130,22,0],[133,9,133,85,0],[134,9,134,10,0],[135,13,135,83,0],[136,13,136,22,0],[139,9,142,37,0],[143,9,144,32,0],[146,9,146,77,0],[147,13,152,36,0],[154,9,154,28,0],[155,13,155,35,0],[157,9,163,89,0],[165,9,167,70,0],[169,9,172,31,0],[173,9,174,41,0],[175,9,177,47,0],[179,9,179,36,0],[180,9,180,10,0],[181,13,185,54,0],[186,13,187,46,0],[189,13,189,63,0],[190,17,190,39,0],[191,9,191,10,0],[193,9,193,28,0],[194,9,194,16,0],[194,18,194,32,0],[194,33,194,35,0],[194,36,194,63,0],[195,9,195,10,0],[196,13,196,63,0],[197,13,201,46,0],[202,13,202,51,0],[203,13,204,34,0],[205,13,205,37,0],[206,9,206,10,0],[208,9,209,31,0],[211,9,211,48,0],[212,13,212,35,0],[214,9,214,69,0],[215,9,215,18,0],[216,5,216,6,0]]);
+    </script>
+  </body>
+</html>

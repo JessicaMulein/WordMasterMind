@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Helpers\UnitTestDetector.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Diagnostics;
+
+namespace GameEngine.Library.Helpers;
+
+public static class UnitTestDetector
+{
+    /// &lt;summary&gt;
+    ///     memoized value of whether we&#39;re running in unit test mode
+    /// &lt;/summary&gt;
+    private static bool? _isInUnitTest;
+
+    private static readonly HashSet&lt;string&gt; UnitTestAttributes = new()
+    {
+        &quot;Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute&quot;,
+        &quot;NUnit.Framework.TestFixtureAttribute&quot;,
+    };
+
+    /// &lt;summary&gt;
+    ///     Use reflection to determine if the current assembly is a unit test.
+    ///     Memoization prevents repeated reflection.
+    /// &lt;/summary&gt;
+    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;&lt;/exception&gt;
+    public static bool IsRunningInUnitTest
+        =&gt; _isInUnitTest ??= new StackTrace()
+            .GetFrames()
+            .Any(predicate: f =&gt;
+            {
+                var method = f.GetMethod();
+                if (method == null) return false;
+                var declaringType = method.DeclaringType;
+                return declaringType != null &amp;&amp;
+                       declaringType
+                           .GetCustomAttributes(inherit: false)
+                           .Any(predicate: x =&gt;
+                               UnitTestAttributes.Contains(item: x.GetType().FullName ??
+                                                                 throw new InvalidOperationException()));
+            });
+
+    public static void ForceTestMode(bool? value)
+    {
+        _isInUnitTest = value;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[12,5,16,7,1],[24,12,27,13,1],[27,13,27,14,0],[27,14,28,17,1],[28,17,28,44,0],[28,44,29,17,1],[29,17,29,36,0],[29,36,29,37,1],[29,37,29,50,0],[29,50,30,17,1],[30,17,30,58,0],[30,58,31,17,1],[31,17,35,32,0],[35,32,36,104,0],[36,104,36,106,0],[36,106,37,13,1],[37,13,37,14,0],[37,14,37,15,1],[40,5,40,6,1],[41,9,41,31,1],[42,5,42,6,1]]);
+    </script>
+  </body>
+</html>

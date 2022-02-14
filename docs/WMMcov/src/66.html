@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\LiteralDictionarySource.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using GameEngine.Library.Enumerations;
+
+namespace GameEngine.Library.Models;
+
+/// &lt;summary&gt;
+///     Single source of dictionaries for the game.
+/// &lt;/summary&gt;
+public partial record LiteralDictionarySource
+{
+    public readonly string Description;
+    public readonly string FileName;
+    public readonly LiteralDictionaryFileType FileType;
+    public readonly LiteralDictionarySourceType SourceType;
+
+    private LiteralDictionarySource(LiteralDictionarySourceType sourceType, string fileName,
+        LiteralDictionaryFileType fileType, string description)
+    {
+        this.SourceType = sourceType;
+        this.FileName = fileName;
+        this.FileType = fileType;
+        this.Description = description;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[15,5,16,64,1],[17,5,17,6,1],[18,9,18,38,1],[19,9,19,34,1],[20,9,20,34,1],[21,9,21,40,1],[22,5,22,6,1]]);
+    </script>
+  </body>
+</html>

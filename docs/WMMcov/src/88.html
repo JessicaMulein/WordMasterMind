@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Exceptions\DebugModeException.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+namespace GameEngine.Library.Exceptions;
+
+public class DebugModeException : GameEngineException
+{
+    public const string MessageText = &quot;Only available in debug and testing mode.&quot;;
+    public readonly string ParamName;
+
+    public DebugModeException(string paramName) : base(message: MessageText)
+    {
+        this.ParamName = paramName;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[8,51,8,77,1],[9,5,9,6,1],[10,9,10,36,1],[11,5,11,6,1]]);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\test\GameEngine.Test\WordDictionaryTest.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using GameEngine.Library.Enumerations;
+using GameEngine.Library.Exceptions;
+using GameEngine.Library.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace GameEngine.Test;
+
+[TestClass]
+public class LiteralDictionaryTest
+{
+    private static string GetTestRoot(string? fileName = null)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var startupPath = Path.GetDirectoryName(path: assembly.Location);
+        Debug.Assert(condition: startupPath != null,
+            message: nameof(startupPath) + &quot; != null&quot;);
+        var pathItems = startupPath.Split(separator: Path.DirectorySeparatorChar);
+        var pos = pathItems.Reverse().ToList().FindIndex(match: x =&gt; string.Equals(a: &quot;bin&quot;,
+            b: x));
+        var basePath = string.Join(separator: Path.DirectorySeparatorChar.ToString(),
+            values: pathItems.Take(count: pathItems.Length - pos - 1));
+        return fileName is null
+            ? basePath
+            : Path.Combine(path1: basePath,
+                path2: fileName);
+    }
+
+    private static LiteralDictionary GetWordDictionary()
+    {
+        var testRoot = GetTestRoot();
+        var literalDictionary = LiteralDictionary.Deserialize(
+            sourceType: LiteralDictionarySourceType.Scrabble,
+            inputStream: LiteralDictionary.OpenFileForRead(
+                fileName: Path.Combine(
+                    path1: testRoot,
+                    path2: &quot;collins-scrabble.bin&quot;)));
+        // this must be set to use the word generator
+        DailyWordGenerator.BasePath = testRoot;
+        return literalDictionary;
+    }
+
+    [TestMethod]
+    public void TestLiteralDictionary()
+    {
+        var literalDictionary = GetWordDictionary();
+        Assert.AreEqual(
+            expected: 279496, // known size of collins scrabble dictionary
+            actual: literalDictionary.WordCount);
+
+        // Test word check
+        Assert.IsTrue(condition: literalDictionary.IsWord(word: &quot;hello&quot;));
+        Assert.IsTrue(condition: literalDictionary.IsWord(word: &quot;world&quot;));
+        Assert.IsTrue(condition: literalDictionary.IsWord(word: &quot;scrabble&quot;));
+
+        // nonsense values
+        Assert.IsFalse(condition: literalDictionary.IsWord(word: &quot;&quot;));
+        // ReSharper disable once StringLiteralTypo
+        Assert.IsFalse(condition: literalDictionary.IsWord(word: &quot;wordle&quot;));
+        Assert.IsFalse(condition: literalDictionary.IsWord(word: &quot;z&quot;));
+        // ReSharper disable once StringLiteralTypo
+        Assert.IsFalse(condition: literalDictionary.IsWord(word: &quot;zzzzzzzzzzzzz&quot;));
+
+        // Test random words
+        var minLength = 3;
+        var maxLength = 5;
+        var testWordCount = 10;
+        for (var i = 0; i &lt; testWordCount; i++)
+        {
+            var word = literalDictionary.GetRandomWord(
+                minLength: minLength,
+                maxLength: maxLength);
+            Assert.IsTrue(condition: word.Length &gt;= minLength &amp;&amp; word.Length &lt;= maxLength);
+            Assert.IsTrue(condition: literalDictionary.IsWord(word: word));
+        }
+
+        // our scrabble json has 2-15 characters
+        Assert.AreEqual(expected: 2,
+            actual: literalDictionary.ShortestWordLength);
+        Assert.AreEqual(expected: 15,
+            actual: literalDictionary.LongestWordLength);
+    }
+
+    [TestMethod]
+    public void TestRandomWordLengthUpperLimit()
+    {
+        var literalDictionary = GetWordDictionary();
+        var thrownException = Assert.ThrowsException&lt;InvalidLengthException&gt;(action: () =&gt;
+            literalDictionary.GetRandomWord(minLength: literalDictionary.LongestWordLength + 1,
+                maxLength: literalDictionary.LongestWordLength + 1));
+        Assert.AreEqual(expected: InvalidLengthException.MessageText,
+            actual: thrownException.Message);
+    }
+
+    [TestMethod]
+    public void TestRandomWordLengthLowerLimit()
+    {
+        var literalDictionary = GetWordDictionary();
+        var thrownException = Assert.ThrowsException&lt;InvalidLengthException&gt;(action: () =&gt;
+            literalDictionary.GetRandomWord(
+                minLength: literalDictionary.ShortestWordLength - 1,
+                maxLength: literalDictionary.ShortestWordLength - 1));
+        Assert.AreEqual(expected: InvalidLengthException.MessageText,
+            actual: thrownException.Message);
+    }
+
+    [TestMethod]
+    public void TestDailyWordGenerator()
+    {
+        var literalDictionary = GetWordDictionary();
+
+        var dayOneWord = DailyWordGenerator.WordOfTheDay(
+            date: DailyWordGenerator.WordGeneratorEpoch,
+            length: 5,
+            dictionary: literalDictionary);
+        Assert.AreEqual(
+            // ReSharper disable once StringLiteralTypo
+            expected:
+            &quot;AAHED&quot;, // this is the 3rd word in the scrabble dictionary, given the seed system, this is unlikely to be correct
+            actual: dayOneWord);
+
+        var oneYearWord = DailyWordGenerator.WordOfTheDay(
+            date: DailyWordGenerator.WordGeneratorEpoch.AddYears(value: 1),
+            length: 5,
+            dictionary: literalDictionary);
+        Assert.AreEqual(
+            // ReSharper disable once StringLiteralTypo
+            expected: &quot;MENGS&quot;,
+            actual: oneYearWord);
+    }
+
+    [TestMethod]
+    public void TestBinarySerializationAndLoading()
+    {
+        var dictionary = GetWordDictionary();
+        var binaryOutputFile = Path.GetTempFileName();
+        File.Delete(path: binaryOutputFile);
+        Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
+
+        var wordsAdded = dictionary.Serialize(outputFilename: binaryOutputFile);
+        Assert.AreEqual(
+            expected: dictionary.WordCount,
+            actual: wordsAdded);
+        Assert.IsTrue(condition: File.Exists(path: binaryOutputFile));
+
+        var dictionary2 = LiteralDictionary.Deserialize(
+            sourceType: dictionary.SourceType,
+            inputStream: LiteralDictionary.OpenFileForRead(fileName: binaryOutputFile));
+        Assert.AreEqual(
+            expected: dictionary2.WordCount,
+            actual: dictionary.WordCount);
+        File.Delete(path: binaryOutputFile);
+        Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
+    }
+
+    [TestMethod]
+    public void TestDailyPuzzleNumberEpoch()
+    {
+        Assert.AreEqual(
+            expected: 1,
+            actual: DailyWordGenerator.PuzzleNumber(date: DailyWordGenerator.WordGeneratorEpoch));
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[16,5,16,6,1],[17,9,17,56,1],[18,9,18,74,1],[19,9,20,56,1],[21,9,21,83,1],[22,9,22,70,1],[22,70,23,18,1],[23,18,23,20,1],[24,9,25,72,1],[26,9,29,34,1],[30,5,30,6,1],[33,5,33,6,1],[34,9,34,38,1],[35,9,40,54,1],[42,9,42,48,1],[43,9,43,34,1],[44,5,44,6,1],[48,5,48,6,1],[49,9,49,53,1],[50,9,52,50,1],[55,9,55,75,1],[56,9,56,75,1],[57,9,57,78,1],[60,9,60,71,1],[62,9,62,77,1],[63,9,63,72,1],[65,9,65,84,1],[68,9,68,27,1],[69,9,69,27,1],[70,9,70,32,1],[71,14,71,23,1],[71,25,71,42,1],[71,44,71,47,1],[72,9,72,10,1],[73,13,75,39,1],[76,13,76,92,1],[77,13,77,76,1],[78,9,78,10,1],[81,9,82,59,1],[83,9,84,58,1],[85,5,85,6,1],[89,5,89,6,1],[90,9,90,53,1],[91,9,92,13,1],[92,13,93,68,1],[93,68,93,70,1],[94,9,95,46,1],[96,5,96,6,1],[100,5,100,6,1],[101,9,101,53,1],[102,9,103,13,1],[103,13,105,69,1],[105,69,105,71,1],[106,9,107,46,1],[108,5,108,6,1],[112,5,112,6,1],[113,9,113,53,1],[115,9,118,44,1],[119,9,123,33,1],[125,9,128,44,1],[129,9,132,34,1],[133,5,133,6,1],[137,5,137,6,1],[138,9,138,46,1],[139,9,139,55,1],[140,9,140,45,1],[141,9,141,72,1],[143,9,143,81,1],[144,9,146,33,1],[147,9,147,71,1],[149,9,151,89,1],[152,9,154,43,1],[155,9,155,45,1],[156,9,156,72,1],[157,5,157,6,1],[161,5,161,6,1],[162,9,164,99,1],[165,5,165,6,1]]);
+    </script>
+  </body>
+</html>

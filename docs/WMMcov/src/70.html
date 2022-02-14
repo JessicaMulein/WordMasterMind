@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\LiteralDictionary.Helpers.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Text.Json;
+
+namespace GameEngine.Library.Models;
+
+public partial class LiteralDictionary
+{
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        AllowTrailingCommas = true,
+    };
+
+    /// &lt;summary&gt;
+    ///     Helper method to make a dictionary organized by lengths from a simple array of words
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;words&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    private static Dictionary&lt;int, IEnumerable&lt;string&gt;&gt; FillDictionary(in IEnumerable&lt;string&gt; words)
+    {
+        var dictionary = new Dictionary&lt;int, IEnumerable&lt;string&gt;&gt;();
+        foreach (var word in words
+                     .Select(selector: w =&gt; w
+                         .Trim()
+                         .ToUpperInvariant())
+                     .Where(predicate: w =&gt; w.Length &gt; 0))
+        {
+            var wordLength = word.Length;
+            if (dictionary.ContainsKey(key: wordLength))
+                dictionary[key: wordLength] = dictionary[key: wordLength].Append(element: word);
+            else
+                dictionary.Add(key: wordLength,
+                    value: new[] {word});
+        }
+
+        return AlphabetizeDictionary(dictionary: dictionary);
+    }
+
+    private static Dictionary&lt;int, IEnumerable&lt;string&gt;&gt; AlphabetizeDictionary(
+        in Dictionary&lt;int, IEnumerable&lt;string&gt;&gt; dictionary)
+    {
+        foreach (var (length, wordsForLength) in dictionary)
+        {
+            var arrayToSort = wordsForLength.ToArray();
+            // skip empty arrays
+            if (!arrayToSort.Any())
+                continue;
+            Array.Sort(array: arrayToSort);
+            dictionary[key: length] = arrayToSort;
+        }
+
+        return dictionary;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[7,5,10,7,0],[18,5,18,6,0],[19,9,19,69,0],[20,9,20,16,0],[20,18,20,26,0],[20,27,20,29,0],[20,30,21,45,0],[21,45,23,45,0],[23,45,24,45,0],[24,45,24,57,0],[24,57,24,58,0],[25,9,25,10,0],[26,13,26,42,0],[27,13,27,57,0],[28,17,28,97,0],[30,17,31,42,0],[32,9,32,10,0],[34,9,34,62,0],[35,5,35,6,0],[39,5,39,6,1],[40,9,40,16,1],[40,18,40,46,1],[40,47,40,49,1],[40,50,40,60,1],[41,9,41,10,1],[42,13,42,56,1],[44,13,44,36,1],[45,17,45,26,0],[46,13,46,44,1],[47,13,47,51,1],[48,9,48,10,1],[50,9,50,27,1],[51,5,51,6,1]]);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\test\GameEngine.Test\ExceptionMessagesTest.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System;
+using Bogus;
+using GameEngine.Library.Exceptions;
+using GameEngine.Library.Helpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace GameEngine.Test;
+
+[TestClass]
+public class ExceptionMessagesTest
+{
+    [TestMethod]
+    public void DebugModeExceptionTest()
+    {
+        var paramName = new Faker().Random.String();
+        var thrownException =
+            Assert.ThrowsException&lt;DebugModeException&gt;(action: ()
+                =&gt; throw new DebugModeException(paramName: paramName));
+        Assert.AreEqual(
+            expected: &quot;Only available in debug and testing mode.&quot;,
+            actual: thrownException.Message);
+        Assert.AreEqual(
+            expected: paramName,
+            actual: thrownException.ParamName);
+    }
+
+    [TestMethod]
+    public void GameOverExceptionTest()
+    {
+        var thrownException =
+            Assert.ThrowsException&lt;GameOverException&gt;(action: () =&gt; throw new GameOverException(solved: true));
+        Assert.AreEqual(
+            expected: &quot;You have already solved this word!&quot;,
+            actual: thrownException.Message);
+
+        thrownException =
+            Assert.ThrowsException&lt;GameOverException&gt;(action: () =&gt; throw new GameOverException(solved: false));
+        Assert.AreEqual(
+            expected: &quot;Game Over: You have reached the maximum number of attempts.&quot;,
+            actual: thrownException.Message);
+    }
+
+    [TestMethod]
+    public void HardModeExceptionTest()
+    {
+        var letterPosition = new Faker().Random.Int(
+            min: 0,
+            max: Constants.StandardLength);
+        var letter = new Faker().Random.Char(
+            min: &#39;A&#39;,
+            max: &#39;Z&#39;);
+
+        var thrownException =
+            Assert.ThrowsException&lt;HardModeException&gt;(action: () =&gt; throw new HardModeException(
+                letterPosition: letterPosition,
+                letter: letter,
+                solved: false));
+        Assert.AreEqual(
+            expected: $&quot;Guess must contain {letter}&quot;,
+            actual: thrownException.Message);
+        Assert.AreEqual(
+            expected: letterPosition,
+            actual: thrownException.LetterPosition);
+        Assert.AreEqual(
+            expected: letter,
+            actual: thrownException.Letter);
+
+        thrownException =
+            Assert.ThrowsException&lt;HardModeException&gt;(action: () =&gt; throw new HardModeException(
+                letterPosition: letterPosition,
+                letter: letter,
+                solved: true));
+        Assert.AreEqual(
+            expected:
+            $&quot;{Utilities.NumberToOrdinal(number: Utilities.HumanizeIndex(index: letterPosition))} letter must be {letter}&quot;,
+            actual: thrownException.Message);
+        Assert.AreEqual(
+            expected: letterPosition,
+            actual: thrownException.LetterPosition);
+        Assert.AreEqual(
+            expected: letter,
+            actual: thrownException.Letter);
+    }
+
+    [TestMethod]
+    public void TestInvalidAttemptLengthException()
+    {
+        var thrownException =
+            Assert.ThrowsException&lt;InvalidAttemptLengthException&gt;(action: ()
+                =&gt; throw new InvalidAttemptLengthException());
+        Assert.AreEqual(
+            expected: &quot;Word length does not match secret word length.&quot;,
+            actual: thrownException.Message);
+    }
+
+    [TestMethod]
+    public void InvalidLengthExceptionTest()
+    {
+        var rnd = new Random();
+        var minLength = rnd.Next(minValue: 3,
+            maxValue: 5);
+        var maxLength = rnd.Next(minValue: minLength,
+            maxValue: 15);
+        var thrownException = Assert.ThrowsException&lt;InvalidLengthException&gt;(action: ()
+            =&gt; throw new InvalidLengthException(minLength: minLength,
+                maxLength: maxLength));
+        Assert.AreEqual(
+            expected: &quot;word must be between minLength and maxLength.&quot;,
+            actual: thrownException.Message);
+        Assert.AreEqual(
+            expected: minLength,
+            actual: thrownException.MinLength);
+        Assert.AreEqual(
+            expected: maxLength,
+            actual: thrownException.MaxLength);
+    }
+
+    [TestMethod]
+    public void TestNotInDictionaryException()
+    {
+        var thrownException =
+            Assert.ThrowsException&lt;NotInDictionaryException&gt;(action: () =&gt; throw new NotInDictionaryException());
+        Assert.AreEqual(
+            expected: NotInDictionaryException.MessageText,
+            actual: thrownException.Message);
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[14,5,14,6,1],[15,9,15,53,1],[16,9,18,20,1],[18,20,18,70,1],[18,70,18,72,1],[19,9,21,46,1],[22,9,24,48,1],[25,5,25,6,1],[29,5,29,6,1],[30,9,31,69,1],[31,69,31,110,1],[31,110,31,112,1],[32,9,34,46,1],[36,9,37,69,1],[37,69,37,111,1],[37,111,37,113,1],[38,9,40,46,1],[41,5,41,6,1],[45,5,45,6,1],[46,9,48,44,1],[49,9,51,23,1],[53,9,54,69,1],[54,69,57,31,1],[57,31,57,33,1],[58,9,60,46,1],[61,9,63,53,1],[64,9,66,45,1],[68,9,69,69,1],[69,69,72,30,1],[72,30,72,32,1],[73,9,76,46,1],[77,9,79,53,1],[80,9,82,45,1],[83,5,83,6,1],[87,5,87,6,1],[88,9,90,20,1],[90,20,90,61,1],[90,61,90,63,1],[91,9,93,46,1],[94,5,94,6,1],[98,5,98,6,1],[99,9,99,32,1],[100,9,101,26,1],[102,9,103,27,1],[104,9,105,16,1],[105,16,106,38,1],[106,38,106,40,1],[107,9,109,46,1],[110,9,112,48,1],[113,9,115,48,1],[116,5,116,6,1],[120,5,120,6,1],[121,9,122,76,1],[122,76,122,112,1],[122,112,122,114,1],[123,9,125,46,1],[126,5,126,6,1]]);
+    </script>
+  </body>
+</html>

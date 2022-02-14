@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\RulesDialog.razor.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using Microsoft.AspNetCore.Components;
+using GameEngine.Blazor.Helpers;
+
+namespace GameEngine.Blazor.Components;
+
+public partial class RulesDialog
+{
+    [Parameter] public EventCallback&lt;bool&gt; OnClose { get; set; }
+
+    private async Task ModalCancel()
+    {
+        if (this.OnClose.HasDelegate)
+            await this.OnClose.InvokeAsync(arg: false);
+    }
+
+    private async Task ModalOk()
+    {
+        if (this.OnClose.HasDelegate)
+            await this.OnClose.InvokeAsync(arg: true);
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[8,54,8,58,0],[8,59,8,63,0],[11,5,11,6,0],[12,9,12,38,0],[13,13,13,56,0],[14,5,14,6,0],[17,5,17,6,0],[18,9,18,38,0],[19,13,19,55,0],[20,5,20,6,0]]);
+    </script>
+  </body>
+</html>

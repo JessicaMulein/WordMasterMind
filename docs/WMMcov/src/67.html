@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\LiteralDictionary.WordFunctions.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Text.RegularExpressions;
+using GameEngine.Library.Exceptions;
+using GameEngine.Library.Helpers;
+
+namespace GameEngine.Library.Models;
+
+public partial class LiteralDictionary
+{
+    /// &lt;summary&gt;
+    ///     Returns the number of words in the dictionary for a given word length
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;length&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    public int WordCountForLength(int length)
+    {
+        return !this._wordCountByLength
+            .ContainsKey(key: length)
+            ? 0
+            : this._wordCountByLength[key: length];
+    }
+
+    public IEnumerable&lt;string&gt; WordsForLength(int length, int maxWords = -1)
+    {
+        if (!this._wordsByLength.ContainsKey(key: length))
+            return Array.Empty&lt;string&gt;();
+
+        var words = this._wordsByLength[key: length];
+
+        return maxWords == -1 ? words : words.Take(count: maxWords);
+    }
+
+    public IEnumerable&lt;string&gt; AllWords(int skip = 0, int take = -1)
+    {
+        return this._wordsByLength.Values
+            .SelectMany(selector: x =&gt; x)
+            .Skip(count: skip)
+            .Take(count: take);
+    }
+
+    /// &lt;summary&gt;
+    ///     Returns the word at the given array index for a given word length
+    ///     Virtual method to allow for overriding in test mocks
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;length&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;wordIndex&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;ArgumentOutOfRangeException&quot;&gt;&lt;/exception&gt;
+    public virtual string WordAtIndex(int length, int wordIndex)
+    {
+        if (!this._wordsByLength.ContainsKey(key: length))
+            throw new ArgumentOutOfRangeException(
+                paramName: nameof(length),
+                message: &quot;No words of this length&quot;);
+
+        var words = this._wordsByLength[key: length].ToArray();
+        if (wordIndex &lt; 0 || wordIndex &gt;= words.Length)
+            throw new ArgumentOutOfRangeException(paramName: nameof(wordIndex),
+                message: &quot;Word index out of range&quot;);
+
+        return words[wordIndex];
+    }
+
+    public int IndexForWord(string word)
+    {
+        if (!this._wordsByLength.ContainsKey(key: word.Length)) return -1;
+        var wordArray = this._wordsByLength[key: word.Length].ToArray();
+        return Array.IndexOf(
+            array: wordArray,
+            value: word);
+    }
+
+    /// &lt;summary&gt;
+    ///     Returns whether the word is in the dictionary
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;word&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    public bool IsWord(string word)
+    {
+        var length = word.Length;
+        return this._wordsByLength.ContainsKey(key: length) &amp;&amp;
+               this._wordsByLength[key: length].Contains(value: word.ToUpperInvariant());
+    }
+
+    /// &lt;summary&gt;
+    ///     Returns a random length between (including) the shortest word and longest word
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;minLength&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;maxLength&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;ArgumentException&quot;&gt;&lt;/exception&gt;
+    public int RandomLength(int minLength = -1, int maxLength = -1)
+    {
+        if (minLength == -1) minLength = this.ShortestWordLength;
+
+        if (maxLength == -1) maxLength = this.LongestWordLength;
+
+        if (minLength &gt; maxLength || maxLength &lt; minLength)
+            throw new ArgumentException(message: &quot;minLength must be less than or equal to maxLength&quot;);
+
+        if (minLength &lt; this.ShortestWordLength)
+            throw new ArgumentException(message: &quot;minLength must be greater than or equal to the shortest word length&quot;);
+
+        if (maxLength &gt; this.LongestWordLength)
+            throw new ArgumentException(message: &quot;maxLength must be less than or equal to the longest word length&quot;);
+
+        var nonRandomLength = minLength == maxLength;
+        return nonRandomLength
+            ? maxLength
+            : new Random().Next(minValue: minLength,
+                maxValue: maxLength);
+    }
+
+    /// &lt;summary&gt;
+    ///     Gets a random word from the dictionary from a random length between minLength and maxLength
+    ///     Virtual is for moq.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;minLength&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;maxLength&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;ArgumentException&quot;&gt;&lt;/exception&gt;
+    /// &lt;exception cref=&quot;Exception&quot;&gt;&lt;/exception&gt;
+    public virtual string GetRandomWord(int minLength, int maxLength)
+    {
+        if (
+            minLength &lt;= 0 ||
+            minLength &gt; maxLength ||
+            minLength &lt; this.ShortestWordLength ||
+            maxLength &gt; this.LongestWordLength)
+            throw new InvalidLengthException(
+                minLength: minLength,
+                maxLength: maxLength);
+
+        var random = new Random();
+        /* maxTries is the number of tries to find a word of length between minLength and maxLength
+         * that is of a length included in the dictionary. Although the dictionary is known to have
+         * words of length between minLength and maxLength, it is possible that the dictionary does
+         * not have words of a specific length between the minLength and maxLength, though I don&#39;t
+         * think that is possible in the supplied dictionary. (untested assertion)
+         * A non standard dictionary may have been provided, so we must ensure we test that the length
+         * has any words
+         * It is very unlikely that the standard dictionary will have any trouble of finding words
+         * of length between minLength and maxLength, but we will allow for some number of retries
+         * of different random lengths to find a word of a length included in the dictionary.
+         */
+        var maxTries = 10000;
+        while (maxTries-- &gt; 0)
+        {
+            // get a random length between minLength and maxLength
+            var length = this.RandomLength(
+                minLength: minLength,
+                maxLength: maxLength);
+            // set up a variable to contain a reference the dictionary entry for the length
+            IEnumerable&lt;string&gt; wordsForLength;
+            // if the dictionary does not contain any words of length, or the length had an empty array, loop again
+            if (!this._wordsByLength.ContainsKey(key: length) ||
+                !(wordsForLength = this._wordsByLength[key: length]).Any())
+            {
+                // there is no point to continue looping if min and max are locked to a value
+                if (minLength == maxLength)
+                    break;
+
+                // continue looping, but skip the following code
+                continue;
+            }
+
+            /* at this point we have a length that is included in the dictionary
+             * and we have at least one word of that length
+             * this is guaranteed to return a word of the desired length
+             * enumerate to an array to prevent multiple enumerations during the return call
+            */
+            var wordsForLengthArray = wordsForLength.ToArray();
+
+            return wordsForLengthArray
+                .ElementAt(index: random.Next(minValue: 0,
+                    maxValue: wordsForLengthArray.Length));
+        } // end while maxTries
+
+        // we&#39;ve failed out of the loop
+        throw new Exception(message: &quot;Dictionary doesn&#39;t seem to have any words of the requested parameters&quot;);
+    }
+
+    /// &lt;summary&gt;
+    ///     Attempts to find a word in the dictionary given some additional constraints
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;knownCharacters&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;maxIterations&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;skipWords&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;mustIncludeLetters&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;fillerChar&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;ArgumentException&quot;&gt;&lt;/exception&gt;
+    /// &lt;exception cref=&quot;Exception&quot;&gt;&lt;/exception&gt;
+    public string FindWord(in char[] knownCharacters, int maxIterations = 1000, IEnumerable&lt;string&gt;? skipWords = null,
+        IEnumerable&lt;char&gt;? mustIncludeLetters = null, char fillerChar = Constants.BlankChar)
+    {
+        if (knownCharacters.Length &lt; this.ShortestWordLength)
+            throw new ArgumentException(
+                message: &quot;knownCharacters array length must be greater than or equal to the shortest word length&quot;);
+
+        if (knownCharacters.Length &gt; this.LongestWordLength)
+            throw new ArgumentException(
+                message: &quot;knownCharacters array length must be less than or equal to the longest word length&quot;);
+
+        var skipWordsArray = skipWords is null ? Array.Empty&lt;string&gt;() : skipWords.ToArray();
+        var mustIncludeLettersArray = mustIncludeLetters is null ? new List&lt;char&gt;() : mustIncludeLetters.ToList();
+
+        while (maxIterations-- &gt; 0)
+        {
+            var word = this.GetRandomWord(
+                minLength: knownCharacters.Length,
+                maxLength: knownCharacters.Length);
+
+            // check the skip words list
+            if (skipWordsArray is not null &amp;&amp; skipWordsArray.Contains(value: word)) continue;
+
+            // check the must include list
+            var allLetters =
+                mustIncludeLettersArray.All(predicate: mustIncludeLetter =&gt; word.Contains(value: mustIncludeLetter));
+
+            if (!allLetters) continue;
+
+            // take knownCharacters where character isn&#39;t null/filler and if any knownCharacter doesn&#39;t match the test-word, loop again
+            // if anything doesn&#39;t match, loop again
+            // knownChars has filler characters for unsolved letters
+            // select all the non matching letters we know
+            var anySolvedLetterMismatches = knownCharacters
+                .Where(
+                    predicate: (c, i)
+                        =&gt; c != fillerChar &amp;&amp; word[index: i] != c)
+                .Any();
+
+            if (!anySolvedLetterMismatches)
+                return word;
+        }
+
+        throw new Exception(message: &quot;Number of iterations exceeded without finding a matching word&quot;);
+    }
+
+    /// &lt;summary&gt;
+    ///     Attempts to find a word in the dictionary given some additional constraints
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;regex&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;puzzleLength&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;skipWords&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;mustIncludeLetters&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;ArgumentException&quot;&gt;&lt;/exception&gt;
+    /// &lt;exception cref=&quot;Exception&quot;&gt;&lt;/exception&gt;
+    public string FindWord(Regex regex, int puzzleLength, IEnumerable&lt;string&gt;? skipWords = null,
+        IEnumerable&lt;char&gt;? mustIncludeLetters = null)
+    {
+        var skipWordsArray = skipWords is null ? Array.Empty&lt;string&gt;() : skipWords.ToArray();
+        var mustIncludeLettersArray = mustIncludeLetters is null ? new List&lt;char&gt;() : mustIncludeLetters.ToList();
+
+        var length = this.RandomLength(
+            minLength: puzzleLength,
+            maxLength: puzzleLength);
+        var words = this._wordsByLength[key: length]
+            .Where(
+                predicate: w =&gt; regex.IsMatch(input: w))
+            // check the skip words list
+            .Where(
+                predicate: w =&gt; !skipWordsArray.Contains(value: w))
+            // check the must include list
+            .Where(
+                predicate: w =&gt; mustIncludeLettersArray.All(predicate: w.Contains)).ToArray();
+
+        switch (words.Length)
+        {
+            case 0:
+                throw new Exception(message: &quot;No words found&quot;);
+            case 1:
+                return words.First();
+            default:
+            {
+                var rnd = new Random();
+                return words[rnd.Next(maxValue: words.Length)];
+            }
+        }
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[15,5,15,6,1],[16,9,19,52,1],[20,5,20,6,1],[23,5,23,6,1],[24,9,24,59,1],[25,13,25,42,0],[27,9,27,54,1],[29,9,29,69,1],[30,5,30,6,1],[33,5,33,6,0],[34,9,35,40,0],[35,40,35,41,0],[35,41,37,32,0],[38,5,38,6,0],[49,5,49,6,1],[50,9,50,59,1],[51,13,53,53,0],[55,9,55,64,1],[56,9,56,56,1],[57,13,58,53,0],[60,9,60,33,1],[61,5,61,6,1],[64,5,64,6,0],[65,9,65,64,0],[65,65,65,75,0],[66,9,66,73,0],[67,9,69,26,0],[70,5,70,6,0],[78,5,78,6,1],[79,9,79,34,1],[80,9,81,90,1],[82,5,82,6,1],[92,5,92,6,1],[93,9,93,29,1],[93,30,93,66,1],[95,9,95,29,1],[95,30,95,65,1],[97,9,97,60,1],[98,13,98,103,0],[100,9,100,49,1],[101,13,101,121,0],[103,9,103,48,1],[104,13,104,117,0],[106,9,106,54,1],[107,9,110,38,1],[111,5,111,6,1],[123,5,123,6,1],[124,9,128,48,1],[129,13,131,39,1],[133,9,133,35,1],[145,9,145,30,1],[146,9,146,31,1],[147,9,147,10,1],[149,13,151,39,1],[155,13,156,76,1],[157,13,157,14,0],[159,17,159,44,0],[160,21,160,27,0],[163,17,163,26,0],[171,13,171,64,1],[173,13,175,60,1],[179,9,179,111,0],[180,5,180,6,1],[195,5,195,6,0],[196,9,196,62,0],[197,13,198,116,0],[200,9,200,61,0],[201,13,202,112,0],[204,9,204,94,0],[205,9,205,115,0],[207,9,207,36,0],[208,9,208,10,0],[209,13,211,52,0],[214,13,214,84,0],[214,85,214,94,0],[217,13,218,77,0],[218,77,218,116,0],[218,116,218,118,0],[220,13,220,29,0],[220,30,220,39,0],[226,13,229,28,0],[229,28,229,66,0],[229,66,230,24,0],[232,13,232,44,0],[233,17,233,29,0],[234,9,234,10,0],[236,9,236,103,0],[237,5,237,6,0],[251,5,251,6,1],[252,9,252,94,1],[253,9,253,115,1],[255,9,257,38,1],[258,9,260,33,1],[260,33,260,56,1],[260,56,263,33,1],[263,33,263,67,1],[263,67,266,33,1],[266,33,266,83,1],[266,83,266,95,1],[268,9,268,30,1],[271,17,271,64,0],[273,17,273,38,0],[275,13,275,14,1],[276,17,276,40,1],[277,17,277,64,1],[280,5,280,6,1]]);
+    </script>
+  </body>
+</html>

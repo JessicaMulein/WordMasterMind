@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\DailyWordGenerator.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Text;
+using GameEngine.Library.Helpers;
+
+namespace GameEngine.Library.Models;
+
+/// &lt;summary&gt;
+///     The idea is to seed a PRNG with a known value and then use that to generate a known sequence of words from the
+///     dictionary
+///     or possibly to otherwise create a hash function that turns a given calendar date into a specific word from the
+///     dictionary
+/// &lt;/summary&gt;
+public static class DailyWordGenerator
+{
+    /// &lt;summary&gt;
+    ///     The Official GameEngine Word of the Day seed*
+    ///     *) probably should be changed to a random value
+    /// &lt;/summary&gt;
+    public const int Seed = 0xBEEF;
+
+    /// &lt;summary&gt;
+    ///     WordMasterMind&#39;s Birthday, Puzzle number 1 is this day
+    /// &lt;/summary&gt;
+    public static readonly DateTime WordGeneratorEpoch = new(
+        year: 2022,
+        month: 1,
+        day: 22);
+
+    public static string? BasePath { get; set; } = null;
+
+    /// &lt;summary&gt;
+    ///     Gets the puzzle number for a given date. Day 1 is the WordGeneratorEpoch.
+    ///     Previous dates just go backwards for simplicity.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;date&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    public static int PuzzleNumber(DateTime? date = null)
+    {
+        date = date ?? DateTime.Now;
+        return Math.Abs(value: (int) Math.Floor(d: date.Value.Subtract(value: WordGeneratorEpoch).TotalDays)) + 1;
+    }
+
+    public static int SourceTypeToSeed(string description)
+    {
+        var hash = Crc32.ComputeChecksumBytes(
+            bytes: Encoding.ASCII.GetBytes(
+                s: description.ToLowerInvariant()));
+        var seed = Seed;
+        for (var offset = 0; offset &lt; hash.Length; offset += 4)
+            seed ^= BitConverter.ToInt32(value: hash,
+                startIndex: offset);
+        return seed;
+    }
+
+    /// &lt;summary&gt;
+    ///     TODO: AAHED is the 3rd word in the scrabble dictionary, and the first 5 letter. Given the seed system, this is
+    ///     unlikely to be correct
+    ///     TODO: investigate and improve puzzle sequence generator
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;dictionaryDescription&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;wordLength&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;advance&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    public static Random RandomSequenceGenerator(string dictionaryDescription,
+        int wordLength,
+        int advance = 0)
+    {
+        var rnd = new Random(Seed: SourceTypeToSeed(
+            description: dictionaryDescription));
+        // skip wordLength entries
+        for (var i = 0; i &lt; wordLength; i++) rnd.Next();
+        // then make a new random sequence starting from the current seed
+        var rnd2 = new Random(Seed: rnd.Next());
+        // advance the random sequence by advance entries
+        for (var skips = 0; skips &lt; advance; skips++)
+            rnd2.Next();
+        return rnd2;
+    }
+
+    public static int WordIndexForDay(string dictionaryDescription,
+        int wordLength, int wordsForLength,
+        DateTime? date = null)
+    {
+        // an RNG with a pre-determined seed will generate a repeatable sequence
+        var rnd = RandomSequenceGenerator(
+            dictionaryDescription: dictionaryDescription,
+            wordLength: wordLength);
+
+        var wordIndex = 0;
+        var puzzleNumber = PuzzleNumber(date: date);
+        // skip puzzleNumber - 1 entries in the randomizer seed to get to that day&#39;s index
+        // pick a number between 0 and the maximum
+        for (var skips = 0; skips &lt; puzzleNumber - 1; skips++)
+            wordIndex = rnd.Next(
+                minValue: 0,
+                maxValue: wordsForLength);
+        return wordIndex;
+    }
+
+    public static string WordOfTheDay(
+        LiteralDictionary dictionary,
+        DateTime? date = null,
+        int length = Constants.StandardLength)
+    {
+        return dictionary.WordAtIndex(
+            length: length,
+            wordIndex: WordIndexForDay(
+                dictionaryDescription: dictionary.Description,
+                wordLength: length,
+                wordsForLength: dictionary.WordCountForLength(
+                    length: length),
+                date: date));
+    }
+
+    public static int PuzzleNumberForWordOfTheDay(string word, LiteralDictionary dictionary)
+    {
+        var rnd = RandomSequenceGenerator(
+            dictionaryDescription: dictionary.Description,
+            wordLength: word.Length,
+            advance: 0);
+        var wordIndex = dictionary.IndexForWord(word: word);
+        // return number of skips when we match the word
+        var wordCount = dictionary.WordCountForLength(length: word.Length);
+        for (var puzzleNumber = 0; puzzleNumber &lt; wordCount; puzzleNumber++)
+            if (wordIndex == rnd.Next(
+                    minValue: 0,
+                    maxValue: wordCount))
+                return puzzleNumber + 1;
+        return -1;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[23,5,26,18,1],[28,38,28,42,0],[28,43,28,47,1],[28,52,28,56,1],[37,5,37,6,1],[38,9,38,37,1],[39,9,39,115,1],[40,5,40,6,1],[43,5,43,6,1],[44,9,46,53,1],[47,9,47,25,1],[48,14,48,28,1],[48,30,48,50,1],[48,52,48,63,1],[49,13,50,37,1],[51,9,51,21,1],[52,5,52,6,1],[66,5,66,6,1],[67,9,68,50,1],[70,14,70,23,1],[70,25,70,39,1],[70,41,70,44,1],[70,46,70,57,1],[72,9,72,49,1],[74,14,74,27,1],[74,29,74,44,1],[74,46,74,53,0],[75,13,75,25,0],[76,9,76,21,1],[77,5,77,6,1],[82,5,82,6,1],[84,9,86,37,1],[88,9,88,27,1],[89,9,89,53,1],[92,14,92,27,1],[92,29,92,53,1],[92,55,92,62,1],[93,13,95,43,1],[96,9,96,26,1],[97,5,97,6,1],[103,5,103,6,1],[104,9,111,30,1],[112,5,112,6,1],[115,5,115,6,0],[116,9,119,25,0],[120,9,120,61,0],[122,9,122,76,0],[123,14,123,34,0],[123,36,123,60,0],[123,62,123,76,0],[124,13,126,42,0],[127,17,127,41,0],[128,9,128,19,0],[129,5,129,6,0]]);
+    </script>
+  </body>
+</html>

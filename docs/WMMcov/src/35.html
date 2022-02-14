@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Shared\BodyElement.razor</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+@inject IJSRuntime _jsRuntime
+@code {
+    [Inject] public static IJSRuntime? StaticJsRuntime { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (CssClass is { })
+            await _jsRuntime.InvokeVoidAsync(identifier: &quot;window.JsFunctions.addCssClassToBody&quot;, CssClass);
+
+        if (Language is { })
+            await _jsRuntime.InvokeVoidAsync(identifier: &quot;window.JsFunctions.setLanguageOfBody&quot;, Language);
+
+        if (TextDirection is { })
+            await _jsRuntime.InvokeVoidAsync(identifier: &quot;window.JsFunctions.setTextDirectionOfBody&quot;, TextDirection);
+
+        if (Title is { })
+            await _jsRuntime.InvokeVoidAsync(identifier: &quot;window.JsFunctions.setDocumentTitle&quot;, Title);
+    }
+
+    [Parameter]
+    public string? CssClass { get; set; } = null;
+
+    [Parameter]
+    public string? Language { get; set; } = null;
+
+    [Parameter]
+    public string? TextDirection { get; set; } = null;
+
+    [Parameter]
+    public string? Title { get; set; } = null;
+
+    public static async Task ShowAlert(string message, int duration = 1000)
+    {
+        if (StaticJsRuntime is null)
+            return;
+        await StaticJsRuntime.InvokeVoidAsync(identifier: &quot;window.JsFunctions.showAlert&quot;, new object[] {message, duration});
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[3,58,3,62,0],[3,63,3,67,0],[6,5,6,6,0],[7,9,7,29,0],[8,13,8,108,0],[10,9,10,29,0],[11,13,11,108,0],[13,9,13,34,0],[14,13,14,118,0],[16,9,16,26,0],[17,13,17,104,0],[18,5,18,6,0],[21,31,21,35,0],[21,36,21,40,0],[21,45,21,49,0],[24,31,24,35,0],[24,36,24,40,0],[24,45,24,49,0],[27,36,27,40,0],[27,41,27,45,0],[27,50,27,54,0],[30,28,30,32,0],[30,33,30,37,0],[30,42,30,46,0],[33,5,33,6,0],[34,9,34,37,0],[35,13,35,20,0],[36,9,36,125,0],[37,5,37,6,0]]);
+    </script>
+  </body>
+</html>

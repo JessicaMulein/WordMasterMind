@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\LiteralDictionary.Serialization.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using GameEngine.Library.Enumerations;
+using GameEngine.Library.Exceptions;
+
+namespace GameEngine.Library.Models;
+
+public partial class LiteralDictionary
+{
+    public static Stream OpenFileForRead(string fileName)
+    {
+        if (!File.Exists(path: fileName))
+            throw new FileNotFoundException(message: &quot;File not found&quot;,
+                fileName: fileName);
+
+        return File.Open(
+            path: fileName,
+            mode: FileMode.Open,
+            access: FileAccess.Read);
+    }
+
+    /// &lt;summary&gt;
+    ///     Read a binary encoded file and re-create a sorted dictionary from it
+    ///     TODO: re-serialize dictionaries with Description included, add to deserialize
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;sourceType&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;inputStream&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;description&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;FileNotFoundException&quot;&gt;&lt;/exception&gt;
+    public static Dictionary&lt;int, IEnumerable&lt;string&gt;&gt;
+        DeserializeToDictionary(Stream inputStream)
+    {
+        using var reader = new BinaryReader(input: inputStream);
+
+        var count = reader.ReadInt32();
+        var dictionary = new Dictionary&lt;int, IEnumerable&lt;string&gt;&gt;(capacity: count);
+        for (var n = 0; n &lt; count; n++)
+        {
+            var key = reader.ReadInt32();
+            var wordCount = reader.ReadInt32();
+            var words = new List&lt;string&gt;(capacity: wordCount);
+            for (var i = 0; i &lt; wordCount; i++)
+            {
+                var value = reader.ReadString();
+                words.Add(item: value);
+            }
+
+            dictionary.Add(key: key,
+                value: words);
+        }
+
+        reader.Close();
+
+        return dictionary;
+    }
+
+    /// &lt;summary&gt;
+    ///     Read a binary encoded file and re-create a sorted dictionary from it
+    ///     TODO: re-serialize dictionaries with Description included, add to deserialize
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;sourceType&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;inputStream&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;description&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;FileNotFoundException&quot;&gt;&lt;/exception&gt;
+    public static LiteralDictionary Deserialize(
+        LiteralDictionarySourceType sourceType,
+        Stream inputStream,
+        string? description = null)
+    {
+        return new LiteralDictionary(
+            dictionary: DeserializeToDictionary(
+                inputStream: inputStream),
+            sourceType: sourceType,
+            description: description);
+    }
+
+    /// &lt;summary&gt;
+    ///     Save the dictionary to a binary encoded file
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;outputFilename&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;forLength&quot;&gt;&lt;/param&gt;
+    /// &lt;exception cref=&quot;FileAlreadyExistsException&quot;&gt;&lt;/exception&gt;
+    public int Serialize(string outputFilename, int forLength = -1)
+    {
+        if (File.Exists(path: outputFilename))
+            throw new FileAlreadyExistsException(message: $&quot;File already exists: {outputFilename}&quot;);
+
+        if (forLength != -1 &amp;&amp; !this._wordsByLength.ContainsKey(key: forLength))
+            throw new ArgumentException(message: $&quot;No words of length {forLength}&quot;);
+
+        var wordCount = 0;
+        using var stream = new StreamWriter(path: outputFilename);
+        var writer = new BinaryWriter(output: stream.BaseStream);
+        // write count of keys
+        writer.Write(value: forLength &gt; 0 ? 1 : this._wordsByLength.Count);
+        foreach (var (key, value) in this._wordsByLength)
+        {
+            if (forLength &gt; 0 &amp;&amp; key != forLength)
+                continue;
+            // write key name
+            writer.Write(value: key);
+            var words = value.ToArray();
+            // write count of words
+            writer.Write(value: words.Length);
+            foreach (var word in words)
+            {
+                wordCount++;
+                // write word
+                writer.Write(value: word);
+            }
+        }
+
+        writer.Flush();
+
+        return wordCount;
+    }
+
+    public int SplitSerialize(string outputFilename)
+    {
+        var lengths = this._wordsByLength.Keys.ToArray();
+        var totalWordCount = (from key in lengths
+            let lengthFilename = $&quot;{key}-{outputFilename}&quot;
+            select this.Serialize(outputFilename: lengthFilename,
+                forLength: key)).Sum();
+
+        // write a table of contents file
+        var jsonFilename = $&quot;{outputFilename}-lengths.json&quot;;
+        var jsonText = JsonSerializer.Serialize(value: lengths);
+
+        File.WriteAllText(
+            path: jsonFilename,
+            contents: jsonText);
+
+        return totalWordCount;
+    }
+
+    public JsonObject ToJson()
+    {
+        throw new NotImplementedException();
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[11,5,11,6,1],[12,9,12,42,1],[13,13,14,37,0],[16,9,19,38,1],[20,5,20,6,1],[33,5,33,6,1],[34,9,34,65,1],[36,9,36,40,1],[37,9,37,84,1],[38,14,38,23,1],[38,25,38,34,1],[38,36,38,39,1],[39,9,39,10,1],[40,13,40,42,1],[41,13,41,48,1],[42,13,42,63,1],[43,18,43,27,1],[43,29,43,42,1],[43,44,43,47,1],[44,13,44,14,1],[45,17,45,49,1],[46,17,46,40,1],[47,13,47,14,1],[49,13,50,31,1],[51,9,51,10,1],[53,9,53,24,1],[55,9,55,27,1],[56,5,56,6,1],[71,5,71,6,1],[72,9,76,39,1],[77,5,77,6,1],[86,5,86,6,1],[87,9,87,47,1],[88,13,88,101,0],[90,9,90,81,1],[91,13,91,85,0],[93,9,93,27,1],[94,9,94,67,1],[95,9,95,66,1],[97,9,97,76,1],[98,9,98,16,1],[98,18,98,34,1],[98,35,98,37,1],[98,38,98,57,1],[99,9,99,10,1],[100,13,100,51,1],[101,17,101,26,0],[103,13,103,38,1],[104,13,104,41,1],[106,13,106,47,1],[107,13,107,20,1],[107,22,107,30,1],[107,31,107,33,1],[107,34,107,39,1],[108,13,108,14,1],[109,17,109,29,1],[111,17,111,43,1],[112,13,112,14,1],[113,9,113,10,1],[115,9,115,24,1],[117,9,117,26,1],[118,5,118,6,1],[121,5,121,6,0],[122,9,122,58,0],[123,9,124,34,0],[124,34,124,59,0],[124,59,125,20,0],[125,20,126,32,0],[126,32,126,40,0],[129,9,129,61,0],[130,9,130,65,0],[132,9,134,33,0],[136,9,136,31,0],[137,5,137,6,0],[140,5,140,6,0],[141,9,141,45,0]]);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Program.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using GameEngine.Blazor;
+using GameEngine.Blazor.Helpers;
+using GameEngine.Blazor.Interfaces;
+using GameEngine.Blazor.Models;
+
+var builder = WebAssemblyHostBuilder.CreateDefault(args: args);
+builder.RootComponents.Add&lt;App&gt;(selector: &quot;#app&quot;);
+builder.RootComponents.Add&lt;HeadOutlet&gt;(selector: &quot;head::after&quot;);
+
+var baseAddress = builder.HostEnvironment.BaseAddress;
+builder.Services.AddHttpClient(
+    name: Constants.SpaHttpClientName,
+    configureClient: services
+        =&gt; services.BaseAddress = new Uri(
+            uriString: baseAddress));
+
+builder.Services.AddScoped(
+    implementationFactory: sp
+        =&gt; sp.GetRequiredService&lt;IHttpClientFactory&gt;()
+            .CreateClient(name: Constants.SpaHttpClientName));
+
+builder.Services.AddSingleton&lt;IGameStateMachine, GameStateMachine&gt;();
+
+await builder
+    .Build()
+    .RunAsync();
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[8,1,8,64,0],[9,1,9,51,0],[10,1,10,65,0],[12,1,12,55,0],[13,1,16,12,0],[16,12,17,36,0],[17,36,17,38,0],[19,1,21,12,0],[21,12,22,61,0],[22,61,22,63,0],[24,1,24,70,0],[26,1,28,17,0]]);
+    </script>
+  </body>
+</html>

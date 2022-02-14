@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\LiteralDictionary.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Collections.Immutable;
+using System.Diagnostics;
+using GameEngine.Library.Enumerations;
+
+namespace GameEngine.Library.Models;
+
+/// &lt;summary&gt;
+///     This is a Word Dictionary (word list/book) - dictionary (data structure) of words grouped by length.
+///     It is designed for small scale usage. It is not (yet) optimized for a multi-user host.
+/// &lt;/summary&gt;
+public partial class LiteralDictionary
+{
+    /// &lt;summary&gt;
+    ///     Quick look up table with counts of words for each length.
+    /// &lt;/summary&gt;
+    private readonly Dictionary&lt;int, int&gt; _wordCountByLength;
+
+    /// &lt;summary&gt;
+    ///     Unalterable collection of dictionary words, organized by length.
+    /// &lt;/summary&gt;
+    private readonly ImmutableDictionary&lt;int, IEnumerable&lt;string&gt;&gt; _wordsByLength;
+
+    /// &lt;summary&gt;
+    ///     Notes/Description of the dictionary.
+    /// &lt;/summary&gt;
+    public readonly string Description;
+
+    /// &lt;summary&gt;
+    ///     Longest word length with at least one word.
+    /// &lt;/summary&gt;
+    public readonly int LongestWordLength;
+
+    /// &lt;summary&gt;
+    ///     Shortest word length with at least one word
+    /// &lt;/summary&gt;
+    public readonly int ShortestWordLength;
+
+    /// &lt;summary&gt;
+    ///     Source of the dictionary words
+    /// &lt;/summary&gt;
+    public readonly LiteralDictionarySourceType SourceType;
+
+    /// &lt;summary&gt;
+    ///     Word lengths known to have at least one word
+    /// &lt;/summary&gt;
+    // ReSharper disable once MemberCanBePrivate.Global
+    public readonly IEnumerable&lt;int&gt; ValidWordLengths;
+
+    /// &lt;summary&gt;
+    ///     Total count of words in the dictionary
+    /// &lt;/summary&gt;
+    public readonly int WordCount;
+
+    /// &lt;summary&gt;
+    ///     Standard constructor takes a dictionary of strings, organized by length
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;sourceType&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;dictionary&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;description&quot;&gt;&lt;/param&gt;
+    /// &lt;exception cref=&quot;Exception&quot;&gt;&lt;/exception&gt;
+    public LiteralDictionary(Dictionary&lt;int, IEnumerable&lt;string&gt;&gt; dictionary,
+        LiteralDictionarySourceType sourceType,
+        string? description = null)
+    {
+        this.SourceType = sourceType;
+        // set this as the instance dictionary, made immutable
+        var wordsByLength = AlphabetizeDictionary(dictionary: dictionary).ToImmutableDictionary();
+
+        if (wordsByLength.Count == 0) throw new Exception(message: &quot;Dictionary could not be loaded&quot;);
+        this._wordsByLength = wordsByLength;
+
+        // now that the dictionary is loaded, tally up the word counts and analyze the dictionary
+
+        var wordCountByLength = new Dictionary&lt;int, int&gt;();
+        var validWordLengths = new List&lt;int&gt;();
+        int? shortest = null;
+        int? longest = null;
+
+        var dictionaryLengths = this._wordsByLength.Keys.ToArray();
+        // ensure we traverse the dictionary in length order rather than addition order
+        Array.Sort(array: dictionaryLengths);
+
+        var totalWords = 0;
+        foreach (var length in dictionaryLengths)
+        {
+            // if there are no words of this length, skip it
+            if (!this._wordsByLength[key: length].Any()) continue;
+
+            // add to the list of valid word lengths with at least one word
+            validWordLengths.Add(item: length);
+
+            var wordsForLength = this._wordsByLength[key: length].Count();
+            wordCountByLength.Add(
+                key: length,
+                value: wordsForLength);
+
+            totalWords += wordsForLength;
+
+            shortest ??= length;
+
+            // let this replace every time, the final value will be the longest
+            longest = length;
+        }
+
+        validWordLengths.Sort();
+
+        this.Description = description ?? string.Empty;
+        this.WordCount = totalWords;
+        this._wordCountByLength = wordCountByLength;
+
+        Debug.Assert(condition: shortest != null,
+            message: nameof(shortest) + &quot; != null&quot;);
+        this.ShortestWordLength = shortest.Value;
+
+        Debug.Assert(condition: longest != null,
+            message: nameof(longest) + &quot; != null&quot;);
+        this.LongestWordLength = longest.Value;
+
+        // now that the array is final, set it as the instance variable
+        this.ValidWordLengths = validWordLengths.ToImmutableArray();
+    }
+
+    /// &lt;summary&gt;
+    ///     This constructor builds a dictionary organized by lengths from a simple array of words
+    ///     and passes it to the standard constructor
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;sourceType&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;words&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;description&quot;&gt;&lt;/param&gt;
+    // ReSharper disable once MemberCanBePrivate.Global
+    public LiteralDictionary(LiteralDictionarySourceType sourceType, IEnumerable&lt;string&gt; words,
+        string? description = null)
+        : this(
+            dictionary: FillDictionary(words: words),
+            sourceType: sourceType,
+            description: description)
+    {
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[61,5,63,36,1],[64,5,64,6,1],[65,9,65,38,1],[67,9,67,99,1],[69,9,69,38,1],[69,39,69,102,0],[70,9,70,45,1],[74,9,74,60,1],[75,9,75,48,1],[76,9,76,30,1],[77,9,77,29,1],[79,9,79,68,1],[81,9,81,46,1],[83,9,83,28,1],[84,9,84,16,1],[84,18,84,28,1],[84,29,84,31,1],[84,32,84,49,1],[85,9,85,10,1],[87,13,87,57,1],[87,58,87,67,0],[90,13,90,48,1],[92,13,92,75,1],[93,13,95,40,1],[97,13,97,42,1],[99,13,99,33,1],[102,13,102,30,1],[103,9,103,10,1],[105,9,105,33,1],[107,9,107,56,1],[108,9,108,37,1],[109,9,109,53,1],[111,9,112,53,1],[113,9,113,50,1],[115,9,116,52,1],[117,9,117,48,1],[120,9,120,69,1],[121,5,121,6,1],[133,11,136,38,0],[137,5,137,6,0],[138,5,138,6,0]]);
+    </script>
+  </body>
+</html>

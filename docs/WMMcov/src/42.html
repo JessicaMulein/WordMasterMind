@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\GameRow.razor</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+@using GameEngine.Library.Helpers
+@if (GameStateMachine.Game is not null)
+{
+    &lt;div class=&quot;game-row row&quot;&gt;
+    @if (AttemptIndex &lt; GameStateMachine.Game.CurrentAttempt)
+    {
+        foreach (var attemptLetterDetail in GameStateMachine.Game.GetAttempt(attemptIndex: AttemptIndex))
+        {
+            &lt;GameTile
+                Letter=&quot;@attemptLetterDetail.Letter&quot;
+                LetterEvaluation=&quot;attemptLetterDetail.Evaluation&quot;
+                Reveal=&quot;@((attemptLetterDetail.Evaluation is LetterEvaluation.Correct) ? true : false)&quot;/&gt;
+        }
+    }
+    else
+    {
+        for (var letterIndex = 0; letterIndex &lt; GameStateMachine.WordLength; letterIndex++)
+        {
+            if (AttemptIndex == GameStateMachine.Game.CurrentAttempt)
+            {
+                &lt;GameTile
+                    Letter=&quot;@GameStateMachine.CurrentAttemptLetter(letterIndex: letterIndex)&quot;
+                    LetterEvaluation=&quot;LetterEvaluation.Tbd&quot;
+                    Reveal=&quot;false&quot;&gt;&lt;/GameTile&gt;
+            }
+            else
+            {
+                &lt;GameTile
+                    Letter=&quot;@GameEngine.Library.Helpers.Constants.BlankChar&quot;
+                    LetterEvaluation=&quot;LetterEvaluation.Tbd&quot;
+                    Reveal=&quot;false&quot;&gt;&lt;/GameTile&gt;
+            }
+        }
+    }
+    &lt;/div&gt;
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[2,2,2,40,0],[3,1,3,2,0],[5,6,5,62,0],[6,5,6,6,0],[7,9,7,16,0],[7,18,7,41,0],[7,42,7,44,0],[7,45,7,105,0],[8,9,8,10,0],[13,9,13,10,0],[14,5,14,6,0],[16,5,16,6,0],[17,14,17,33,0],[17,35,17,76,0],[17,78,17,91,0],[18,9,18,10,0],[19,13,19,70,0],[20,13,20,14,0],[25,13,25,14,0],[27,13,27,14,0],[32,13,32,14,0],[33,9,33,10,0],[34,5,34,6,0],[36,1,36,2,0]]);
+    </script>
+  </body>
+</html>

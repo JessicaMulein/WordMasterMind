@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\GameTile.razor.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using Microsoft.AspNetCore.Components;
+using GameEngine.Library.Enumerations;
+
+namespace GameEngine.Blazor.Components;
+
+/// &lt;summary&gt;
+///     GameTile is used by GameRow/GameBoard and the Rules splash, but notably rules does not use GameRow.
+/// &lt;/summary&gt;
+public partial class GameTile
+{
+    [ParameterAttribute] public char Letter { get; set; } = GameEngine.Library.Helpers.Constants.BlankChar;
+
+    [ParameterAttribute] public string LetterString
+    {
+        get =&gt; this.Letter.ToString().ToUpperInvariant();
+        set =&gt; this.Letter = value.ToUpperInvariant()[index: 0];
+    }
+    [ParameterAttribute] public LetterEvaluation LetterEvaluation { get; set; } = LetterEvaluation.Tbd;
+
+    [ParameterAttribute]
+    public string EvaluationString
+    {
+        get =&gt; Enum.GetName(
+            enumType: typeof(LetterEvaluation),
+            value: this.LetterEvaluation)!.ToLowerInvariant();
+        set =&gt; this.LetterEvaluation = (LetterEvaluation)Enum.Parse(
+            enumType: typeof(LetterEvaluation),
+            value: value.ToLowerInvariant(),
+            ignoreCase: true);
+    }
+
+    [ParameterAttribute] public bool Reveal { get; set; }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[11,47,11,51,0],[11,52,11,56,0],[11,61,11,107,0],[15,16,15,57,0],[16,16,16,64,0],[18,69,18,73,0],[18,74,18,78,0],[18,83,18,103,0],[23,16,25,62,0],[26,16,29,30,0],[32,47,32,51,0],[32,52,32,56,0]]);
+    </script>
+  </body>
+</html>

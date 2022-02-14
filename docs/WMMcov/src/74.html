@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\AttemptLetterDetail.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using GameEngine.Library.Enumerations;
+
+namespace GameEngine.Library.Models;
+
+public record AttemptLetterDetail
+{
+    public readonly LetterEvaluation Evaluation;
+    public readonly char Letter;
+    public readonly int LetterPosition;
+
+    public AttemptLetterDetail(int letterPosition, char letter, LetterEvaluation evaluation)
+    {
+        this.LetterPosition = letterPosition;
+        this.Letter = letter;
+        this.Evaluation = evaluation;
+    }
+
+    public override string ToString()
+    {
+        return GameEngineInstance.GetEmojiFromAttemptDetail(attemptLetterDetail: this);
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[11,5,11,93,1],[12,5,12,6,1],[13,9,13,46,1],[14,9,14,30,1],[15,9,15,38,1],[16,5,16,6,1],[19,5,19,6,0],[20,9,20,88,0],[21,5,21,6,0]]);
+    </script>
+  </body>
+</html>

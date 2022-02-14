@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\GameEngineUI.razor</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+@using GameEngine.Blazor.Helpers
+&lt;div id=&quot;game&quot;&gt;
+    &lt;header&gt;
+        &lt;div class=&quot;title mb-3 mt-3&quot;&gt;@GameEngine.Library.Helpers.Constants.GameTitle&lt;/div&gt;
+        &lt;div class=&quot;menu mb-3&quot;&gt;
+            &lt;button id=&quot;help-button&quot; class=&quot;btn btn-outline-primary&quot; aria-label=&quot;rules&quot; @onclick=&quot;OnRulesClick&quot;&gt;
+                &lt;i class=&quot;fad fa-info&quot;&gt;&lt;/i&gt;
+            &lt;/button&gt;
+            &lt;button id=&quot;statistics-button&quot; class=&quot;btn btn-outline-primary&quot; aria-label=&quot;statistics&quot;&gt;
+                &lt;i class=&quot;fad fa-chart-line&quot;&gt;&lt;/i&gt;
+            &lt;/button&gt;
+            &lt;button id=&quot;settings-button&quot; class=&quot;btn btn-outline-primary&quot; aria-label=&quot;settings&quot; @onclick=&quot;OnSettingsClick&quot;&gt;
+                &lt;i class=&quot;fad fa-cogs&quot;&gt;&lt;/i&gt;
+            &lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+    @if (GameStateMachine.State is GameState.Rules)
+    {
+        &lt;RulesDialog OnClose=@OnRulesDialogClose&gt;&lt;/RulesDialog&gt;
+    }
+    else if (GameStateMachine.State is GameState.Settings)
+    {
+        &lt;GameSettingsDialog OnSettingsClosed=@OnGameSettingsDialogClose&gt;&lt;/GameSettingsDialog&gt;
+    }
+    else if (GameStateMachine.State is GameState.SourceSelection or GameState.LengthSelection)
+    {
+        if (GameStateMachine.State is GameState.SourceSelection)
+        {
+            &lt;h1&gt;Select a Dictionary&lt;/h1&gt;
+            &lt;DictionarySourceList&gt;&lt;/DictionarySourceList&gt;
+        }
+        else if (GameStateMachine.State is GameState.LengthSelection)
+        {
+            &lt;h1&gt;Select a Word Length&lt;/h1&gt;
+            &lt;WordLengthList&gt;&lt;/WordLengthList&gt;
+        }
+        &lt;div class=&quot;row mt-3&quot;&gt;
+            &lt;div class=&quot;col d-flex justify-content-center&quot;&gt;
+                &lt;button class=&quot;btn btn-outline-primary me-1&quot; aria-label=&quot;back&quot; @onclick=&quot;OnBackClick&quot;&gt;
+                    &lt;i class=&quot;fas fa-step-backward&quot;&gt;&lt;/i&gt;
+                &lt;/button&gt;
+                &lt;button class=&quot;btn btn-outline-primary ms-1&quot; aria-label=&quot;next&quot; @onclick=&quot;OnNextClick&quot;&gt;
+                    &lt;i class=&quot;fas fa-step-forward&quot;&gt;&lt;/i&gt;
+                &lt;/button&gt;
+             &lt;/div&gt;
+        &lt;/div&gt;
+    }
+    else if (GameStateMachine.State is GameState.Playing or GameState.GameOver)
+    {
+        &lt;div id=&quot;board-container&quot;&gt;
+            &lt;GameBoard&gt;&lt;/GameBoard&gt;
+        &lt;/div&gt;
+        if (GameStateMachine.State is GameState.Playing)
+        {
+            &lt;GameKeyboard&gt;&lt;/GameKeyboard&gt;
+        }
+    }
+    else
+    {
+        &lt;h3&gt;Unknown state&lt;/h3&gt;
+    }
+&lt;/div&gt;
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[4,39,4,86,0],[17,6,17,52,0],[18,5,18,6,0],[20,5,20,6,0],[21,10,21,59,0],[22,5,22,6,0],[24,5,24,6,0],[25,10,25,95,0],[26,5,26,6,0],[27,9,27,65,0],[28,9,28,10,0],[31,9,31,10,0],[32,14,32,70,0],[33,9,33,10,0],[36,9,36,10,0],[47,5,47,6,0],[48,10,48,80,0],[49,5,49,6,0],[53,9,53,57,0],[54,9,54,10,0],[56,9,56,10,0],[57,5,57,6,0],[59,5,59,6,0],[61,5,61,6,0]]);
+    </script>
+  </body>
+</html>

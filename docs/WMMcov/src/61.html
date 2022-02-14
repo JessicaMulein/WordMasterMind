@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\WordMasterMindPlayer.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Text.RegularExpressions;
+using GameEngine.Library.Enumerations;
+using GameEngine.Library.Exceptions;
+
+namespace GameEngine.Library.Models;
+
+public static class GameEnginePlayer
+{
+    public const int DefaultTries = 1000;
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public static readonly IEnumerable&lt;string&gt; FiveLetterStrategies = new[]
+    {
+        &quot;ADIEU&quot;,
+        &quot;ALOFT&quot;,
+        &quot;AROSE&quot;,
+        &quot;ARISE&quot;,
+        &quot;CRANE&quot;,
+        &quot;IDEAL&quot;,
+        &quot;LINTY&quot;,
+        &quot;PAUSE&quot;,
+        &quot;RAISE&quot;,
+        // ReSharper disable once StringLiteralTypo
+        &quot;SOARE&quot;,
+        &quot;SOUTH&quot;,
+        &quot;WILDS&quot;,
+    };
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public static string RandomFiveLetterStrategy
+    {
+        get
+        {
+            var rnd = new Random();
+            var strategies = FiveLetterStrategies.ToArray();
+            return strategies[rnd.Next(maxValue: strategies.Length)];
+        }
+    }
+
+
+    /// &lt;summary&gt;
+    ///     The computer strategy starts with adieu if the game is 5 letters and it is not specifically disabled
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;mastermind&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;turn&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;maximumDictionaryLookupAttemptsPerTry&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;excludeWords&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;mustIncludeLetters&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;noStrategy&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;avoidSecretWord&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    // ReSharper disable once MemberCanBePrivate.Global
+    public static string ComputerGuessWord(GameEngineInstance mastermind,
+        int turn,
+        int maximumDictionaryLookupAttemptsPerTry = 1000,
+        IEnumerable&lt;string&gt;? excludeWords = null,
+        IEnumerable&lt;char&gt;? mustIncludeLetters = null,
+        bool noStrategy = false, bool avoidSecretWord = false)
+    {
+        if (turn == 1 &amp;&amp; mastermind.WordLength == 5 &amp;&amp; !noStrategy)
+            return RandomFiveLetterStrategy;
+
+        if (avoidSecretWord)
+        {
+            var tmp = (excludeWords ?? Array.Empty&lt;string&gt;()).ToList();
+            if (!tmp.Contains(value: mastermind.SecretWord))
+            {
+                tmp.Add(item: mastermind.SecretWord);
+                excludeWords = tmp.ToArray();
+            }
+        }
+
+        return mastermind.LiteralDictionary.FindWord(
+            regex: new Regex(
+                pattern: new string(value: mastermind.SolvedLettersAsChars(filler: &#39;.&#39;)),
+                options: RegexOptions.IgnoreCase),
+            puzzleLength: mastermind.WordLength,
+            skipWords: excludeWords,
+            mustIncludeLetters: mustIncludeLetters);
+    }
+
+    /// &lt;summary&gt;
+    ///     Attempts to solve the current puzzle from whatever turn it is on.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;mastermind&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;turns&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;maximumDictionaryLookupAttemptsPerTry&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;noStrategy&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;avoidSecretWord&quot;&gt;
+    ///     Avoid the secret word (to do too many attempts). The computer will NEVER guess the
+    ///     correct word.
+    /// &lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;GameOverException&quot;&gt;&lt;/exception&gt;
+    public static bool AttemptComputerSolve(GameEngineInstance mastermind, int turns = -1,
+        int maximumDictionaryLookupAttemptsPerTry = DefaultTries, bool noStrategy = false, bool avoidSecretWord = false)
+    {
+        if (mastermind.Solved || mastermind.CurrentAttempt &gt;= mastermind.MaxAttempts)
+            throw new GameOverException(solved: mastermind.Solved);
+
+        var mustIncludeLetters = new List&lt;char&gt;();
+        var triedWords = new List&lt;string&gt;();
+        var turn = 1;
+        while (!mastermind.Solved &amp;&amp; (turns == -1 || turns-- &gt; 0))
+        {
+            var computerGuess = ComputerGuessWord(
+                turn: turn,
+                mastermind: mastermind,
+                maximumDictionaryLookupAttemptsPerTry: maximumDictionaryLookupAttemptsPerTry,
+                excludeWords: triedWords,
+                mustIncludeLetters: mustIncludeLetters,
+                noStrategy: noStrategy);
+
+            if (triedWords.Contains(item: computerGuess) ||
+                avoidSecretWord &amp;&amp; computerGuess.Equals(value: mastermind.SecretWord)) continue;
+
+            // advance the turn counter
+            turn++;
+
+            triedWords.Add(item: computerGuess);
+
+            var attempt = mastermind.MakeAttempt(wordAttempt: computerGuess);
+
+            // add all matched letters to the mustIncludeLetters list
+            // future word guesses must include these letters
+            attempt.Details
+                .Where(predicate: d =&gt; d.Evaluation is LetterEvaluation.Present or LetterEvaluation.Correct)
+                .ToList()
+                .ForEach(action: d =&gt; { mustIncludeLetters.Add(item: d.Letter); });
+        }
+
+        return mastermind.Solved;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[12,5,27,7,1],[33,9,33,10,1],[34,13,34,36,1],[35,13,35,61,1],[36,13,36,70,1],[37,9,37,10,1],[59,5,59,6,1],[60,9,60,68,1],[61,13,61,45,1],[63,9,63,29,1],[64,9,64,10,0],[65,13,65,72,0],[66,13,66,61,0],[67,13,67,14,0],[68,17,68,54,0],[69,17,69,46,0],[70,13,70,14,0],[71,9,71,10,0],[73,9,79,53,1],[80,5,80,6,1],[97,5,97,6,1],[98,9,98,86,1],[99,13,99,68,1],[101,9,101,51,1],[102,9,102,45,1],[103,9,103,22,1],[104,9,104,67,1],[105,9,105,10,1],[106,13,112,41,1],[114,13,115,87,1],[115,88,115,97,0],[118,13,118,20,1],[120,13,120,49,1],[122,13,122,78,1],[126,13,127,40,1],[127,40,127,108,1],[127,108,129,39,1],[129,39,129,40,1],[129,40,129,41,1],[129,41,129,80,1],[129,80,129,81,1],[129,81,129,82,1],[129,82,129,84,1],[130,9,130,10,1],[132,9,132,34,1],[133,5,133,6,1]]);
+    </script>
+  </body>
+</html>

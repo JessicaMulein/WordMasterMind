@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\AttemptDetails.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+namespace GameEngine.Library.Models;
+
+public record AttemptDetails
+{
+    public readonly int AttemptNumber;
+    public readonly IEnumerable&lt;AttemptLetterDetail&gt; Details;
+
+    public AttemptDetails(int attemptNumber, IEnumerable&lt;AttemptLetterDetail&gt; details)
+    {
+        this.AttemptNumber = attemptNumber;
+        this.Details = details;
+    }
+
+    public string AttemptString =&gt; string.Join(
+        separator: &quot;&quot;,
+        values: this.Details
+            .Select(selector: x =&gt; x.Letter));
+
+    public IEnumerator&lt;AttemptLetterDetail&gt; GetEnumerator()
+    {
+        return this.Details.GetEnumerator();
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[8,5,8,87,1],[9,5,9,6,1],[10,9,10,44,1],[11,9,11,32,1],[12,5,12,6,1],[14,36,17,36,0],[17,36,17,44,0],[17,44,17,46,0],[20,5,20,6,1],[21,9,21,45,1],[22,5,22,6,1]]);
+    </script>
+  </body>
+</html>

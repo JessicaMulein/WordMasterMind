@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Exceptions\GameOverException.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+namespace GameEngine.Library.Exceptions;
+
+public class GameOverException : GameEngineException
+{
+    public const string SolvedText = &quot;You have already solved this word!&quot;;
+    public const string GameOverText = &quot;Game Over: You have reached the maximum number of attempts.&quot;;
+    public readonly bool Solved;
+
+    public GameOverException(bool solved = false) : base(message: solved ? SolvedText : GameOverText)
+    {
+        this.Solved = solved;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[9,53,9,102,1],[10,5,10,6,1],[11,9,11,30,1],[12,5,12,6,1]]);
+    </script>
+  </body>
+</html>

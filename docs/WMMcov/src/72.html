@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\GameEngineInstance.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using GameEngine.Library.Enumerations;
+using GameEngine.Library.Exceptions;
+using GameEngine.Library.Helpers;
+
+namespace GameEngine.Library.Models;
+
+public partial class GameEngineInstance
+{
+    private readonly List&lt;char&gt; _foundLetters;
+
+    /// &lt;summary&gt;
+    ///     Current word being guessed. Randomly selected from the Scrabble dictionary.
+    /// &lt;/summary&gt;
+    private readonly string _secretWord;
+
+    private readonly bool[] _solvedLetters;
+
+    /// &lt;summary&gt;
+    ///     Scrabble Dictionary to use
+    /// &lt;/summary&gt;
+    public readonly LiteralDictionary LiteralDictionary;
+
+    /// &lt;summary&gt;
+    ///     Source being used to generate the secret word.
+    /// &lt;/summary&gt;
+    public readonly LiteralDictionarySourceType LiteralDictionarySourceType;
+
+    private bool _hardMode;
+
+    /// &lt;summary&gt;
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;minLength&quot;&gt;The minimum word length the computer will use from the dictionary&lt;/param&gt;
+    /// &lt;param name=&quot;maxLength&quot;&gt;The maximum word length the computer will use from the dictionary. May equal the minimum.&lt;/param&gt;
+    /// &lt;param name=&quot;hardMode&quot;&gt;
+    ///     When enabled, found letters must be in subsequent guesses, and solved positions must remain
+    ///     solved.
+    /// &lt;/param&gt;
+    /// &lt;param name=&quot;literalDictionary&quot;&gt;Provide a proper LiteralDictionary object or null&lt;/param&gt;
+    /// &lt;param name=&quot;secretWord&quot;&gt;Optionally force the secret word to be this value&lt;/param&gt;
+    /// &lt;param name=&quot;dailyWordWhenComputer&quot;&gt;When generating a word, use the daily word&lt;/param&gt;
+    /// &lt;exception cref=&quot;ArgumentNullException&quot;&gt;&lt;/exception&gt;
+    /// &lt;exception cref=&quot;InvalidLengthException&quot;&gt;&lt;/exception&gt;
+    /// &lt;exception cref=&quot;NotInDictionaryException&quot;&gt;&lt;/exception&gt;
+    public GameEngineInstance(LiteralDictionary literalDictionary, int minLength, int maxLength, bool hardMode = false,
+        bool dailyWordWhenComputer = true, string? secretWord = Constants.ComputerSelectedWord)
+    {
+        this.Solved = false;
+        this.CurrentAttempt = 0;
+        this._hardMode = hardMode;
+        // use the provided dictionary, or use the default one which is stored locally
+        this.LiteralDictionary = literalDictionary;
+        if (minLength == -1) minLength = secretWord?.Length ?? Constants.StandardLength;
+        if (maxLength == -1) maxLength = secretWord?.Length ?? Constants.StandardLength;
+        if (secretWord is not null &amp;&amp;
+            (secretWord.Length &lt; minLength ||
+             secretWord.Length &gt; maxLength) ||
+            minLength &lt;= 0)
+            throw new InvalidLengthException(minLength: minLength,
+                maxLength: maxLength);
+
+        this._secretWord = (secretWord switch
+        {
+            null when dailyWordWhenComputer =&gt; DailyWordGenerator.WordOfTheDay(
+                dictionary: this.LiteralDictionary,
+                date: null,
+                length: this.LiteralDictionary.RandomLength(
+                    minLength: minLength,
+                    maxLength: maxLength)),
+            null =&gt; this.LiteralDictionary
+                .GetRandomWord(
+                    minLength: minLength,
+                    maxLength: maxLength),
+            _ =&gt; secretWord,
+        }).ToUpperInvariant();
+
+        this.WordLength = this._secretWord.Length;
+
+        if (this.WordLength &gt; maxLength || this.WordLength &lt; minLength)
+            throw new InvalidLengthException(minLength: minLength,
+                maxLength: maxLength);
+
+        if (!this.LiteralDictionary.IsWord(word: this._secretWord))
+            throw new NotInDictionaryException();
+
+        this.MaxAttempts = GetMaxAttemptsForLength(
+            length: this.WordLength);
+        this._attempts = new AttemptDetails[this.MaxAttempts];
+        this._solvedLetters = new bool[this.WordLength];
+        this._foundLetters = new List&lt;char&gt;();
+    }
+
+    /// &lt;summary&gt;
+    ///     if a previous attempt had a letter in the correct position, future attempts must have the same letter in the
+    ///     correct position
+    /// &lt;/summary&gt;
+    public bool HardMode
+    {
+        get =&gt; this._hardMode;
+        set
+        {
+            if (this.CurrentAttempt &gt; 0)
+                throw new HardModeLockedException();
+
+            this._hardMode = value;
+        }
+    }
+
+    /// &lt;summary&gt;
+    ///     An array of boolean values corresponding to each letter in the secret word and whether it has been solved
+    /// &lt;/summary&gt;
+    public IEnumerable&lt;bool&gt; SolvedLetters =&gt; DuplicateArray(array: this._solvedLetters);
+
+    /// &lt;summary&gt;
+    ///     A sorted array of all of the letters that have been found in the secret word
+    /// &lt;/summary&gt;
+    public IEnumerable&lt;char&gt; FoundLetters =&gt; this._foundLetters.ToArray();
+
+    /// &lt;summary&gt;
+    ///     Debug flag allows revealing the secret word
+    /// &lt;/summary&gt;
+    private static bool IsDebug =&gt; UnitTestDetector.IsRunningInUnitTest;
+
+    public bool Solved { get; private set; }
+
+    public bool GameOver =&gt; this.Solved || this.CurrentAttempt &gt;= this.MaxAttempts;
+
+    public string SecretWord
+    {
+        get
+        {
+            if (!this.Solved &amp;&amp; !IsDebug) return string.Empty;
+            return this._secretWord;
+        }
+    }
+
+    private static IEnumerable&lt;bool&gt; DuplicateArray(in bool[] array)
+    {
+        var copy = new bool[array.Length];
+        Array.Copy(
+            sourceArray: array,
+            destinationArray: copy,
+            length: array.Length);
+        return copy;
+    }
+
+    public char[] SolvedLettersAsChars(char filler = Constants.BlankChar)
+    {
+        var solvedLetters = new char[this.WordLength];
+        for (var i = 0; i &lt; this.WordLength; i++)
+            solvedLetters[i] = this._solvedLetters[i] ? this._secretWord[index: i] : filler;
+
+        return solvedLetters;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[44,5,45,96,1],[46,5,46,6,1],[47,9,47,29,1],[48,9,48,33,1],[49,9,49,35,1],[51,9,51,52,1],[52,9,52,29,1],[52,30,52,89,1],[53,9,53,29,1],[53,30,53,89,1],[54,9,57,28,1],[58,13,59,39,1],[61,9,63,18,1],[63,18,63,44,1],[63,44,63,48,1],[63,48,68,43,1],[68,43,69,21,1],[69,21,72,42,1],[72,42,73,18,1],[73,18,73,28,1],[73,28,74,31,1],[76,9,76,51,1],[78,9,78,72,1],[79,13,80,39,0],[82,9,82,68,1],[83,13,83,50,1],[85,9,86,38,1],[87,9,87,63,1],[88,9,88,57,1],[89,9,89,47,1],[90,5,90,6,1],[98,16,98,30,1],[100,9,100,10,1],[101,13,101,41,1],[102,17,102,53,1],[104,13,104,36,1],[105,9,105,10,1],[111,47,111,89,1],[116,46,116,74,1],[121,36,121,72,1],[123,26,123,30,1],[123,31,123,43,1],[125,29,125,83,1],[130,9,130,10,1],[131,13,131,42,1],[131,43,131,63,1],[132,13,132,37,1],[133,9,133,10,1],[137,5,137,6,1],[138,9,138,43,1],[139,9,142,35,1],[143,9,143,21,1],[144,5,144,6,1],[147,5,147,6,1],[148,9,148,55,1],[149,14,149,23,1],[149,25,149,44,1],[149,46,149,49,1],[150,13,150,93,1],[152,9,152,30,1],[153,5,153,6,1]]);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\GameSettingsDialog.razor.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using GameEngine.Blazor.Enumerations;
+using GameEngine.Blazor.Helpers;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using GameEngine.Blazor.Interfaces;
+using GameEngine.Blazor.Shared;
+using GameEngine.Library.Exceptions;
+
+namespace GameEngine.Blazor.Components;
+
+public partial class GameSettingsDialog
+{
+#pragma warning disable CS8618
+    [Inject] public IGameStateMachine GameStateMachine { get; set; }
+    [Inject] public IJSRuntime JsRuntime { get; set; }
+#pragma warning restore CS8618
+
+    [Parameter] public EventCallback&lt;bool&gt; OnSettingsClosed { get; set; }
+
+    private async Task ModalCancel()
+    {
+        try
+        {
+            await UIHelpers.TryPreviousStateAndAlertOnGameEngineException(stateMachine: this.GameStateMachine);
+            if (this.OnSettingsClosed.HasDelegate)
+                await this.OnSettingsClosed.InvokeAsync(arg: false);
+        }
+        catch (Exception _)
+        {
+            // ignore
+        }
+    }
+
+    private async Task ModalOk()
+    {
+        try
+        {
+            await UIHelpers.TryPreviousStateAndAlertOnGameEngineException(stateMachine: this.GameStateMachine);
+            if (this.OnSettingsClosed.HasDelegate)
+                await this.OnSettingsClosed.InvokeAsync(arg: true);
+        }
+        catch (Exception _)
+        {
+            // ignore
+        }
+    }
+
+    private void ToggleHardMode()
+    {
+        try
+        {
+            var gameActive = this.GameStateMachine.Game is not null;
+            // get the current state of the toggle
+            var newMode = !(gameActive &amp;&amp; this.GameStateMachine.HardMode);
+            // try to set the new state in the game
+            if (gameActive) this.GameStateMachine.Game!.HardMode = newMode;
+            // if that was successful, or no game is active, update the UI
+            this.GameStateMachine.HardMode = newMode;
+        }
+        // ReSharper disable once RedundantNameQualifier
+        catch (HardModeLockedException e)
+        {
+            Console.WriteLine(value: $&quot;Error: {e.Message}&quot;);
+        }
+    }
+
+    private void ToggleDailyWord()
+    {
+        this.GameStateMachine.DailyWord = !this.GameStateMachine.DailyWord;
+    }
+
+    private async Task ToggleNightMode()
+    {
+        this.GameStateMachine.NightMode = !this.GameStateMachine.NightMode;
+        await this.JsRuntime.InvokeVoidAsync(identifier: &quot;window.JsFunctions.setNightMode&quot;, this.GameStateMachine.NightMode);
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[14,58,14,62,0],[14,63,14,67,0],[15,44,15,48,0],[15,49,15,53,0],[18,63,18,67,0],[18,68,18,72,0],[21,5,21,6,0],[23,9,23,10,0],[24,13,24,112,0],[25,13,25,51,0],[26,17,26,69,0],[27,9,27,10,0],[28,9,28,28,0],[29,9,29,10,0],[31,9,31,10,0],[32,5,32,6,0],[35,5,35,6,0],[37,9,37,10,0],[38,13,38,112,0],[39,13,39,51,0],[40,17,40,68,0],[41,9,41,10,0],[42,9,42,28,0],[43,9,43,10,0],[45,9,45,10,0],[46,5,46,6,0],[49,5,49,6,0],[51,9,51,10,0],[52,13,52,69,0],[54,13,54,75,0],[56,13,56,28,0],[56,29,56,76,0],[58,13,58,54,0],[59,9,59,10,0],[61,9,61,42,0],[62,9,62,10,0],[63,13,63,61,0],[64,9,64,10,0],[65,5,65,6,0],[68,5,68,6,0],[69,9,69,76,0],[70,5,70,6,0],[73,5,73,6,0],[74,9,74,76,0],[75,9,75,126,0],[76,5,76,6,0]]);
+    </script>
+  </body>
+</html>

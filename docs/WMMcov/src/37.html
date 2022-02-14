@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Shared\NavMenu.razor</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+&lt;div class=&quot;top-row ps-3 navbar navbar-dark&quot;&gt;
+    &lt;div class=&quot;container-fluid&quot;&gt;
+        &lt;a class=&quot;navbar-brand&quot; href=&quot;&quot;&gt;GameEngine.Blazor&lt;/a&gt;
+        &lt;button title=&quot;Navigation menu&quot; class=&quot;navbar-toggler&quot; @onclick=&quot;ToggleNavMenu&quot;&gt;
+            &lt;span class=&quot;navbar-toggler-icon&quot;&gt;&lt;/span&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;@NavMenuCssClass&quot; @onclick=&quot;ToggleNavMenu&quot;&gt;
+    &lt;nav class=&quot;flex-column&quot;&gt;
+        &lt;div class=&quot;nav-item px-3&quot;&gt;
+            &lt;NavLink class=&quot;nav-link&quot; href=&quot;&quot; Match=&quot;NavLinkMatch.All&quot;&gt;
+                &lt;span class=&quot;oi oi-home&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt; Home
+            &lt;/NavLink&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+&lt;/div&gt;
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass =&gt; collapseNavMenu ? &quot;collapse&quot; : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[21,5,21,41,0],[23,40,23,75,0],[26,5,26,6,0],[27,9,27,44,0],[28,5,28,6,0]]);
+    </script>
+  </body>
+</html>

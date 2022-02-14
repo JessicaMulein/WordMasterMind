@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\LiteralDictionary.StaticNewFunctions.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Text;
+using System.Text.Json;
+using GameEngine.Library.Enumerations;
+
+namespace GameEngine.Library.Models;
+
+public partial class LiteralDictionary
+{
+    public static IEnumerable&lt;string&gt; JsonToWords(string jsonText)
+    {
+        return JsonSerializer
+            .Deserialize&lt;string[]&gt;(
+                json: jsonText,
+                options: JsonSerializerOptions) ?? throw new InvalidOperationException();
+    }
+
+    /// &lt;summary&gt;
+    ///     This constructor creates a list of words from a JSON file with an array of strings containing the words
+    ///     It will get passed through FillDictionary and then the standard constructor
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;jsonText&quot;&gt;&lt;/param&gt;
+    public static LiteralDictionary NewFromJson(LiteralDictionarySourceType sourceType, string jsonText,
+        string? description = null)
+    {
+        return new LiteralDictionary(
+            sourceType: sourceType,
+            words: JsonToWords(
+                jsonText: jsonText),
+            description: description);
+    }
+
+    /// &lt;summary&gt;
+    ///     Creates a literal dictionary from a source
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;source&quot;&gt;format of source bytes&lt;/param&gt;
+    /// &lt;param name=&quot;sourceData&quot;&gt;array of bytes with source&#39;s raw data&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;Exception&quot;&gt;&lt;/exception&gt;
+    public static LiteralDictionary NewFromSource(LiteralDictionarySource source, IEnumerable&lt;byte&gt; sourceData)
+    {
+        return source.FileType switch
+        {
+            LiteralDictionaryFileType.TextWithNewLines =&gt; new LiteralDictionary(
+                sourceType: source.SourceType,
+                words: Encoding.ASCII.GetString(
+                    bytes: sourceData.ToArray()).Split(
+                    separator: Environment.NewLine,
+                    options: StringSplitOptions.RemoveEmptyEntries),
+                description: source.Description),
+            LiteralDictionaryFileType.JsonStringArray =&gt; NewFromJson(
+                sourceType: source.SourceType,
+                jsonText: Encoding.ASCII.GetString(
+                    bytes: sourceData.ToArray()),
+                description: source.Description),
+            LiteralDictionaryFileType.Binary =&gt;
+                new LiteralDictionary(
+                    dictionary: DeserializeToDictionary(
+                        inputStream: new MemoryStream(
+                            buffer: sourceData.ToArray())),
+                    sourceType: source.SourceType,
+                    description: source.Description),
+            _ =&gt; throw new Exception(message: &quot;Unknown file type&quot;),
+        };
+    }
+
+    /// &lt;summary&gt;
+    ///     Creates a literal dictionary from a source type
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;sourceType&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;basePath&quot;&gt;&lt;/param&gt;
+    /// &lt;param name=&quot;httpClient&quot;&gt;&lt;/param&gt;
+    /// &lt;returns&gt;&lt;/returns&gt;
+    /// &lt;exception cref=&quot;Exception&quot;&gt;&lt;/exception&gt;
+    public static LiteralDictionary NewFromSourceType(LiteralDictionarySourceType sourceType, string basePath)
+    {
+        var source = LiteralDictionarySource.FromSourceType(sourceType: sourceType);
+        IEnumerable&lt;byte&gt; sourceData = File.ReadAllBytes(path: Path.Combine(
+            path1: basePath,
+            path2: source.FileName));
+
+        return NewFromSource(
+            source: source,
+            sourceData: sourceData);
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[10,5,10,6,0],[11,9,14,90,0],[15,5,15,6,0],[24,5,24,6,0],[25,9,29,39,0],[30,5,30,6,0],[40,5,40,6,0],[41,9,43,59,0],[43,59,49,49,0],[49,49,50,58,0],[50,58,54,49,0],[54,49,56,17,0],[56,17,61,53,0],[61,53,62,18,0],[62,18,62,67,0],[62,67,63,11,0],[64,5,64,6,0],[75,5,75,6,0],[76,9,76,85,0],[77,9,79,38,0],[81,9,83,37,0],[84,5,84,6,0]]);
+    </script>
+  </body>
+</html>

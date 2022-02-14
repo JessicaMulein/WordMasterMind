@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Exceptions\HardModeException.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using GameEngine.Library.Helpers;
+
+namespace GameEngine.Library.Exceptions;
+
+public class HardModeException : GameEngineException
+{
+    public readonly char Letter;
+
+    public readonly int LetterPosition;
+    public readonly bool Solved;
+
+    public HardModeException(int letterPosition, char letter, bool solved) : base(message: FormatMessage(
+        letterPosition: letterPosition,
+        letter: letter,
+        solved: solved))
+    {
+        this.LetterPosition = letterPosition;
+        this.Letter = letter;
+        this.Solved = solved;
+    }
+
+    public static string FormatMessage(int letterPosition, char letter, bool solved)
+    {
+        return solved
+            ? $&quot;{Utilities.NumberToOrdinal(number: Utilities.HumanizeIndex(index: letterPosition))} letter must be {letter}&quot;
+            : $&quot;Guess must contain {letter}&quot;;
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[12,78,15,25,1],[16,5,16,6,1],[17,9,17,46,1],[18,9,18,30,1],[19,9,19,30,1],[20,5,20,6,1],[23,5,23,6,1],[24,9,26,46,1],[27,5,27,6,1]]);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\test\GameEngine.Test\UtilitiesTest.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System;
+using System.Collections.Generic;
+using GameEngine.Library.Helpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace GameEngine.Test;
+
+[TestClass]
+public class UtilitiesTest
+{
+    /// &lt;summary&gt;
+    ///     HumanizeIndex just turns 0 offset based numbering to 1 based numbering
+    /// &lt;/summary&gt;
+    [TestMethod]
+    public void TestHumanizeIndex()
+    {
+        var randomInt = new Random().Next(minValue: 1,
+            maxValue: 1000);
+        var result = Utilities.HumanizeIndex(index: randomInt);
+        Assert.AreEqual(
+            expected: randomInt + 1,
+            actual: result);
+    }
+
+    [TestMethod]
+    public void TestNumberToOrdinal()
+    {
+        var expectedResultDict = new Dictionary&lt;int, string&gt;
+        {
+            {0, &quot;0th&quot;},
+            {1, &quot;1st&quot;},
+            {2, &quot;2nd&quot;},
+            {3, &quot;3rd&quot;},
+            {4, &quot;4th&quot;},
+            {5, &quot;5th&quot;},
+            {6, &quot;6th&quot;},
+            {7, &quot;7th&quot;},
+            {8, &quot;8th&quot;},
+            {9, &quot;9th&quot;},
+            {10, &quot;10th&quot;},
+            {11, &quot;11th&quot;},
+            {12, &quot;12th&quot;},
+            {13, &quot;13th&quot;},
+            {14, &quot;14th&quot;},
+            {15, &quot;15th&quot;},
+            {16, &quot;16th&quot;},
+            {17, &quot;17th&quot;},
+            {18, &quot;18th&quot;},
+            {19, &quot;19th&quot;},
+            {20, &quot;20th&quot;},
+            {21, &quot;21st&quot;},
+            {22, &quot;22nd&quot;},
+            {23, &quot;23rd&quot;},
+            {24, &quot;24th&quot;},
+            {25, &quot;25th&quot;},
+            {26, &quot;26th&quot;},
+            {27, &quot;27th&quot;},
+            {28, &quot;28th&quot;},
+            {29, &quot;29th&quot;},
+            {30, &quot;30th&quot;},
+            {31, &quot;31st&quot;},
+            {32, &quot;32nd&quot;},
+            {33, &quot;33rd&quot;},
+            {34, &quot;34th&quot;},
+            {35, &quot;35th&quot;},
+            {100, &quot;100th&quot;},
+            {150, &quot;150th&quot;},
+            {1000, &quot;1,000th&quot;},
+            {1000000, &quot;1,000,000th&quot;},
+            {1000001, &quot;1,000,001st&quot;},
+        };
+        foreach (var (key, value) in expectedResultDict)
+        {
+            var result = Utilities.NumberToOrdinal(number: key);
+            Assert.AreEqual(
+                expected: value,
+                actual: result);
+        }
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[16,5,16,6,1],[17,9,18,29,1],[19,9,19,64,1],[20,9,22,29,1],[23,5,23,6,1],[27,5,27,6,1],[28,9,71,11,1],[72,9,72,16,1],[72,18,72,34,1],[72,35,72,37,1],[72,38,72,56,1],[73,9,73,10,1],[74,13,74,65,1],[75,13,77,33,1],[78,9,78,10,1],[79,5,79,6,1]]);
+    </script>
+  </body>
+</html>

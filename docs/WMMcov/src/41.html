@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\GameKeyboard.razor</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+&lt;div id=&quot;game-keyboard&quot;&gt;
+    @{
+        var rows = Keys.Rank + 1;
+        var columns = Keys.Length / rows;
+    }
+    @for (var row = 0; row &lt; rows; row++)
+    {
+        &lt;div class=&quot;flex&quot;&gt;
+                @for (var column = 0; column &lt; columns; column++)
+                {
+                    var key = Keys[row,column];
+                    var label = new MarkupString(value: key.ToString());
+                    switch (key)
+                    {
+                        case SkipBlank:
+                            // blank, don&#39;t emit anything
+                            continue;
+                        case &gt;= &#39;A&#39; and &lt;= &#39;Z&#39;:
+                            // leave default
+                            break;
+                        case EnterKey:
+                            label = new MarkupString(value: &quot;&lt;i class=\&quot;fas fa-search\&quot;&gt;&lt;/i&gt;&quot;);
+                            break;
+                        case BackspaceKey:
+                            label = new MarkupString(value: &quot;&lt;i class=\&quot;fas fa-backspace\&quot;&gt;&lt;/i&gt;&quot;);
+                            break;
+                        default:
+                            Console.WriteLine(format: &quot;Invalid key: {0}&quot;,
+                                arg0: key);
+                            break;
+                    }
+                    &lt;button @onclick=&quot;() =&gt; OnClick(keyValue: key)&quot;&gt;@label&lt;/button&gt;
+                }
+        &lt;/div&gt;
+    }
+&lt;/div&gt;
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[3,9,3,34,0],[4,9,4,42,0],[6,11,6,22,0],[6,24,6,34,0],[6,36,6,41,0],[7,5,7,6,0],[9,23,9,37,0],[9,39,9,55,0],[9,57,9,65,0],[10,17,10,18,0],[11,21,11,48,0],[12,21,12,73,0],[13,21,13,33,0],[17,29,17,38,0],[20,29,20,35,0],[22,29,22,96,0],[23,29,23,35,0],[25,29,25,99,0],[26,29,26,35,0],[28,29,29,44,0],[30,29,30,35,0],[32,45,32,67,0],[32,70,32,76,0],[33,17,33,18,0],[35,5,35,6,0]]);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\DictionarySourceList.razor.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using Microsoft.AspNetCore.Components;
+using GameEngine.Blazor.Interfaces;
+using GameEngine.Library.Enumerations;
+using GameEngine.Library.Models;
+
+namespace GameEngine.Blazor.Components;
+
+public partial class DictionarySourceList
+{
+#pragma warning disable CS8618
+    [Inject] public IGameStateMachine GameStateMachine { get; set; }
+#pragma warning restore CS8618
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public static IEnumerable&lt;LiteralDictionarySource&gt; Sources =&gt; LiteralDictionarySource.Sources;
+
+    /// &lt;summary&gt;
+    ///     Translator to let the UI use the DictionarySource&#39;s type string as a key.
+    ///     UI can get/set the currently selected source by using the
+    ///     &lt;see cref=&quot;GameEngine.Blazor.Models.GameStateMachine.DictionarySourceType&quot; /&gt; property.
+    /// &lt;/summary&gt;
+    private string SourceTypeString
+    {
+        get =&gt; Enum.GetName(
+            enumType: typeof(LiteralDictionarySourceType),
+            value: this.GameStateMachine.DictionarySourceType)!;
+        set =&gt; this.GameStateMachine.DictionarySourceType = (LiteralDictionarySourceType) Enum.Parse(
+            enumType: typeof(LiteralDictionarySourceType),
+            value: value,
+            ignoreCase: true);
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[11,58,11,62,0],[11,63,11,67,0],[15,67,15,98,0],[24,16,26,64,0],[27,16,30,30,0]]);
+    </script>
+  </body>
+</html>

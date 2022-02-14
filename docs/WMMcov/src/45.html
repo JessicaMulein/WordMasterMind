@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\RulesDialog.razor</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+@using GameEngine.Blazor.Helpers
+&lt;section&gt;
+    &lt;div class=&quot;modal fade show instructions&quot; id=&quot;instructions&quot;
+        style=&quot;display:block; background-color: rgba(10,10,10,.8);&quot; aria-modal=&quot;true&quot; role=&quot;dialog&quot;&gt;
+        &lt;div class=&quot;modal-dialog&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;modal-header&quot;&gt;
+                    &lt;h4 class=&quot;modal-title&quot;&gt;@Constants.RulesTitle&lt;/h4&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;close&quot; @onclick=&quot;ModalCancel&quot;&gt;&amp;times;&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;modal-body&quot;&gt;
+                    &lt;p&gt;Welcome to &lt;strong&gt;@Library.Helpers.Constants.GameTitle&lt;/strong&gt;!&lt;/p&gt;
+                    &lt;p&gt;
+                        @Library.Helpers.Constants.GameTitle is a variation of &lt;a href=&quot;https://en.wikipedia.org/wiki/Mastermind_(board_game)&quot;&gt;Mastermind&lt;/a&gt;,
+                        popularized by the game Wordle, but with a few differences.
+                    &lt;/p&gt;
+                    &lt;p&gt;In @Library.Helpers.Constants.GameTitle, you can guess and the game will choose a random word length in either the &lt;a href=&quot;https://en.wikipedia.org/wiki/Scrabble&quot;&gt;Scrabble&lt;/a&gt; &lt;a href=&quot;https://scrabble.merriam.com/&quot;&gt;Dictionary&lt;/a&gt;, one of a couple other provided word lists, or we&#39;ve given you the tools to use your own.&lt;/p&gt;
+                    &lt;p&gt;
+                        Words available in the Scrabble dictionary range from 2 letters to 15 letters.
+                    &lt;/p&gt;
+                    &lt;p&gt;Unlike Wordle, the number of tries varies with the word length.&lt;/p&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;One (1) Attempt per letter in the secret word&lt;/li&gt;
+                        &lt;li&gt;One (1) additional Attempt&lt;/li&gt;
+                    &lt;/ul&gt;
+                    &lt;p&gt;
+                        Therefore, a 3 letter word will give you 4 attempts, a 5 letter will give you 6 like Wordle.
+                        A 15 letter word would give you 16 attempts.
+                    &lt;/p&gt;
+                    &lt;p&gt;Guess the word the Mastermind has in mind in within the number of tries.&lt;/p&gt;
+                    &lt;p&gt;Each guess must be a valid word of the correct length. Hit the enter button to submit.&lt;/p&gt;
+                    &lt;p&gt;After each guess, the color of the tiles will change to show how close your guess was to the word.&lt;/p&gt;
+                    &lt;div class=&quot;examples&quot;&gt;
+                        &lt;p&gt;
+                            &lt;strong&gt;Examples&lt;/strong&gt;
+                        &lt;/p&gt;
+                        &lt;div class=&quot;example&quot;&gt;
+                            &lt;div class=&quot;row&quot;&gt;
+                                &lt;GameTile LetterString=&quot;w&quot; LetterEvaluation=&quot;LetterEvaluation.Correct&quot; Reveal=&quot;true&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;e&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;a&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;r&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;y&quot;&gt;&lt;/GameTile&gt;
+                            &lt;/div&gt;
+                            &lt;p&gt;The letter &lt;strong&gt;W&lt;/strong&gt; is in the word and in the correct spot.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;example&quot;&gt;
+                            &lt;div class=&quot;row&quot;&gt;
+                                &lt;GameTile LetterString=&quot;p&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;i&quot; LetterEvaluation=&quot;LetterEvaluation.Present&quot; Reveal=&quot;true&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;l&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;l&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;s&quot;&gt;&lt;/GameTile&gt;
+                            &lt;/div&gt;
+                            &lt;p&gt;The letter &lt;strong&gt;I&lt;/strong&gt; is in the word but in the wrong spot.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;example&quot;&gt;
+                            &lt;div class=&quot;row&quot;&gt;
+                                &lt;GameTile LetterString=&quot;v&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;a&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;g&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;u&quot; LetterEvaluation=&quot;LetterEvaluation.Absent&quot; Reveal=&quot;true&quot;&gt;&lt;/GameTile&gt;
+                                &lt;GameTile LetterString=&quot;e&quot;&gt;&lt;/GameTile&gt;
+                            &lt;/div&gt;
+                            &lt;p&gt;The letter &lt;strong&gt;U&lt;/strong&gt; is not in the word in any spot.&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;scoring&quot;&gt;
+                            &lt;p&gt;Scoring:&lt;/p&gt;
+                            &lt;ul&gt;
+                                &lt;li&gt;Two (2) points per attempt under maximum&lt;/li&gt;
+                                &lt;li&gt;Three (3) additional points each first time a letter is used, it is in the correct position&lt;/li&gt;
+                                &lt;li&gt;One (1) additional point for each new letter, but out of place&lt;/li&gt;
+                                &lt;li&gt;One (1) more point for a previously guessed letter once it is in the correct position&lt;/li&gt;
+                            &lt;/ul&gt;
+                            &lt;p&gt;&lt;small&gt;Scoring subject to change, at least until it is dialed in.&lt;/small&gt;&lt;/p&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;modal-footer&quot;&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;btn btn-primary&quot; @onclick=&quot;ModalOk&quot;&gt;Let&#39;s Play!&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/section&gt;
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[8,46,8,67,0],[12,44,12,80,0],[14,26,14,62,0],[17,28,17,64,0]]);
+    </script>
+  </body>
+</html>

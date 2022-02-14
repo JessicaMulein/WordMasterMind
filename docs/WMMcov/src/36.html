@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Shared\MainLayout.razor</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+@inherits LayoutComponentBase
+
+&lt;div class=&quot;page&quot;&gt;
+    @if (EnableSidebar)
+    {
+        &lt;div class=&quot;sidebar&quot;&gt;
+            &lt;NavMenu/&gt;
+        &lt;/div&gt;
+
+        &lt;main&gt;
+            &lt;article class=&quot;content px-4&quot;&gt;
+                @Body
+            &lt;/article&gt;
+        &lt;/main&gt;
+    }
+    else
+    {
+        &lt;main&gt;
+            @Body
+        &lt;/main&gt;
+    }
+&lt;/div&gt;
+
+@code
+{
+    public bool EnableSidebar { get; private set; } = false;
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[4,6,4,24,0],[5,5,5,6,0],[12,18,12,23,0],[15,5,15,6,0],[17,5,17,6,0],[19,14,19,19,0],[21,5,21,6,0],[26,33,26,37,0],[26,38,26,50,0],[26,55,26,60,0]]);
+    </script>
+  </body>
+</html>

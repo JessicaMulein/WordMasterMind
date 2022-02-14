@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Library\Models\WordMasterMindGame.GameSummary.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System.Net;
+using System.Text;
+using GameEngine.Library.Enumerations;
+using GameEngine.Library.Helpers;
+
+namespace GameEngine.Library.Models;
+
+public partial class GameEngineInstance
+{
+    public string AttemptHistoryEmojiString
+    {
+        get
+        {
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i &lt; this.CurrentAttempt; i++)
+                // join all of the emojis for each attempt and append
+                stringBuilder.AppendLine(
+                    value: string.Concat(
+                        values: this._attempts[i].Details
+                            .Select(selector: a =&gt; a.ToString())));
+
+            return stringBuilder.ToString();
+        }
+    }
+
+    public string PuzzleHeader
+    {
+        get
+        {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append(value: $&quot;{Constants.GameTitle} W{this.WordLength}:&quot;);
+            var puzzleNumber = DailyWordGenerator.PuzzleNumberForWordOfTheDay(
+                word: this.SecretWord,
+                dictionary: this.LiteralDictionary);
+            if (puzzleNumber &gt;= 0)
+            {
+                stringBuilder.Append(value: $&quot;P{puzzleNumber}&quot;);
+            }
+            else
+            {
+                var wordIndex = this.LiteralDictionary.IndexForWord(word: this.SecretWord);
+                stringBuilder.Append(value: $&quot;I{wordIndex}&quot;);
+            }
+
+            stringBuilder.Append(value: $&quot; {this.Attempts.Count()}/{this.MaxAttempts}&quot;);
+            if (this._hardMode)
+                stringBuilder.Append(value: &#39;*&#39;);
+            return stringBuilder.ToString();
+        }
+    }
+
+    public string AttemptHistoryString =&gt; string.Concat(
+        values: new[]
+        {
+            this.PuzzleHeader,
+            Environment.NewLine,
+            this.AttemptHistoryEmojiString,
+            Environment.NewLine,
+        });
+
+    /// &lt;summary&gt;
+    ///     Game score. Higher is better.
+    ///     TODO: https://github.com/WordMasterMind/WordMasterMind/discussions/2#discussioncomment-2144488
+    /// &lt;/summary&gt;
+    public int Score
+    {
+        get
+        {
+            // two points per attempt under maximum
+            var score = 2 * (this.MaxAttempts - this.CurrentAttempt);
+            // three points if the first time a letter is used, it is in the correct position
+            // one point for each new letter out of place
+            // one more point for a previously guessed letter when it is in the correct position
+            var newLetters = new List&lt;char&gt;();
+            foreach (var turn in this._attempts)
+            foreach (var attemptDetail in turn.Details)
+            {
+                var newLetter = !newLetters.Contains(item: attemptDetail.Letter);
+                switch (attemptDetail.Evaluation)
+                {
+                    case LetterEvaluation.Correct:
+                        score += newLetter ? 3 : 1;
+                        newLetters.Add(item: attemptDetail.Letter);
+                        break;
+                    case LetterEvaluation.Present:
+                        score += newLetter ? 1 : 0;
+                        newLetters.Add(item: attemptDetail.Letter);
+                        break;
+                    case LetterEvaluation.Absent:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return score;
+        }
+    }
+
+    private static string GetEmojiFromConst(in string constValue)
+    {
+        return WebUtility.HtmlDecode(value: constValue);
+    }
+
+    public static string GetEmojiFromAttemptDetail(in AttemptLetterDetail attemptLetterDetail)
+    {
+        var emojiColor = attemptLetterDetail.Evaluation switch
+        {
+            LetterEvaluation.Correct =&gt; Constants.GreenSquareEmoji,
+            LetterEvaluation.Present =&gt; Constants.YellowSquareEmoji,
+            _ =&gt; Constants.BlackSquareEmoji,
+        };
+
+        return GetEmojiFromConst(constValue: emojiColor);
+    }
+
+    public static string AttemptToEmojiString(IEnumerable&lt;AttemptLetterDetail&gt; attemptDetails)
+    {
+        var stringBuilder = new StringBuilder();
+        foreach (var attemptDetail in attemptDetails)
+            stringBuilder.Append(value: GetEmojiFromAttemptDetail(attemptLetterDetail: attemptDetail));
+
+        stringBuilder.AppendLine();
+
+        return stringBuilder.ToString();
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[13,9,13,10,0],[14,13,14,53,0],[15,18,15,27,0],[15,29,15,52,0],[15,54,15,57,0],[17,17,20,52,0],[20,52,20,64,0],[20,64,20,68,0],[22,13,22,45,0],[23,9,23,10,0],[29,9,29,10,0],[30,13,30,53,0],[31,13,31,87,0],[32,13,34,53,0],[35,13,35,35,0],[36,13,36,14,0],[37,17,37,65,0],[38,13,38,14,0],[40,13,40,14,0],[41,17,41,92,0],[42,17,42,62,0],[43,13,43,14,0],[45,13,45,89,0],[46,13,46,32,0],[47,17,47,50,0],[48,13,48,45,0],[49,9,49,10,0],[52,43,59,11,0],[68,9,68,10,0],[70,13,70,70,0],[74,13,74,47,0],[75,13,75,20,0],[75,22,75,30,0],[75,31,75,33,0],[75,34,75,48,0],[76,13,76,20,0],[76,22,76,39,0],[76,40,76,42,0],[76,43,76,55,0],[77,13,77,14,0],[78,17,78,82,0],[79,17,79,50,0],[82,25,82,52,0],[83,25,83,68,0],[84,25,84,31,0],[86,25,86,52,0],[87,25,87,68,0],[88,25,88,31,0],[90,25,90,31,0],[92,25,92,65,0],[94,13,94,14,0],[96,13,96,26,0],[97,9,97,10,0],[101,5,101,6,0],[102,9,102,57,0],[103,5,103,6,0],[106,5,106,6,0],[107,9,109,41,0],[109,41,109,67,0],[109,67,110,41,0],[110,41,110,68,0],[110,68,111,18,0],[111,18,111,44,0],[111,44,112,11,0],[114,9,114,58,0],[115,5,115,6,0],[118,5,118,6,0],[119,9,119,49,0],[120,9,120,16,0],[120,18,120,35,0],[120,36,120,38,0],[120,39,120,53,0],[121,13,121,104,0],[123,9,123,36,0],[125,9,125,41,0],[126,5,126,6,0]]);
+    </script>
+  </body>
+</html>

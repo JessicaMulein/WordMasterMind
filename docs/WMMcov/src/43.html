@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\src\GameEngine.Blazor\Components\GameSettingsDialog.razor</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+@using GameEngine.Library.Exceptions
+@using GameEngine.Blazor.Helpers
+&lt;section&gt;
+    &lt;div class=&quot;modal fade show instructions&quot; id=&quot;instructions&quot;
+         style=&quot;display:block; background-color: rgba(10,10,10,.8);&quot; aria-modal=&quot;true&quot; role=&quot;dialog&quot;&gt;
+        &lt;div class=&quot;modal-dialog&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;modal-header&quot;&gt;
+                    &lt;h4 class=&quot;modal-title&quot;&gt;@Constants.SettingsTitle&lt;/h4&gt;
+                    &lt;button type=&quot;button&quot; class=&quot;close&quot; @onclick=&quot;ModalCancel&quot;&gt;&amp;times;&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;modal-body&quot;&gt;
+                    &lt;div class=&quot;row&quot;&gt;
+                        &lt;div class=&quot;form-label&quot;&gt;Night Mode&lt;/div&gt;
+                        &lt;div class=&quot;form-control&quot; @onclick=&quot;ToggleNightMode&quot;&gt;
+                            @if (GameStateMachine.NightMode)
+                            {
+                                &lt;i class=&quot;fas fa-toggle-on&quot;&gt;&lt;/i&gt;
+                            }
+                            else
+                            {
+                                &lt;i class=&quot;fas fa-toggle-off&quot;&gt;&lt;/i&gt;
+                            }
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;row&quot;&gt;
+                        &lt;div class=&quot;form-label&quot;&gt;Hard Mode&lt;/div&gt;
+                        &lt;div class=&quot;form-control&quot; @onclick=&quot;ToggleHardMode&quot;&gt;
+                            @if (GameStateMachine.HardMode)
+                            {
+                                &lt;i class=&quot;fas fa-toggle-on&quot;&gt;&lt;/i&gt;
+                            }
+                            else
+                            {
+                                &lt;i class=&quot;fas fa-toggle-off&quot;&gt;&lt;/i&gt;
+                            }
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;row&quot;&gt;
+                        &lt;div class=&quot;form-label&quot;&gt;@(GameStateMachine.DailyWord ? &quot;Daily Word&quot; : &quot;Random Word&quot;)&lt;/div&gt;
+                        &lt;div class=&quot;form-control&quot; @onclick=&quot;ToggleDailyWord&quot;&gt;
+                            @if (GameStateMachine.DailyWord)
+                            {
+                                &lt;i class=&quot;fas fa-toggle-on&quot;&gt;&lt;/i&gt;
+                            }
+                            else
+                            {
+                                &lt;i class=&quot;fas fa-toggle-off&quot;&gt;&lt;/i&gt;
+                            }
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/section&gt;
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[9,46,9,70,0],[16,30,16,61,0],[17,29,17,30,0],[19,29,19,30,0],[21,29,21,30,0],[23,29,23,30,0],[29,30,29,60,0],[30,29,30,30,0],[32,29,32,30,0],[34,29,34,30,0],[36,29,36,30,0],[40,51,40,109,0],[42,30,42,61,0],[43,29,43,30,0],[45,29,45,30,0],[47,29,47,30,0],[49,29,49,30,0]]);
+    </script>
+  </body>
+</html>
