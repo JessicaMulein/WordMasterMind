@@ -1,10 +1,11 @@
 # WordMasterMind
-- [![.NET](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/dotnet.yml/badge.svg)](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/dotnet.yml)
-- [![CodeQL](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/codeql-analysis.yml)
-- Code Coverage: https://wordmastermind.github.io/WordMasterMind/
-
 - A C# Blazor WebAssembly quick wordle clone based on the scrabble dictionary
 - Self-contained
+- Testing and code coverage:
+  - [![.NET](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/dotnet.yml/badge.svg)](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/dotnet.yml)
+  - [![CodeQL](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/WordMasterMind/WordMasterMind/actions/workflows/codeql-analysis.yml)
+  - Code Coverage: https://wordmastermind.github.io/WordMasterMind/
+
 
 # About
 See: the [About](https://github.com/WordMasterMind/WordMasterMind/wiki/About) page in the Wiki.
