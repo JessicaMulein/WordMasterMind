@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using GameEngine.Library.Enumerations;
 using GameEngine.Library.Exceptions;
 
@@ -62,21 +61,21 @@ public static class GameEnginePlayer
 
         if (avoidSecretWord)
         {
-            var tmp = (excludeWords ?? Array.Empty<string>()).ToList();
-            if (!tmp.Contains(value: mastermind.SecretWord))
+            var enumerable = (excludeWords ?? Array.Empty<string>()).ToList();
+            if (!enumerable.Contains(value: mastermind.SecretWord))
             {
-                tmp.Add(item: mastermind.SecretWord);
-                excludeWords = tmp.ToArray();
+                enumerable.Add(item: mastermind.SecretWord);
+                excludeWords = enumerable;
             }
         }
 
-        return mastermind.LiteralDictionary.FindWord(
-            regex: new Regex(
-                pattern: new string(value: mastermind.SolvedLettersAsChars(filler: '.')),
-                options: RegexOptions.IgnoreCase),
-            puzzleLength: mastermind.WordLength,
-            skipWords: excludeWords,
-            mustIncludeLetters: mustIncludeLetters);
+        return mastermind.LiteralDictionary.FindWords(
+                regex: mastermind.SolvedLettersAsRegex(),
+                wordLength: mastermind.WordLength,
+                maxResults: 1,
+                excludeWords: excludeWords,
+                mustIncludeLetters: mustIncludeLetters)
+            .First();
     }
 
     /// <summary>

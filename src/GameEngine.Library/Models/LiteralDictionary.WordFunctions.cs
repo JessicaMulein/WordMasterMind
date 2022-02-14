@@ -240,42 +240,44 @@ public partial class LiteralDictionary
     ///     Attempts to find a word in the dictionary given some additional constraints
     /// </summary>
     /// <param name="regex"></param>
-    /// <param name="puzzleLength"></param>
-    /// <param name="skipWords"></param>
+    /// <param name="wordLength"></param>
+    /// <param name="maxResults"></param>
+    /// <param name="excludeWords"></param>
     /// <param name="mustIncludeLetters"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="Exception"></exception>
-    public string FindWord(Regex regex, int puzzleLength, IEnumerable<string>? skipWords = null,
+    public IEnumerable<string> FindWords(Regex regex, int wordLength = Constants.StandardLength, int maxResults = -1,
+        IEnumerable<string>? excludeWords = null,
         IEnumerable<char>? mustIncludeLetters = null)
     {
-        var skipWordsArray = skipWords is null ? Array.Empty<string>() : skipWords.ToArray();
+        var skipWordsArray = excludeWords is null ? Array.Empty<string>() : excludeWords.ToArray();
         var mustIncludeLettersArray = mustIncludeLetters is null ? new List<char>() : mustIncludeLetters.ToList();
 
         var length = this.RandomLength(
-            minLength: puzzleLength,
-            maxLength: puzzleLength);
+            minLength: wordLength,
+            maxLength: wordLength);
         var words = this._wordsByLength[key: length]
-            .Where(
-                predicate: w => regex.IsMatch(input: w))
             // check the skip words list
             .Where(
-                predicate: w => !skipWordsArray.Contains(value: w))
+                predicate: word => !skipWordsArray.Contains(value: word))
+            // check solved letters
+            .Where(
+                predicate: word => regex.IsMatch(input: word))
             // check the must include list
             .Where(
-                predicate: w => mustIncludeLettersArray.All(predicate: w.Contains)).ToArray();
+                predicate: word => mustIncludeLettersArray.All(predicate: word.Contains))
+            .ToArray();
 
-        switch (words.Length)
-        {
-            case 0:
-                throw new Exception(message: "No words found");
-            case 1:
-                return words.First();
-            default:
-            {
-                var rnd = new Random();
-                return words[rnd.Next(maxValue: words.Length)];
-            }
-        }
+        Array.Sort(array: words);
+
+        if (maxResults < 0 || maxResults >= words.Length)
+            return words;
+
+        var rnd = new Random();
+        var shuffled = words
+            .OrderBy(keySelector: w => rnd.Next())
+            .ToArray();
+        return shuffled.Take(count: maxResults);
     }
 }

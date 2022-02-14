@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PhantomKit.Helpers;
+using GameEngine.Library.Helpers;
 
 namespace PhantomKit.Test;
 

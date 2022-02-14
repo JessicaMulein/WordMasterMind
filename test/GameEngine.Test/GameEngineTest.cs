@@ -535,4 +535,65 @@ public class GameEngineTest
             expected: HardModeLockedException.MessageText,
             actual: thrownException.Message);
     }
+
+    [TestMethod]
+    public void TestMaximumFlaggedLetters()
+    {
+        var expectedWord = "elegy";
+        var dictionary = TestHelpers.GetWordDictionaryFromTestRoot();
+        var mastermind = new GameEngineInstance(
+            literalDictionary: dictionary,
+            minLength: -1,
+            maxLength: -1,
+            hardMode: false,
+            dailyWordWhenComputer: true,
+            secretWord: expectedWord);
+        var attempt = mastermind.MakeAttempt(wordAttempt: "eerie");
+        // we should only end up with one solved and one present letter
+        Assert.AreEqual(
+            expected: LetterEvaluation.Correct,
+            actual: attempt.Details.ElementAt(index: 0).Evaluation);
+        Assert.AreEqual(
+            expected: LetterEvaluation.Present,
+            actual: attempt.Details.ElementAt(index: 1).Evaluation);
+        for (var i = 2; i < mastermind.WordLength; i++)
+            Assert.AreEqual(
+                expected: LetterEvaluation.Absent,
+                actual: attempt.Details.ElementAt(index: i).Evaluation);
+    }
+
+    [TestMethod]
+    public void TestMaximumFlaggedLettersV2()
+    {
+        var expectedWord = "abbey";
+        var dictionary = TestHelpers.GetWordDictionaryFromTestRoot();
+        var mastermind = new GameEngineInstance(
+            literalDictionary: dictionary,
+            minLength: -1,
+            maxLength: -1,
+            hardMode: false,
+            dailyWordWhenComputer: true,
+            secretWord: expectedWord);
+
+        var attempt = mastermind.MakeAttempt(wordAttempt: "algae");
+        Assert.AreEqual(
+            expected: LetterEvaluation.Correct,
+            actual: attempt.Details.ElementAt(index: 0).Evaluation);
+        Assert.AreEqual(
+            expected: LetterEvaluation.Present,
+            actual: attempt.Details.ElementAt(index: 4).Evaluation);
+        for (var i = 2; i < 4; i++)
+            Assert.AreEqual(
+                expected: LetterEvaluation.Absent,
+                actual: attempt.Details.ElementAt(index: i).Evaluation);
+
+        var attempt2 = mastermind.MakeAttempt(wordAttempt: "keeps");
+        Assert.AreEqual(
+            expected: LetterEvaluation.Present,
+            actual: attempt2.Details.ElementAt(index: 1).Evaluation);
+        for (var i = 2; i < mastermind.WordLength; i++)
+            Assert.AreEqual(
+                expected: LetterEvaluation.Absent,
+                actual: attempt2.Details.ElementAt(index: i).Evaluation);
+    }
 }

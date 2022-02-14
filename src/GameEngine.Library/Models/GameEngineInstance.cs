@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using GameEngine.Library.Enumerations;
 using GameEngine.Library.Exceptions;
 using GameEngine.Library.Helpers;
@@ -9,7 +10,7 @@ public partial class GameEngineInstance
     private readonly List<char> _foundLetters;
 
     /// <summary>
-    ///     Current word being guessed. Randomly selected from the Scrabble dictionary.
+    ///     Current word being guessed. Randomly selected from the dictionary.
     /// </summary>
     private readonly string _secretWord;
 
@@ -150,5 +151,14 @@ public partial class GameEngineInstance
             solvedLetters[i] = this._solvedLetters[i] ? this._secretWord[index: i] : filler;
 
         return solvedLetters;
+    }
+
+    public Regex SolvedLettersAsRegex()
+    {
+        return new(
+            pattern: new string(
+                value: this.SolvedLettersAsChars(
+                    filler: '.')),
+            options: RegexOptions.IgnoreCase);
     }
 }

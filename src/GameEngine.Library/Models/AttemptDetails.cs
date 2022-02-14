@@ -4,11 +4,14 @@ public record AttemptDetails
 {
     public readonly int AttemptNumber;
     public readonly IEnumerable<AttemptLetterDetail> Details;
+    public readonly string Word;
 
-    public AttemptDetails(int attemptNumber, IEnumerable<AttemptLetterDetail> details)
+    public AttemptDetails(int attemptNumber, string word, IEnumerable<AttemptLetterDetail> details)
     {
         this.AttemptNumber = attemptNumber;
-        this.Details = details;
+        var attemptLetterDetails = details as AttemptLetterDetail[] ?? details.ToArray();
+        this.Details = attemptLetterDetails;
+        this.Word = word.ToUpperInvariant();
     }
 
     public string AttemptString => string.Join(
