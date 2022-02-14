@@ -2,572 +2,176 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>C:\s\WordMasterMind\test\GameEngine.Test\GameEngineTest.cs</title>
+    <title>C:\s\WordMasterMind\test\GameEngine.Test\WordDictionaryTest.cs</title>
     <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
   </head>
   <body>
     <pre id="content" class="source-code">
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using GameEngine.Library.Enumerations;
 using GameEngine.Library.Exceptions;
-using GameEngine.Library.Helpers;
 using GameEngine.Library.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace GameEngine.Test;
 
 [TestClass]
-public class GameEngineTest
+public class LiteralDictionaryTest
 {
-    [TestInitialize]
-    public void TestSetup()
+    [TestMethod]
+    public void TestLiteralDictionary()
     {
-        UnitTestDetector.ForceTestMode(value: true);
-    }
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
+        Assert.AreEqual(
+            expected: 279496, // known size of collins scrabble dictionary
+            actual: literalDictionary.WordCount);
 
-    private static Dictionary&lt;int, IEnumerable&lt;string&gt;&gt; GetWordDictionaryDict(LiteralDictionarySource source)
-    {
-        using var stream = LiteralDictionary.OpenFileForRead(
-            fileName: Utilities.GetTestRoot(
-                fileName: source.FileName));
-        return LiteralDictionary.DeserializeToDictionary(inputStream: stream);
-    }
+        // Test word check
+        Assert.IsTrue(condition: literalDictionary.IsWord(word: &quot;hello&quot;));
+        Assert.IsTrue(condition: literalDictionary.IsWord(word: &quot;world&quot;));
+        Assert.IsTrue(condition: literalDictionary.IsWord(word: &quot;scrabble&quot;));
 
-    private static LiteralDictionary GetWordDictionary()
-    {
-        var collinsSource = LiteralDictionarySource.ScrabbleDictionarySource;
-        return new LiteralDictionary(
-            dictionary: GetWordDictionaryDict(
-                source: collinsSource),
-            sourceType: collinsSource.SourceType,
-            description: collinsSource.Description);
-    }
+        // nonsense values
+        Assert.IsFalse(condition: literalDictionary.IsWord(word: &quot;&quot;));
+        // ReSharper disable once StringLiteralTypo
+        Assert.IsFalse(condition: literalDictionary.IsWord(word: &quot;wordle&quot;));
+        Assert.IsFalse(condition: literalDictionary.IsWord(word: &quot;z&quot;));
+        // ReSharper disable once StringLiteralTypo
+        Assert.IsFalse(condition: literalDictionary.IsWord(word: &quot;zzzzzzzzzzzzz&quot;));
 
-    /// &lt;summary&gt;
-    ///     Inspects an attempt result and makes sure it is valid.
-    /// &lt;/summary&gt;
-    /// &lt;param name=&quot;knownSecretWord&quot;&gt;&lt;/param&gt;
-    /// &lt;param name=&quot;attemptDetails&quot;&gt;&lt;/param&gt;
-    private static void VerifyTestAttempt(string knownSecretWord, AttemptDetails attemptDetails)
-    {
-        var positionIndex = 0;
-        foreach (var position in attemptDetails)
+        // Test random words
+        var minLength = 3;
+        var maxLength = 5;
+        var testWordCount = 10;
+        for (var i = 0; i &lt; testWordCount; i++)
         {
-            var correspondingSecretLetter = knownSecretWord[index: positionIndex++];
-            var letterMatch = knownSecretWord.Contains(value: position.Letter);
-            var positionMatch = position.Letter.Equals(obj: correspondingSecretLetter);
-            var expected = positionMatch
-                ? LetterEvaluation.Correct
-                : letterMatch
-                    ? LetterEvaluation.Present
-                    : LetterEvaluation.Absent;
-            Assert.AreEqual(
-                expected: expected,
-                actual: position.Evaluation);
+            var word = literalDictionary.GetRandomWord(
+                minLength: minLength,
+                maxLength: maxLength);
+            Assert.IsTrue(condition: word.Length &gt;= minLength &amp;&amp; word.Length &lt;= maxLength);
+            Assert.IsTrue(condition: literalDictionary.IsWord(word: word));
         }
+
+        // our scrabble json has 2-15 characters
+        Assert.AreEqual(expected: 2,
+            actual: literalDictionary.ShortestWordLength);
+        Assert.AreEqual(expected: 15,
+            actual: literalDictionary.LongestWordLength);
     }
 
     [TestMethod]
-    public void TestGameEngineWordTooShort()
+    public void TestRandomWordLengthUpperLimit()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var thrownException = Assert.ThrowsException&lt;InvalidLengthException&gt;(action: () =&gt;
-            new GameEngineInstance(
-                literalDictionary: literalDictionary,
-                minLength: Constants.StandardLength,
-                maxLength: Constants.StandardLength,
-                hardMode: false,
-                dailyWordWhenComputer: true,
-                // secretWord is valid, but not long enough
-                secretWord: literalDictionary.GetRandomWord(
-                    minLength: 3,
-                    maxLength: Constants.StandardLength - 1)));
+            literalDictionary.GetRandomWord(minLength: literalDictionary.LongestWordLength + 1,
+                maxLength: literalDictionary.LongestWordLength + 1));
         Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
     }
 
     [TestMethod]
-    public void TestGameEngineWordTooLong()
+    public void TestRandomWordLengthLowerLimit()
     {
-        var literalDictionary = GetWordDictionary();
+        var literalDictionary = TestHelpers.GetWordDictionaryFromTestRoot();
         var thrownException = Assert.ThrowsException&lt;InvalidLengthException&gt;(action: () =&gt;
-            new GameEngineInstance(
-                literalDictionary: literalDictionary,
-                minLength: Constants.StandardLength,
-                maxLength: Constants.StandardLength,
-                hardMode: false,
-                dailyWordWhenComputer: true,
-                // secretWord is valid, but too long
-                secretWord: literalDictionary.GetRandomWord(minLength: Constants.StandardLength + 1,
-                    maxLength: Constants.StandardLength + 1)));
+            literalDictionary.GetRandomWord(
+                minLength: literalDictionary.ShortestWordLength - 1,
+                maxLength: literalDictionary.ShortestWordLength - 1));
         Assert.AreEqual(expected: InvalidLengthException.MessageText,
             actual: thrownException.Message);
     }
 
     [TestMethod]
-    public void TestGameEngineWordNotInDictionary()
+    public void TestDailyWordGenerator()
     {
-        // secretWord is made up word not in dictionary
-        const string expectedSecretWord = &quot;fizzbuzz&quot;;
-        var literalDictionary = GetWordDictionary();
-        var thrownException = Assert.ThrowsException&lt;NotInDictionaryException&gt;(action: () =&gt;
-            new GameEngineInstance(
-                literalDictionary: literalDictionary,
-                minLength: 8,
-                maxLength: 8,
-                hardMode: false,
-                dailyWordWhenComputer: true,
-                secretWord: expectedSecretWord));
-        Assert.AreEqual(expected: NotInDictionaryException.MessageText,
-            actual: thrownException.Message);
-    }
+        var literalDictionary =
+            TestHelpers.GetWordDictionaryFromTestRoot(sourceType: LiteralDictionarySourceType.CollinsScrabble);
 
-    [TestMethod]
-    public void TestGameEngineAttemptLengthMismatch()
-    {
-        var literalDictionary = GetWordDictionary();
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: Constants.StandardLength,
-            maxLength: Constants.StandardLength,
-            hardMode: false,
-            dailyWordWhenComputer: true,
-            secretWord: null);
+        var dayOneWord = DailyWordGenerator.WordOfTheDay(
+            date: DailyWordGenerator.WordGeneratorEpoch,
+            length: 5,
+            dictionary: literalDictionary);
         Assert.AreEqual(
-            expected: Constants.StandardLength,
-            actual: mastermind.WordLength);
-        Assert.AreEqual(
-            expected: false,
-            actual: mastermind.HardMode);
-        var thrownException = Assert.ThrowsException&lt;InvalidAttemptLengthException&gt;(action: () =&gt;
-            mastermind.MakeAttempt(
-                wordAttempt: literalDictionary.GetRandomWord(
-                    minLength: Constants.StandardLength + 1,
-                    maxLength: Constants.StandardLength + 1)));
-        Assert.AreEqual(expected: InvalidAttemptLengthException.MessageText,
-            actual: thrownException.Message);
-    }
-
-    [TestMethod]
-    public void TestGameEngineAttemptCorrect()
-    {
-        var rnd = new Random();
-        var length = rnd.Next(minValue: 3,
-            maxValue: 5);
-        var literalDictionary = GetWordDictionary();
-        var secretWord = literalDictionary.GetRandomWord(minLength: length,
-            maxLength: length);
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: length,
-            maxLength: length,
-            hardMode: false,
-            dailyWordWhenComputer: true,
-            secretWord: secretWord);
-        Assert.AreEqual(
-            expected: length,
-            actual: mastermind.WordLength);
-        Assert.AreEqual(
-            expected: false,
-            actual: mastermind.HardMode);
-        var attempt = mastermind.MakeAttempt(wordAttempt: secretWord);
-        Assert.IsTrue(condition: mastermind.GameOver);
-        Assert.IsTrue(condition: mastermind.Solved);
-        VerifyTestAttempt(knownSecretWord: secretWord,
-            attemptDetails: attempt);
-        Assert.AreEqual(
-            expected: mastermind.CurrentAttempt,
-            actual: mastermind.Attempts.Count());
-    }
-
-    [TestMethod]
-    public void TestGameEngineTooManyAttempts()
-    {
-        var rnd = new Random();
-        var length = rnd.Next(minValue: 3,
-            maxValue: 5);
-        var literalDictionary = GetWordDictionary();
-        var secretWord = literalDictionary.GetRandomWord(minLength: length,
-            maxLength: length);
-        var incorrectWord = secretWord;
-        while (incorrectWord.Equals(value: secretWord))
-            incorrectWord = literalDictionary.GetRandomWord(minLength: length,
-                maxLength: length);
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: length,
-            maxLength: length,
-            hardMode: false,
-            dailyWordWhenComputer: true,
-            secretWord: secretWord);
-        Assert.AreEqual(
-            expected: length,
-            actual: mastermind.WordLength);
-        Assert.AreEqual(
-            expected: false,
-            actual: mastermind.HardMode);
-        for (var i = 0;
-             i &lt; GameEngineInstance.GetMaxAttemptsForLength(
-                 length: length);
-             i++)
-        {
-            GameEnginePlayer.AttemptComputerSolve(
-                mastermind: mastermind,
-                turns: 1,
-                maximumDictionaryLookupAttemptsPerTry: GameEnginePlayer.DefaultTries,
-                noStrategy: false,
-                avoidSecretWord: true);
-            var attempt = mastermind.Attempts.Last();
-            VerifyTestAttempt(knownSecretWord: secretWord,
-                attemptDetails: attempt);
-            Assert.AreEqual(
-                expected: mastermind.CurrentAttempt,
-                actual: mastermind.Attempts.Count());
-            Assert.AreEqual(
-                expected: i + 1,
-                actual: attempt.AttemptNumber);
-        }
-
-        Assert.IsTrue(condition: mastermind.GameOver);
-        Assert.IsFalse(condition: mastermind.Solved);
-        var thrownException =
-            Assert.ThrowsException&lt;GameOverException&gt;(action: () =&gt; mastermind.MakeAttempt(wordAttempt: &quot;wrong&quot;));
-        Assert.IsFalse(condition: thrownException.Solved);
-        Assert.AreEqual(
-            expected: GameOverException.GameOverText,
-            actual: thrownException.Message);
-
-        // our Computer player needs to cover this same case where the game is over for test coverage
-        var thrownGuessException = Assert.ThrowsException&lt;GameOverException&gt;(action: ()
-            =&gt; GameEnginePlayer.AttemptComputerSolve(
-                mastermind: mastermind,
-                turns: 1));
-        Assert.IsFalse(condition: thrownGuessException.Solved);
-        Assert.AreEqual(
-            expected: GameOverException.GameOverText,
-            actual: thrownGuessException.Message);
-    }
-
-    [TestMethod]
-    public void TestGameEngineWithProvidedRandomWordAndInvalidAttempt()
-    {
-        var literalDictionary = GetWordDictionary();
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: Constants.StandardLength,
-            maxLength: Constants.StandardLength,
-            hardMode: false,
-            dailyWordWhenComputer: true);
-        Assert.AreEqual(
-            expected: Constants.StandardLength,
-            actual: mastermind.WordLength);
-        Assert.AreEqual(
-            expected: false,
-            actual: mastermind.HardMode);
-        var secretWord = mastermind.SecretWord.ToUpperInvariant();
-        Assert.AreEqual(
-            expected: Constants.StandardLength,
-            actual: secretWord.Length);
-        // a word of all z&#39;s is extremely unlikely to be a valid word in any dictionary
-        var invalidSecretWord = string.Empty.PadLeft(
-            totalWidth: Constants.StandardLength,
-            paddingChar: &#39;z&#39;);
-        var thrownAssertion = Assert.ThrowsException&lt;NotInDictionaryException&gt;(action: () =&gt;
-            mastermind.MakeAttempt(wordAttempt: invalidSecretWord));
-        Assert.AreEqual(
-            expected: NotInDictionaryException.MessageText,
-            actual: thrownAssertion.Message);
-    }
-
-    [TestMethod]
-    public void TestGameEngineHardModeCorrect()
-    {
-        var literalDictionary = GetWordDictionary();
-        const string expectedWord = &quot;while&quot;;
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: expectedWord.Length,
-            maxLength: expectedWord.Length,
-            hardMode: true,
-            dailyWordWhenComputer: true,
-            secretWord: expectedWord);
-        Assert.AreEqual(
-            expected: expectedWord.Length,
-            actual: mastermind.WordLength);
-        Assert.AreEqual(
-            expected: true,
-            actual: mastermind.HardMode);
-        // a first attempt of where should lock in three letters, &#39;w&#39;, &#39;h&#39;, and the final &#39;e&#39;
-        var attempt = mastermind.MakeAttempt(wordAttempt: &quot;where&quot;);
-        VerifyTestAttempt(knownSecretWord: mastermind.SecretWord,
-            attemptDetails: attempt);
-        Assert.AreEqual(
-            expected: mastermind.CurrentAttempt,
-            actual: mastermind.Attempts.Count());
-        // this should throw an exception because we&#39;ve changed the &#39;w&#39; to &#39;t&#39; in a locked position, and 
-        var thrownException =
-            Assert.ThrowsException&lt;HardModeException&gt;(action: () =&gt; mastermind.MakeAttempt(wordAttempt: &quot;there&quot;));
-        Assert.AreEqual(
+            // ReSharper disable once StringLiteralTypo
             expected:
-            $&quot;{Utilities.NumberToOrdinal(number: Utilities.HumanizeIndex(index: thrownException.LetterPosition))} letter must be {thrownException.Letter}&quot;,
-            actual: thrownException.Message);
+            &quot;AAHED&quot;, // this is the 3rd word in the scrabble dictionary, given the seed system, this is unlikely to be correct
+            actual: dayOneWord);
+
+        var oneYearWord = DailyWordGenerator.WordOfTheDay(
+            date: DailyWordGenerator.WordGeneratorEpoch.AddYears(value: 1),
+            length: 5,
+            dictionary: literalDictionary);
+        Assert.AreEqual(
+            // ReSharper disable once StringLiteralTypo
+            expected: &quot;JOKED&quot;,
+            actual: oneYearWord);
     }
 
     [TestMethod]
-    public void TestGameEngineHardModePresent()
+    public void TestBinarySerializationAndLoading()
     {
-        var literalDictionary = GetWordDictionary();
-        const string expectedWord = &quot;while&quot;;
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: expectedWord.Length,
-            maxLength: expectedWord.Length,
-            hardMode: true,
-            dailyWordWhenComputer: true,
-            secretWord: expectedWord);
+        var dictionary = TestHelpers.GetWordDictionaryFromTestRoot();
+        var binaryOutputFile = Path.GetTempFileName();
+        File.Delete(path: binaryOutputFile);
+        Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
+
+        var wordsAdded = dictionary.Serialize(outputFilename: binaryOutputFile);
         Assert.AreEqual(
-            expected: expectedWord.Length,
-            actual: mastermind.WordLength);
+            expected: dictionary.WordCount,
+            actual: wordsAdded);
+        Assert.IsTrue(condition: File.Exists(path: binaryOutputFile));
+
+        var dictionary2 = LiteralDictionary.Deserialize(
+            sourceType: dictionary.SourceType,
+            inputStream: LiteralDictionary.OpenFileForRead(fileName: binaryOutputFile));
         Assert.AreEqual(
-            expected: true,
-            actual: mastermind.HardMode);
-        // a first attempt of &#39;liars&#39; should mark the &#39;i&#39; and &#39;l&#39; as present
-        var attempt = mastermind.MakeAttempt(wordAttempt: &quot;liars&quot;);
-        VerifyTestAttempt(knownSecretWord: mastermind.SecretWord,
-            attemptDetails: attempt);
-        Assert.AreEqual(
-            expected: mastermind.CurrentAttempt,
-            actual: mastermind.Attempts.Count());
-        // this should throw an exception because we&#39;ve not guessed the &#39;i&#39; and &#39;l&#39; this attempt
-        // will throw on the I as I comes before L in the alphabet and the internal list is sorted
-        var thrownException =
-            Assert.ThrowsException&lt;HardModeException&gt;(action: () =&gt; mastermind.MakeAttempt(wordAttempt: &quot;doors&quot;));
-        Assert.AreEqual(
-            expected:
-            &quot;Guess must contain I&quot;,
-            actual: thrownException.Message);
+            expected: dictionary2.WordCount,
+            actual: dictionary.WordCount);
+        File.Delete(path: binaryOutputFile);
+        Assert.IsFalse(condition: File.Exists(path: binaryOutputFile));
     }
 
     [TestMethod]
-    public void TestAttemptsToString()
+    public void TestDailyPuzzleNumberEpoch()
     {
-        var literalDictionary = GetWordDictionary();
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: Constants.StandardLength,
-            maxLength: Constants.StandardLength,
-            hardMode: false,
-            dailyWordWhenComputer: true);
         Assert.AreEqual(
-            expected: Constants.StandardLength,
-            actual: mastermind.WordLength);
-        Assert.AreEqual(
-            expected: false,
-            actual: mastermind.HardMode);
-        GameEnginePlayer.AttemptComputerSolve(mastermind: mastermind,
-            turns: mastermind.MaxAttempts - 1);
-        Assert.AreEqual(
-            expected: mastermind.CurrentAttempt,
-            actual: mastermind.Attempts.Count());
+            expected: 1,
+            actual: DailyWordGenerator.PuzzleNumber(date: DailyWordGenerator.WordGeneratorEpoch));
     }
 
-    [TestMethod]
-    public void TestSolvedLetters()
+    [DataTestMethod]
+    [DataRow(data1: LiteralDictionarySourceType.Crossword,
+        2,
+        22,
+        62799)]
+    [DataRow(data1: LiteralDictionarySourceType.CollinsScrabble,
+        2,
+        15,
+        279496)]
+    [DataRow(data1: LiteralDictionarySourceType.English,
+        1,
+        31,
+        370103)]
+    public void TestDictionarySources(LiteralDictionarySourceType sourceType, int expectedShortestWord,
+        int expectedLongestWord, int expectedTotalWords)
     {
-        const string expectedWord = &quot;HELLO&quot;;
-        var literalDictionary = GetWordDictionary();
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: expectedWord.Length,
-            maxLength: expectedWord.Length,
-            hardMode: false,
-            dailyWordWhenComputer: true,
-            secretWord: expectedWord);
+        var dictionary = TestHelpers.GetWordDictionaryFromTestRoot(sourceType: sourceType);
         Assert.AreEqual(
-            expected: expectedWord.Length,
-            actual: mastermind.WordLength);
+            expected: expectedShortestWord,
+            actual: dictionary.ShortestWordLength);
         Assert.AreEqual(
-            expected: false,
-            actual: mastermind.HardMode);
-        // a first guess of &quot;weigh&quot; should register &quot;e&quot; as a solved letter, regardless of hardmode, and &quot;h&quot; as a solved letter
-        var attempt = mastermind.MakeAttempt(wordAttempt: &quot;WEIGH&quot;);
-        VerifyTestAttempt(
-            knownSecretWord: mastermind.SecretWord,
-            attemptDetails: attempt);
+            expected: expectedLongestWord,
+            actual: dictionary.LongestWordLength);
         Assert.AreEqual(
-            expected: mastermind.CurrentAttempt,
-            actual: mastermind.Attempts.Count());
-        Assert.IsTrue(
-            condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {false, true, false, false, false}));
-        Assert.IsTrue(
-            condition: mastermind.FoundLetters.SequenceEqual(second: new[] {&#39;E&#39;, &#39;H&#39;}));
-        // now let&#39;s solve it
-        attempt = mastermind.MakeAttempt(wordAttempt: expectedWord);
-        VerifyTestAttempt(
-            knownSecretWord: mastermind.SecretWord,
-            attemptDetails: attempt);
-        Assert.AreEqual(
-            expected: mastermind.CurrentAttempt,
-            actual: mastermind.Attempts.Count());
-        Assert.IsTrue(
-            condition: mastermind.SolvedLetters.SequenceEqual(second: new[] {true, true, true, true, true}));
-        Assert.IsTrue(condition: mastermind.GameOver);
-        Assert.IsTrue(condition: mastermind.Solved);
-    }
-
-    [TestMethod]
-    public void TestAttemptsFunction()
-    {
-        var literalDictionary = GetWordDictionary();
-        foreach (var hardMode in new[] {false, true})
-            for (var length = literalDictionary.ShortestWordLength;
-                 length &lt;= literalDictionary.LongestWordLength;
-                 length++)
-            {
-                var attemptsForLength = GameEngineInstance.GetMaxAttemptsForLength(
-                    length: length);
-                Assert.AreEqual(
-                    expected: length + 1,
-                    actual: attemptsForLength);
-            }
-    }
-
-    [TestMethod]
-    public void TestSecretWordWithoutIsDebug()
-    {
-        UnitTestDetector.ForceTestMode(value: false);
-        const string expectedWord = &quot;HELLO&quot;;
-        var literalDictionary = GetWordDictionary();
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: expectedWord.Length,
-            maxLength: expectedWord.Length,
-            hardMode: false,
-            dailyWordWhenComputer: true,
-            secretWord: expectedWord);
-        Assert.AreEqual(
-            expected: string.Empty,
-            actual: mastermind.SecretWord);
-        mastermind.MakeAttempt(wordAttempt: expectedWord);
-        Assert.AreEqual(
-            expected: expectedWord,
-            actual: mastermind.SecretWord);
-    }
-
-    [TestMethod]
-    public void TestDailywordFalse()
-    {
-        var collinsSource = LiteralDictionarySource.ScrabbleDictionarySource;
-        var dictionaryMock = new Mock&lt;LiteralDictionary&gt;(
-            GetWordDictionaryDict(
-                source: collinsSource),
-            collinsSource.SourceType,
-            collinsSource.Description
-        )
-        {
-            CallBase = true,
-        };
-        var randomLength = dictionaryMock.Object.RandomLength();
-
-        dictionaryMock
-            .Setup(expression: d
-                =&gt; d.GetRandomWord(
-                    It.Is&lt;int&gt;(l =&gt; l.Equals(randomLength)),
-                    It.Is&lt;int&gt;(l =&gt; l.Equals(randomLength)))).CallBase();
-
-        var mastermind = new GameEngineInstance(
-            literalDictionary: dictionaryMock.Object,
-            minLength: randomLength,
-            maxLength: randomLength,
-            hardMode: false,
-            dailyWordWhenComputer: false,
-            secretWord: null);
-        dictionaryMock.VerifyAll();
-        dictionaryMock.VerifyNoOtherCalls();
-    }
-
-    [TestMethod]
-    public void TestDailyWordTrue()
-    {
-        var collinsSource = LiteralDictionarySource.ScrabbleDictionarySource;
-        var dictionaryMock = new Mock&lt;LiteralDictionary&gt;(
-            GetWordDictionaryDict(
-                source: collinsSource),
-            collinsSource.SourceType,
-            collinsSource.Description
-        )
-        {
-            CallBase = true,
-        };
-        var randomLength = dictionaryMock.Object.RandomLength();
-        var expectedWordIndex = DailyWordGenerator.WordIndexForDay(
-            dictionaryDescription: collinsSource.Description,
-            wordLength: randomLength,
-            wordsForLength: dictionaryMock.Object.WordsForLength(length: randomLength).Count(),
-            date: null);
-        /*
-         *         return dictionary.WordAtIndex(
-            length: length,
-            wordIndex: WordIndexForDay(
-                dictionaryDescription: dictionary.Description,
-                wordLength: length,
-                wordsForLength: dictionary.WordCountForLength(
-                    length: length),
-                date: date));
-         */
-        dictionaryMock
-            .Setup(expression: d
-                =&gt; d.WordAtIndex(
-                    It.Is&lt;int&gt;(length =&gt; length.Equals(randomLength)),
-                    It.Is&lt;int&gt;(index =&gt; index.Equals(expectedWordIndex)))).CallBase();
-
-        var mastermind = new GameEngineInstance(
-            literalDictionary: dictionaryMock.Object,
-            minLength: randomLength,
-            maxLength: randomLength,
-            hardMode: false,
-            dailyWordWhenComputer: true,
-            secretWord: null);
-        dictionaryMock.VerifyAll();
-        dictionaryMock.VerifyNoOtherCalls();
-    }
-
-    [TestMethod]
-    public void TestGameEngineHardModeChangeException()
-    {
-        var literalDictionary = GetWordDictionary();
-        var mastermind = new GameEngineInstance(
-            literalDictionary: literalDictionary,
-            minLength: -1,
-            maxLength: -1,
-            hardMode: false);
-        Assert.AreEqual(
-            expected: false,
-            actual: mastermind.HardMode);
-
-        // set hard mode before first attempt
-        mastermind.HardMode = true;
-
-        // make the first attempt
-        var attempt = mastermind.MakeAttempt(wordAttempt: &quot;where&quot;);
-        VerifyTestAttempt(knownSecretWord: mastermind.SecretWord,
-            attemptDetails: attempt);
-
-        // this should throw an exception because we tried to change hard mode after making an attempt
-        var thrownException =
-            Assert.ThrowsException&lt;HardModeLockedException&gt;(action: () =&gt; mastermind.HardMode = false);
-        Assert.AreEqual(
-            expected: HardModeLockedException.MessageText,
-            actual: thrownException.Message);
+            expected: expectedTotalWords,
+            actual: dictionary.WordCount);
     }
 }
     </pre>
     <script type="text/javascript">
-      highlightRanges([[18,5,18,6,1],[19,9,19,53,1],[20,5,20,6,1],[23,5,23,6,1],[24,9,26,45,1],[27,9,27,79,1],[28,5,28,6,1],[31,5,31,6,1],[32,9,32,78,1],[33,9,37,53,1],[38,5,38,6,1],[46,5,46,6,1],[47,9,47,31,1],[48,9,48,16,1],[48,18,48,30,1],[48,31,48,33,1],[48,34,48,48,1],[49,9,49,10,1],[50,13,50,85,1],[51,13,51,80,1],[52,13,52,88,1],[53,13,57,47,1],[58,13,60,46,1],[61,9,61,10,1],[62,5,62,6,1],[66,5,66,6,1],[67,9,67,53,1],[68,9,69,13,1],[69,13,78,62,1],[78,62,78,64,1],[79,9,80,46,1],[81,5,81,6,1],[85,5,85,6,1],[86,9,86,53,1],[87,9,88,13,1],[88,13,96,62,1],[96,62,96,64,1],[97,9,98,46,1],[99,5,99,6,1],[103,5,103,6,1],[106,9,106,53,1],[107,9,108,13,1],[108,13,114,48,1],[114,48,114,50,1],[115,9,116,46,1],[117,5,117,6,1],[121,5,121,6,1],[122,9,122,53,1],[123,9,129,31,1],[130,9,132,44,1],[133,9,135,42,1],[136,9,137,13,1],[137,13,140,62,1],[140,62,140,64,1],[141,9,142,46,1],[143,5,143,6,1],[147,5,147,6,1],[148,9,148,32,1],[149,9,150,26,1],[151,9,151,53,1],[152,9,153,32,1],[154,9,160,37,1],[161,9,163,44,1],[164,9,166,42,1],[167,9,167,71,1],[168,9,168,55,1],[169,9,169,53,1],[170,9,171,38,1],[172,9,174,50,1],[175,5,175,6,1],[179,5,179,6,1],[180,9,180,32,1],[181,9,182,26,1],[183,9,183,53,1],[184,9,185,32,1],[186,9,186,40,1],[187,9,187,56,1],[188,13,189,36,1],[190,9,196,37,1],[197,9,199,44,1],[200,9,202,42,1],[203,14,203,23,1],[204,14,205,33,1],[206,14,206,17,1],[207,9,207,10,1],[208,13,213,40,1],[214,13,214,54,1],[215,13,216,42,1],[217,13,219,54,1],[220,13,222,48,1],[223,9,223,10,1],[225,9,225,55,1],[226,9,226,54,1],[227,9,228,69,1],[228,69,228,113,1],[228,113,228,115,1],[229,9,229,59,1],[230,9,232,46,1],[235,9,236,16,1],[236,16,238,26,1],[238,26,238,28,1],[239,9,239,64,1],[240,9,242,51,1],[243,5,243,6,1],[247,5,247,6,1],[248,9,248,53,1],[249,9,254,42,1],[255,9,257,44,1],[258,9,260,42,1],[261,9,261,67,1],[262,9,264,40,1],[266,9,268,31,1],[269,9,270,13,1],[270,13,270,67,1],[270,67,270,69,1],[271,9,273,46,1],[274,5,274,6,1],[278,5,278,6,1],[279,9,279,53,1],[281,9,287,39,1],[288,9,290,44,1],[291,9,293,42,1],[295,9,295,68,1],[296,9,297,38,1],[298,9,300,50,1],[302,9,303,69,1],[303,69,303,113,1],[303,113,303,115,1],[304,9,307,46,1],[308,5,308,6,1],[312,5,312,6,1],[313,9,313,53,1],[315,9,321,39,1],[322,9,324,44,1],[325,9,327,42,1],[329,9,329,68,1],[330,9,331,38,1],[332,9,334,50,1],[337,9,338,69,1],[338,69,338,113,1],[338,113,338,115,1],[339,9,342,46,1],[343,5,343,6,1],[347,5,347,6,1],[348,9,348,53,1],[349,9,354,42,1],[355,9,357,44,1],[358,9,360,42,1],[361,9,362,48,1],[363,9,365,50,1],[366,5,366,6,1],[370,5,370,6,1],[372,9,372,53,1],[373,9,379,39,1],[380,9,382,44,1],[383,9,385,42,1],[387,9,387,68,1],[388,9,390,38,1],[391,9,393,50,1],[394,9,395,114,1],[396,9,397,89,1],[399,9,399,69,1],[400,9,402,38,1],[403,9,405,50,1],[406,9,407,110,1],[408,9,408,55,1],[409,9,409,53,1],[410,5,410,6,1],[414,5,414,6,1],[415,9,415,53,1],[416,9,416,16,1],[416,18,416,30,1],[416,31,416,33,1],[416,34,416,53,1],[417,18,417,67,1],[418,18,418,63,1],[419,18,419,26,1],[420,13,420,14,1],[421,17,422,37,1],[423,17,425,48,1],[426,13,426,14,1],[427,5,427,6,1],[431,5,431,6,1],[432,9,432,54,1],[434,9,434,53,1],[435,9,441,39,1],[442,9,444,44,1],[445,9,445,59,1],[446,9,448,44,1],[449,5,449,6,1],[453,5,453,6,1],[454,9,454,78,1],[455,9,463,11,1],[464,9,464,65,1],[466,9,470,74,1],[472,9,478,31,1],[479,9,479,36,1],[480,9,480,45,1],[481,5,481,6,1],[485,5,485,6,1],[486,9,486,78,1],[487,9,495,11,1],[496,9,496,65,1],[497,9,501,25,1],[512,9,516,87,1],[518,9,524,31,1],[525,9,525,36,1],[526,9,526,45,1],[527,5,527,6,1],[531,5,531,6,1],[532,9,532,53,1],[533,9,537,30,1],[538,9,540,42,1],[543,9,543,36,1],[546,9,546,68,1],[547,9,548,38,1],[551,9,552,75,1],[552,75,552,102,1],[552,102,552,104,1],[553,9,555,46,1],[556,5,556,6,1]]);
+      highlightRanges([[14,5,14,6,1],[15,9,15,77,1],[16,9,18,50,1],[21,9,21,75,1],[22,9,22,75,1],[23,9,23,78,1],[26,9,26,71,1],[28,9,28,77,1],[29,9,29,72,1],[31,9,31,84,1],[34,9,34,27,1],[35,9,35,27,1],[36,9,36,32,1],[37,14,37,23,1],[37,25,37,42,1],[37,44,37,47,1],[38,9,38,10,1],[39,13,41,39,1],[42,13,42,92,1],[43,13,43,76,1],[44,9,44,10,1],[47,9,48,59,1],[49,9,50,58,1],[51,5,51,6,1],[55,5,55,6,1],[56,9,56,77,1],[57,9,58,13,1],[58,13,59,68,1],[59,68,59,70,1],[60,9,61,46,1],[62,5,62,6,1],[66,5,66,6,1],[67,9,67,77,1],[68,9,69,13,1],[69,13,71,69,1],[71,69,71,71,1],[72,9,73,46,1],[74,5,74,6,1],[78,5,78,6,1],[79,9,80,112,1],[82,9,85,44,1],[86,9,90,33,1],[92,9,95,44,1],[96,9,99,34,1],[100,5,100,6,1],[104,5,104,6,1],[105,9,105,70,1],[106,9,106,55,1],[107,9,107,45,1],[108,9,108,72,1],[110,9,110,81,1],[111,9,113,33,1],[114,9,114,71,1],[116,9,118,89,1],[119,9,121,43,1],[122,9,122,45,1],[123,9,123,72,1],[124,5,124,6,1],[128,5,128,6,1],[129,9,131,99,1],[132,5,132,6,1],[149,5,149,6,1],[150,9,150,92,1],[151,9,153,52,1],[154,9,156,51,1],[157,9,159,43,1],[160,5,160,6,1]]);
     </script>
   </body>
 </html>

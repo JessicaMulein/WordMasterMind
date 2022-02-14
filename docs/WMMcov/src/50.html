@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\s\WordMasterMind\test\GameEngine.Test\Crc32Test.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+using System;
+using GameEngine.Library.Helpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace GameEngine.Test;
+
+[TestClass]
+public class Crc32Test
+{
+    // ReSharper disable once StringLiteralTypo
+    [DataTestMethod]
+    [DataRow(data1: &quot;54686520717569636B2062726F776E20666F78206A756D7073206F76657220746865206C617A7920646F67&quot;,
+        0x414FA339U)]
+    [DataRow(data1: &quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,
+        0x190A55ADU)]
+    [DataRow(data1: &quot;FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF&quot;,
+        0xFF6CAB0BU)]
+    [DataRow(data1: &quot;000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F&quot;,
+        0x91267E8AU)]
+    public void TestCrc32KnownHashes(string hexString, uint expected)
+    {
+        var data = new byte[hexString.Length / 2];
+        for (int offset = 0, dataOffset = 0; offset &lt; hexString.Length; offset += 2)
+            data[dataOffset++] = Convert.ToByte(
+                value: hexString.Substring(
+                    startIndex: offset,
+                    length: 2),
+                fromBase: 16);
+
+        var actual = Crc32.ComputeChecksum(bytes: data);
+        Assert.AreEqual(
+            expected: expected,
+            actual: actual);
+    }
+
+    [TestMethod]
+    public void TestNullThrows()
+    {
+        Assert.ThrowsException&lt;ArgumentNullException&gt;(
+            action: () =&gt; Crc32.ComputeChecksum(bytes: null));
+    }
+}
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[21,5,21,6,1],[22,9,22,51,1],[23,14,23,28,1],[23,30,23,44,1],[23,46,23,71,1],[23,73,23,84,1],[24,13,28,31,1],[30,9,30,57,1],[31,9,33,29,1],[34,5,34,6,1],[38,5,38,6,1],[39,9,40,27,1],[40,27,40,61,1],[40,61,40,63,1],[41,5,41,6,1]]);
+    </script>
+  </body>
+</html>

@@ -8,35 +8,13 @@
   </head>
   <body>
     <pre id="content" class="source-code">
-using System.Diagnostics;
 using System.Globalization;
-using System.Reflection;
 using static System.Threading.Thread;
 
 namespace GameEngine.Library.Helpers;
 
 public static class Utilities
 {
-    /// &lt;summary&gt;
-    ///     Gets the path to the test project&#39;s root directory.
-    /// &lt;/summary&gt;
-    public static string GetTestRoot(string? fileName = null)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        var startupPath = Path.GetDirectoryName(path: assembly.Location);
-        Debug.Assert(condition: startupPath != null,
-            message: nameof(startupPath) + &quot; != null&quot;);
-        var pathItems = startupPath.Split(separator: Path.DirectorySeparatorChar);
-        var pos = pathItems.Reverse().ToList().FindIndex(match: x =&gt; string.Equals(a: &quot;bin&quot;,
-            b: x));
-        var basePath = string.Join(separator: Path.DirectorySeparatorChar.ToString(),
-            values: pathItems.Take(count: pathItems.Length - pos - 1));
-        return fileName is null
-            ? basePath
-            : Path.Combine(path1: basePath,
-                path2: fileName);
-    }
-
     public static string GetWebRoot(string? fileName = null)
     {
         return Path.Combine(
@@ -71,7 +49,7 @@ public static class Utilities
 }
     </pre>
     <script type="text/javascript">
-      highlightRanges([[14,5,14,6,1],[15,9,15,56,1],[16,9,16,74,1],[17,9,18,56,1],[19,9,19,83,1],[20,9,20,70,1],[20,70,21,18,1],[21,18,21,20,1],[22,9,23,72,1],[24,9,27,34,1],[28,5,28,6,1],[31,5,31,6,0],[32,9,35,46,0],[36,5,36,6,0],[39,5,39,6,1],[40,9,40,26,1],[41,5,41,6,1],[44,5,44,6,1],[45,9,47,64,1],[49,9,49,39,1],[51,9,51,43,1],[51,44,51,71,1],[53,9,55,18,1],[55,18,55,37,1],[55,37,56,18,1],[56,18,56,37,1],[56,37,57,18,1],[57,18,57,37,1],[57,37,58,18,1],[58,18,58,37,1],[58,37,59,11,1],[60,5,60,6,1]]);
+      highlightRanges([[9,5,9,6,0],[10,9,13,46,0],[14,5,14,6,0],[17,5,17,6,1],[18,9,18,26,1],[19,5,19,6,1],[22,5,22,6,1],[23,9,25,64,1],[27,9,27,39,1],[29,9,29,43,1],[29,44,29,71,1],[31,9,33,18,1],[33,18,33,37,1],[33,37,34,18,1],[34,18,34,37,1],[34,37,35,18,1],[35,18,35,37,1],[35,37,36,18,1],[36,18,36,37,1],[36,37,37,11,1],[38,5,38,6,1]]);
     </script>
   </body>
 </html>
