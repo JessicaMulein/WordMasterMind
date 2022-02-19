@@ -1,8 +1,9 @@
 using System;
-using GameEngine.Library.Helpers;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PhantomKit.Helpers;
 
-namespace GameEngine.Test;
+namespace PhantomKit.Test;
 
 [TestClass]
 public class Crc32Test
@@ -31,6 +32,18 @@ public class Crc32Test
         Assert.AreEqual(
             expected: expected,
             actual: actual);
+    }
+
+    [TestMethod]
+    public void TestChecksumBytes()
+    {
+        var randomBytes = new Bogus.Faker().Random.Bytes(count: 1000)!;
+        // get the expected checksum using the uint version, which is tested more vigorously above
+        var expected = Crc32.ComputeChecksum(bytes: randomBytes);
+        var expectedBytes = BitConverter.GetBytes(value: expected);
+        var actual = Crc32.ComputeChecksumBytes(bytes: randomBytes);
+        Assert.IsTrue(
+             expectedBytes.SequenceEqual(actual));
     }
 
     [TestMethod]
