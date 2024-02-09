@@ -47,14 +47,6 @@ Scoring (idea):
 
 Scoring subject to change, at least until it is dialed in.
 
-# Collaboration
-Collaboration is welcome. Please contact jessica [at] mulein.com.
-
-
-# Project tracking
-- While not a formal Agile/Scrum/Kanban team, GitHub's built-in (beta) project tracking is fantastic and We (royal we/the team/myself) will try to keep the tickets as up-to-date as possible.
-  - [WordMasterMind - Initial Sprint (Notorious LEX)](https://github.com/orgs/WordMasterMind/projects/1)
-
 # Documentation
 Documentation is located in the toplevel repo's [Wiki](https://github.com/WordMasterMind/WordMasterMind/wiki)
 - Documentation for the utility to add your own dictionaries is covered on the [Dictionary File Formats](https://github.com/WordMasterMind/WordMasterMind/wiki/Dictionary-File-Formats) page.
