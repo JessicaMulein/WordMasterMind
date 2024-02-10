@@ -1,4 +1,5 @@
 @using GameEngine.Blazor.Helpers
+@using System.Text.RegularExpressions
 <div id="game">
     <header>
         <div class="title mb-3 mt-3">@GameEngine.Library.Helpers.Constants.GameTitle</div>
@@ -47,13 +48,31 @@
     }
     else if (GameStateMachine.State is GameState.Playing or GameState.GameOver)
     {
-        <div id="board-container">
-            <GameBoard></GameBoard>
+        <div>
+            <div id="board-container">
+                <GameBoard></GameBoard>
+            </div>
+            if (GameStateMachine.State is GameState.Playing)
+            {
+                <GameKeyboard></GameKeyboard>
+            }
         </div>
-        if (GameStateMachine.State is GameState.Playing)
-        {
-            <GameKeyboard></GameKeyboard>
-        }
+        <div>
+            @if (GameStateMachine.Game!.CurrentAttempt >= 1)
+            {
+                <ul>
+                    @foreach (var word in GameStateMachine.Game.LiteralDictionary.FindWords(
+                        regex: GameStateMachine.Game.SolvedLettersAsRegex(),
+                        wordLength: GameStateMachine.Game.WordLength,
+                        maxResults: -1,
+                        excludeWords: GameStateMachine.Game.Attempts.Select(selector: attempt => attempt.Word),
+                        mustIncludeLetters: GameStateMachine.Game.FoundLetters))
+                    {
+                        <li>@word</li>
+                    }
+                </ul>
+            }
+        </div>
     }
     else
     {
